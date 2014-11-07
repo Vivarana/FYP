@@ -1,0 +1,20 @@
+{% extends 'vivarana/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block body_block %}
+    <h1>Welcome!!!!</h1>
+
+    <a href="/vivarana/upload">Select Data</a>
+
+{#    {%  if request.session.filename %}#}
+    <h3>Current File -> {{ filename }}</h3>
+{#    {% endif %}#}
+
+    <ul>
+    {% for col in columns %}
+        <li>{{ col }}</li>
+    {% endfor %}
+    </ul>
+
+{% endblock %}

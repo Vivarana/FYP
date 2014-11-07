@@ -1,0 +1,422 @@
+{% extends 'vivarana/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block body_block %}
+
+    <style>
+        svg {
+            font-size: 14px;
+        }
+
+          .axis path,
+          .axis line{
+            fill: none;
+            stroke: black;
+          }
+
+          .line{
+            fill: none;
+            stroke: blue;
+            stroke-width: 2px;
+          }
+
+          .tick text{
+            font-size: 12px;
+          }
+
+          .tick line{
+            opacity: 0.2;
+          }
+
+
+        rect.extent {
+            fill: #000;
+            fill-opacity: .125;
+            stroke: #fff;
+        }
+
+        rect.frame {
+            fill: #fff;
+            fill-opacity: .7;
+            stroke: #aaa;
+        }
+
+        circle {
+            fill: #ccc;
+            pointer-events: none;
+        }
+
+        .legend circle {
+            fill-opacity: 1;
+        }
+
+        .legend text {
+            font-size: 18px;
+            font-style: oblique;
+        }
+
+        .cell text {
+            pointer-events: none;
+        }
+
+        .setosa {
+            fill: #800;
+        }
+
+        .versicolor {
+            fill: #080;
+        }
+
+        .virginica {
+            fill: #008;
+        }
+
+    </style>
+
+    <div style="margin-top: 25px" class="row">
+        <div style="margin-left: 25px" id="controls" class="col-md-5">
+            <div class=row">
+                <div id="matSelect"></div>
+            </div>
+            <div class=row">
+                <h3>Legend :</h3>
+                <div id="legendView"></div>
+            </div>
+        </div>
+        <div id="graphView" class="col-md-6"></div>
+    </div>
+
+    <script>
+
+    var current = "matrix";
+
+    d3.csv("/media/iris.csv", function(flowers) {
+
+        var traits = ["sepal length", "sepal width", "petal length", "petal width"];
+
+        // Size parameters.
+        var size = 140,
+                padding = 10,
+                graphContainerSize = 650,
+                labelPadding = 25,
+                n = traits.length,
+                metrixSize = 500,
+                metrixLabelsPadding = 25,
+                metrixCellSize = ( metrixSize - metrixLabelsPadding )/traits.length;
+
+        var x_variable = "sepal length";
+        var y_variable = "sepal width";
+
+        var fullScales = generateScales(traits,size,flowers);
+        var x = fullScales.x, y = fullScales.y;
+
+        var matScales = generateScales(traits,metrixCellSize,flowers);
+        var matX = matScales.x, matY = matScales.y;
+
+        var xdomain = [d3.min(flowers, function(d) { return d[x_variable]; }), d3.max(flowers, function(d) { return d[x_variable]; })];
+        var ydomain = [d3.min(flowers, function(d) { return d[y_variable]; }), d3.max(flowers, function(d) { return d[y_variable]; })];
+
+        var xrange = [labelPadding , graphContainerSize];
+        var yrange = [graphContainerSize - 2*labelPadding, labelPadding ];
+
+        var xScale = d3.scale.linear().domain(xdomain).range(xrange);
+        var yScale = d3.scale.linear().domain(ydomain).range(yrange);
+
+        // Root panel.
+        var svg = d3.select("#graphView").append("svg:svg")
+                .attr("width", graphContainerSize)
+                .attr("height", graphContainerSize)
+                .attr("class", "graphContainer")
+
+        var graph = svg.append("svg:g")
+                .attr("transform", "translate("+ labelPadding + ","+ labelPadding +")");
+
+        var grid = svg.append("svg:g")
+                .attr("class", "axis")
+                .attr("transform", "translate("+ labelPadding + ","+ labelPadding +")");
+
+        /*var rect = svg.append("svg:rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("height", graphContainerSize - labelPadding)
+                .attr("width", graphContainerSize - labelPadding)
+                .attr("transform", "translate(" + labelPadding + ",0)")
+                .style("stroke", "#ccc")
+                .style("fill", "none")
+                .style("stroke-width", 2);*/
+
+        // X-axis.
+        var xAxis   = d3.svg.axis()
+                        .scale(xScale)
+                        .ticks(10)
+                        .innerTickSize(-(graphContainerSize - 2*labelPadding))
+                        .outerTickSize(0)
+                        .orient("bottom")
+        grid.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + (graphContainerSize - 2*labelPadding) + ")")
+                .call(xAxis);
+
+        // Y-axis.
+
+        var yAxis = d3.svg.axis()
+                        .scale(yScale)
+                        .ticks(10)
+                        .innerTickSize(-(graphContainerSize - 2*labelPadding))
+                        .outerTickSize(0)
+                        .orient("left");
+
+        grid.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate("+ labelPadding + ","+ 0 +")")
+                .call(yAxis);
+
+        graph.selectAll("circles")
+                .data(flowers)
+                .enter()
+                .append("svg:circle")
+                .attr("class", function(d) { return d.species; })
+                .attr("cx", function(d) { return xScale(d[x_variable]); })
+                .attr("cy", function(d) { return yScale(d[y_variable]); })
+                .attr("r", 3);
+
+
+        var brush = d3.svg.brush()
+                      .on("brushstart", brushstart)
+                      .on("brush", brush)
+                      .on("brushend", brushend);
+
+        graph.call(brush.x(xScale).y(yScale));
+
+        function brushstart(p) {
+            if (brush.data !== p) {
+              cell.call(brush.clear());
+              brush.x(xScale).y(yScale).data = p;
+            }
+          }
+
+        function brush(p) {
+            var e = brush.extent();
+            graph.selectAll("circle").attr("class", function(d) {
+              return e[0][0] <= d[x_variable] && d[x_variable] <= e[1][0]
+                  && e[0][1] <= d[y_variable] && d[y_variable] <= e[1][1]
+                  ? d.species : null;
+            });
+
+            buttonContainer.selectAll(".cell circle").attr("class", function(d) {
+              return e[0][0] <= d[x_variable] && d[x_variable] <= e[1][0]
+                  && e[0][1] <= d[y_variable] && d[y_variable] <= e[1][1]
+                  ? d.species : null;
+            });
+          }
+
+        // If the brush is empty, select all circles.
+          function brushend() {
+            if (brush.empty()){
+                graph.selectAll("circle").attr("class", function(d) {
+                    return d.species;
+                });
+                buttonContainer.selectAll(".cell circle").attr("class", function(d) {
+                    return d.species;
+                });
+            }
+          }
+
+        /*
+         // Cell and plot.
+         var cell = svg.selectAll("g.cell")
+         .data(cross(traits, traits))
+         .enter().append("svg:g")
+         .attr("class", "cell")
+         .attr("transform", function(d) { return "translate(" + d.i * size + "," + d.j * size + ")"; })
+         .each(plot);
+
+         // Titles for the diagonal.
+         cell.filter(function(d) { return d.i == d.j; }).append("svg:text")
+         .attr("x", padding)
+         .attr("y", padding)
+         .attr("dy", ".71em")
+         .text(function(d) { return d.x; });
+
+         function plot(p) {
+         var cell = d3.select(this);
+
+         // Plot frame.
+         cell.append("svg:rect")
+         .attr("class", "frame")
+         .attr("x", padding / 2)
+         .attr("y", padding / 2)
+         .attr("width", size - padding)
+         .attr("height", size - padding);
+
+         // Plot dots.
+         cell.selectAll("circle")
+         .data(flowers)
+         .enter().append("svg:circle")
+         .attr("class", function(d) { return d.species; })
+         .attr("cx", function(d) { return x[p.x](d[p.x]); })
+         .attr("cy", function(d) { return y[p.y](d[p.y]); })
+         .attr("r", 3);
+
+         // Plot brush.
+         cell.call(brush.x(x[p.x]).y(y[p.y]));
+         }
+
+         */
+
+
+        function cross(a, b) {
+            var c = [], n = a.length, m = b.length, i, j;
+            for (i = -1; ++i < n;)
+                for (j = -1; ++j < m;)
+                    c.push({x: a[i], i: i, y: b[j], j: j});
+            return c;
+        }
+
+        function generateScales(traits,size,data){
+            var x = {},y={};
+            traits.forEach(function(trait) {
+                // Coerce values to numbers.
+                data.forEach(function(d) { d[trait] = +d[trait]; });
+
+                var value = function(d) { return d[trait]; },
+                        domain = [d3.min(data, value), d3.max(data, value)],
+                        range = [padding / 2, size - padding / 2];
+
+                x[trait] = d3.scale.linear().domain(domain).range(range);
+                y[trait] = d3.scale.linear().domain(domain).range(range.reverse());
+            });
+
+            return {"x":x, "y":y};
+        }
+
+        function drawGraph(d){
+            console.log(x_variable);
+
+            x_variable = d.x;
+            y_variable = d.y;
+
+            xdomain = [d3.min(flowers, function(d) { return d[x_variable]; }), d3.max(flowers, function(d) { return d[x_variable]; })];
+            ydomain = [d3.min(flowers, function(d) { return d[y_variable]; }), d3.max(flowers, function(d) { return d[y_variable]; })];
+
+            xScale.domain(xdomain);
+            yScale.domain(ydomain);
+
+            grid.select(".x.axis")
+                .transition()
+                .duration(1000)
+                .call(xAxis);
+
+            grid.select(".y.axis")
+                .transition()
+                .duration(1000)
+                .call(yAxis);
+
+            graph.selectAll("circle")
+                 .data(flowers)
+                 .transition()
+                 .duration(500)
+                 .attr("cx", function(d) { return xScale(d[x_variable]); })
+                 .attr("cy", function(d) { return yScale(d[y_variable]); });
+        }
+
+        /*******************************************************************/
+        //Concerned with the legend
+        /*******************************************************************/
+        var svg2 = d3.select("#legendView").append("svg:svg")
+                .attr("width", 300)
+                .attr("height", 300)
+                .append("svg:g");
+
+        // Legend.
+        var legend = svg2.selectAll("g.legend")
+                .data(["setosa", "versicolor", "virginica"])
+                .enter().append("svg:g")
+                .attr("class", "legend")
+                .attr("transform", function(d, i) { return "translate(20," + (i * 20 + 20)  +")"; });
+
+        legend.append("svg:circle")
+                .attr("class", String)
+                .attr("r", 3);
+
+        legend.append("svg:text")
+                .attr("x", 12)
+                .attr("dy", ".31em")
+                .text(function(d) { return "Iris " + d; });
+        /*******************************************************************/
+
+        /*******************************************************************/
+        //Drawing the legend
+        /*******************************************************************/
+
+        var svg3 = d3.select("#matSelect").append("svg:svg")
+                .attr("width", 500)
+                .attr("height", 500)
+                .append("svg:g");
+
+        /*
+         svg3.selectAll("labels")
+         .data(distMat)
+         .enter()
+         .append("foreignObject")
+         .attr("width", 100)
+         .attr("x", function(d,i) { return i*60 })
+         .attr("y", ".60em")
+         .append("xhtml:body")
+         .html('<div style="width: 150px;">about whatever</div>');
+         */
+
+        var buttonContainer = svg3.append("svg:g")
+                .attr("transform", function(d, i) { return "translate(25,25)"; });
+
+        var metrixData = cross(traits, traits)
+
+        // Cell and plot.
+        var cells = buttonContainer.selectAll("g.row")
+                .data(metrixData)
+                .enter()
+                .append("svg:g")
+                .attr("class", "cell")
+                .attr("transform", function(d) { return "translate(" + d.i * metrixCellSize + "," + d.j * metrixCellSize + ")"; })
+                .on("click", function(d) {
+                        //This will run whenever *any* cell is clicked
+                        drawGraph(d);
+                    })
+                .each(plotMetrix);
+
+
+        function plotMetrix(p) {
+            var cell = d3.select(this);
+
+            // Plot frame.
+            cell.append("svg:rect")
+                    .attr("class", "frame")
+                    .attr("x", padding / 2)
+                    .attr("y", padding / 2)
+                    .attr("width", metrixCellSize - padding)
+                    .attr("height", metrixCellSize - padding);
+
+
+            // Plot dots.
+            cell.selectAll("circle")
+                    .data(flowers)
+                    .enter().append("svg:circle")
+                    .attr("class", function(d) { return d.species; })
+                    .attr("cx", function(d) { return matX[p.x](d[p.x]); })
+                    .attr("cy", function(d) { return matY[p.y](d[p.y]); })
+                    .attr("r", 2);
+
+        }
+        /*******************************************************************/
+
+
+
+    });
+
+
+
+
+    </script>
+
+{% endblock %}

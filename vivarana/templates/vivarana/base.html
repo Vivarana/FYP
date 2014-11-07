@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+
+        <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" />
+        <script type="text/javascript" src="{% static "js/d3.js" %}"></script>
+
+        <title>{% block title %}Vivarana{% endblock %}</title>
+
+
+
+    </head>
+
+    <body>
+        {% block body_block %}{% endblock %}
+    </body>
+</html>
