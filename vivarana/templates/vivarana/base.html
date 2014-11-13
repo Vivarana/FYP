@@ -1,18 +1,119 @@
 <!DOCTYPE html>
 {% load staticfiles %}
-<html>
-    <head>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
 
-        <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}" />
-        <script type="text/javascript" src="{% static "js/d3.js" %}"></script>
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "css/ripples.min.css" %}" rel="stylesheet">
+{#<link href="{% static "css/material.css" %}" rel="stylesheet">#}
+    <link href="{% static "css/material-wfont.css" %}" rel="stylesheet">
 
-        <title>{% block title %}Vivarana{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static "slickgrid/slick.grid.css" %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static "slickgrid/jquery-ui-1.8.16.custom.css" %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static "slickgrid/examples.css" %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static "slickgrid/slick.pager.css" %}" type="text/css"/>
+{#    <script src="{% static "slickgrid/jquery-1.7.min.js" %}"></script>#}
+
+    <!-- End SlickGrid -->
+
+
+    <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/d3.parcoords.css" %}">
+{#    <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/style.css" %}">#}
+
+
+    <script src="{% static "slickgrid/jquery-1.7.min.js" %}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/ripples.js" %}"></script>
+    <script src="{% static "js/material.js" %}"></script>
 
 
 
-    </head>
+    <script src="{% static "slickgrid/jquery.event.drag-2.0.min.js" %}"></script>
+    <script src="{% static "slickgrid/slick.core.js" %}"></script>
+    <script src="{% static "slickgrid/slick.grid.js" %}"></script>
+    <script src="{% static "slickgrid/slick.pager.js" %}"></script>
+    <script src="{% static "slickgrid/slick.dataview.js" %}"></script>
 
-    <body>
-        {% block body_block %}{% endblock %}
-    </body>
+    <script src="{% static "js/d3.js" %}"></script>
+    <script src="{% static "parallelcordinates/d3.parcoords.js" %}"></script>
+    <script src="{% static "parallelcordinates/divgrid.js" %}"></script>
+
+    <script>
+        $(document).ready(function () {
+            $.material.init();
+        });
+    </script>
+
+    <title>{% block title %}Vivarana{% endblock %}</title>
+
+
+</head>
+
+<body>
+<div class="navbar navbar-default">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="javascript:void(0)">Brand</a>
+    </div>
+    <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="javascript:void(0)">Active</a></li>
+            <li><a href="javascript:void(0)">Link</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b
+                        class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="javascript:void(0)">Action</a></li>
+                    <li><a href="javascript:void(0)">Another action</a></li>
+                    <li><a href="javascript:void(0)">Something else here</a></li>
+                    <li class="divider"></li>
+                    <li class="dropdown-header">Dropdown header</li>
+                    <li><a href="javascript:void(0)">Separated link</a></li>
+                    <li><a href="javascript:void(0)">One more separated link</a></li>
+                </ul>
+            </li>
+        </ul>
+        <form class="navbar-form navbar-left">
+            <input type="text" class="form-control col-lg-8" placeholder="Search">
+        </form>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="javascript:void(0)">Link</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b
+                        class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="javascript:void(0)">Action</a></li>
+                    <li><a href="javascript:void(0)">Another action</a></li>
+                    <li><a href="javascript:void(0)">Something else here</a></li>
+                    <li class="divider"></li>
+                    <li><a href="javascript:void(0)">Separated link</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+{% block body_block %}{% endblock %}
+
+
+</body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+

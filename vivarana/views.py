@@ -1,4 +1,7 @@
+import simplejson
+from django.core import serializers
 from django.http import HttpResponseRedirect
+
 from django.shortcuts import render, render_to_response
 from .forms import UploadFileForm
 import csv
@@ -7,54 +10,47 @@ import numpy as np
 import pandas as pd
 import json
 
+original_data_frame = ""
+
+
 def home(request):
-    context = { }
+    context = {}
     return render(request, 'vivarana/home.html', context)
 
-def visualize(request):
-    context = loadData(request.session['filename'],request)
-    return render(request, 'vivarana/visualize.html', context)
 
-def dvis(request):
-    context = { }
-    return render(request, 'vivarana/d3.html', context)
+def visualize(request):
+    json = original_data_frame.to_json(orient='records')
+    return render(request, 'vivarana/visualize.html', {'result': json, 'frame_size': len(original_data_frame)})
+
+
+def preprocessor(request):
+    context = loadData(request.session['filename'])
+    return render(request, 'vivarana/preprocessor.html', context)
+
 
 def upload(request):
-    if request.method=='POST':
+    if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             handle_uploaded_file(request.FILES['file'])
             request.session['filename'] = request.FILES['file'].name
 
-            print request.session['filename']
-            return HttpResponseRedirect('/vivarana/visualize')
+            return HttpResponseRedirect('/vivarana/preprocessor')
     else:
         form = UploadFileForm()
     return render(request, 'vivarana/upload.html', {'form': form})
 
+
 def handle_uploaded_file(fileIn):
-    with open("media/"+fileIn.name, 'wb+') as destination:
+    with open("media/" + fileIn.name, 'wb+') as destination:
         for chunk in fileIn.chunks():
             destination.write(chunk)
 
-def loadData(fileName , request):
-    print 'media/'+fileName
-    count = 0
 
-    with open('media/'+fileName,'r') as csvfile:
-        dataframe = pd.read_csv(csvfile)
-        cols = list(dataframe.columns)
-        to_json(dataframe, 'media/data.json')
-    print count
+def loadData(fileName):
+    with open('media/' + fileName, 'r') as csv_file:
+        global original_data_frame
+        original_data_frame = pd.read_csv(csv_file, delim_whitespace=True)
+        cols = list(original_data_frame.columns)
+    return {"filename": fileName, "columns": cols}
 
-    return {"filename" : fileName, "columns": cols}
-
-def to_json(df,filename):
-    d = [
-        dict([
-            (colname, row[i])
-            for i,colname in enumerate(df.columns)
-        ])
-        for row in df.values
-    ]
-    return json.dump(d, open(filename + '.json', 'w'))

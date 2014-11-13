@@ -2,14 +2,132 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ad71db62-5a95-4856-af26-d3531e02c30b" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/media/temp.txt" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/vivarana/static/iris.csv" afterPath="$PROJECT_DIR$/media/iris.csv" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/fonts/Material-Design-Icons.eot" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/fonts/Material-Design-Icons.ttf" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/fonts/Material-Design-Icons.woff" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/actions.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/actions.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/ajax-loader-small.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/ajax-loader-small.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/arrow_redo.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/arrow_redo.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/arrow_right_peppermint.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/arrow_right_peppermint.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/arrow_right_spearmint.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/arrow_right_spearmint.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/arrow_undo.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/arrow_undo.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/bullet_blue.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/bullet_blue.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/bullet_star.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/bullet_star.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/bullet_toggle_minus.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/bullet_toggle_minus.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/bullet_toggle_plus.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/bullet_toggle_plus.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/calendar.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/calendar.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/collapse.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/collapse.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/comment_yellow.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/comment_yellow.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/down.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/down.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/drag-handle.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/drag-handle.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/editor-helper-bg.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/editor-helper-bg.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/expand.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/expand.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/header-bg.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/header-bg.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/header-columns-bg.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/header-columns-bg.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/header-columns-over-bg.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/header-columns-over-bg.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/help.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/help.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/info.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/info.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/listview.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/listview.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/pencil.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/pencil.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/row-over-bg.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/row-over-bg.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/sort-asc.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/sort-asc.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/sort-asc.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/sort-asc.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/sort-desc.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/sort-desc.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/sort-desc.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/sort-desc.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/stripes.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/stripes.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/tag_red.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/tag_red.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/tick.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/tick.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/ui-bg_glass_75_dadada_1x400.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/ui-bg_glass_75_dadada_1x400.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/ui-bg_glass_75_e6e6e6_1x400.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/ui-bg_glass_75_e6e6e6_1x400.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/ui-icons_888888_256x240.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/ui-icons_888888_256x240.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/user_identity.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/user_identity.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/images/user_identity_plus.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/images/user_identity_plus.gif" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/fonts/LICENSE.txt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/fonts/Material-Design-Icons.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/helper/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/helper/aggregate.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/parallelcordinates/d3.parcoords.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/parallelcordinates/d3.parcoords.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/divgrid.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/parallelcordinates/divgrid.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/examples.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/jquery-1.7.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/jquery-2.1.1.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/jquery-ui-1.8.16.custom.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/jquery.event.drag-2.0.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/css/material-wfont.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/css/material-wfont.min.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/css/material.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/material.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/css/material.min.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/material.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/templates/vivarana/preprocessor.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/ripples.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/css/ripples.min.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/ripples.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/scatterplot.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/slick-default-theme.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/slick.core.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/slick.dataview.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/slick.grid.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/slick.grid.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/slick.pager.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/slickgrid/slick.pager.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/parallelcordinates/style.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/superformula.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/sylvester.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/underscore.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/vivarana/static/js/underscore.math.js" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/media/data.json.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vivarana/models.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vivarana/static/bus_perf.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vivarana/static/cars.csv" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db.sqlite3" afterPath="$PROJECT_DIR$/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vivarana/templates/vivarana/d3.html" afterPath="$PROJECT_DIR$/vivarana/templates/vivarana/d3.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/media/data.json.json" afterPath="$PROJECT_DIR$/media/data.json.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FYP/settings.py" afterPath="$PROJECT_DIR$/FYP/settings.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FYP/urls.py" afterPath="$PROJECT_DIR$/FYP/urls.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/FYP.iml" afterPath="$PROJECT_DIR$/.idea/FYP.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vivarana/templates/vivarana/base.html" afterPath="$PROJECT_DIR$/vivarana/templates/vivarana/base.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/media/cars.csv" afterPath="$PROJECT_DIR$/media/cars.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vivarana/templates/vivarana/upload.html" afterPath="$PROJECT_DIR$/vivarana/templates/vivarana/upload.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vivarana/urls.py" afterPath="$PROJECT_DIR$/vivarana/urls.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vivarana/views.py" afterPath="$PROJECT_DIR$/vivarana/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html" afterPath="$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="FYP.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,31 +150,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="upload.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/upload.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.875" vertical-offset="0" max-vertical-offset="255">
-              <caret line="11" column="14" selection-start-line="11" selection-start-column="14" selection-end-line="11" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="home.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/home.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="225">
-              <caret line="9" column="14" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="visualize.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.875" vertical-offset="0" max-vertical-offset="375">
-              <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
+            <state vertical-scroll-proportion="8.666667" vertical-offset="810" max-vertical-offset="2826">
+              <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="base.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/base.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="324" max-vertical-offset="2250">
+              <caret line="24" column="55" selection-start-line="24" selection-start-column="55" selection-end-line="24" selection-end-column="55" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="d3.parcoords.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vivarana/static/parallelcordinates/d3.parcoords.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="8669" max-vertical-offset="22302">
+              <caret line="485" column="18" selection-start-line="485" selection-start-column="13" selection-end-line="485" selection-end-column="18" />
               <folding />
             </state>
           </provider>
@@ -65,61 +183,9 @@
       <file leaf-file-name="views.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/vivarana/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.95238096" vertical-offset="325" max-vertical-offset="870">
-              <caret line="58" column="5" selection-start-line="58" selection-start-column="5" selection-end-line="58" selection-end-column="5" />
+            <state vertical-scroll-proportion="2.9277108" vertical-offset="0" max-vertical-offset="936">
+              <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="d3.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/d3.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.2" vertical-offset="1290" max-vertical-offset="6405">
-              <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="urls.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vivarana/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="285">
-              <caret line="15" column="1" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="forms.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vivarana/forms.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="135">
-              <caret line="3" column="28" selection-start-line="3" selection-start-column="28" selection-end-line="3" selection-end-column="28" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="settings.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/FYP/settings.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1030" max-vertical-offset="1515">
-              <caret line="83" column="34" selection-start-line="83" selection-start-column="34" selection-end-line="83" selection-end-column="34" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="urls.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/FYP/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="225">
-              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#51#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -139,24 +205,48 @@
       <list>
         <option value="$PROJECT_DIR$/vivarana/templates/vivarana/success.html" />
         <option value="$PROJECT_DIR$/vivarana/forms.py" />
-        <option value="$PROJECT_DIR$/vivarana/templates/vivarana/upload.html" />
         <option value="$PROJECT_DIR$/vivarana/templates/vivarana/home.html" />
-        <option value="$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html" />
-        <option value="$PROJECT_DIR$/vivarana/templates/vivarana/base.html" />
-        <option value="$PROJECT_DIR$/vivarana/urls.py" />
-        <option value="$PROJECT_DIR$/vivarana/views.py" />
         <option value="$PROJECT_DIR$/vivarana/static/iris.csv" />
         <option value="$PROJECT_DIR$/FYP/settings.py" />
         <option value="$PROJECT_DIR$/FYP/urls.py" />
         <option value="$PROJECT_DIR$/vivarana/templates/vivarana/d3.html" />
+        <option value="$PROJECT_DIR$/vivarana/templates/vivarana/upload.html" />
+        <option value="$PROJECT_DIR$/vivarana/urls.py" />
+        <option value="$PROJECT_DIR$/vivarana/templates/vivarana/preprocessor.html" />
+        <option value="$PROJECT_DIR$/media/myfile" />
+        <option value="$PROJECT_DIR$/vivarana/static/slickgrid/slick.grid.js" />
+        <option value="$PROJECT_DIR$/vivarana/static/css/material-wfont.css" />
+        <option value="$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html" />
+        <option value="$PROJECT_DIR$/vivarana/templates/vivarana/base.html" />
+        <option value="$PROJECT_DIR$/vivarana/views.py" />
+        <option value="$PROJECT_DIR$/vivarana/helper/aggregate.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="465" />
-    <option name="y" value="23" />
-    <option name="width" value="930" />
-    <option name="height" value="860" />
+    <option name="x" value="-1" />
+    <option name="y" value="30" />
+    <option name="width" value="1368" />
+    <option name="height" value="739" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>Python</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>PyUnresolvedReferencesInspection</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -184,6 +274,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -230,43 +321,25 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FYP" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FYP" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="vivarana" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="static" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FYP" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FYP" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="vivarana" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="migrations" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="FYP" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="FYP" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="vivarana" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="helper" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -300,7 +373,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -308,10 +380,12 @@
     <property name="recentsLimit" value="5" />
     <property name="DefaultHtmlFileTemplate" value="Html5" />
     <property name="FullScreen" value="false" />
-    <property name="options.lastSelected" value="http.proxy" />
+    <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="LayoutCode.rearrangeEntriesPython" value="false" />
+    <property name="LayoutCode.rearrangeEntriesDjangoTemplate" value="false" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -325,11 +399,11 @@
       <recent name="$PROJECT_DIR$/vivarana/templates/vivarana" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/vivarana/" />
+      <recent name="$PROJECT_DIR$/vivarana/helper.py" />
+      <recent name="$PROJECT_DIR$/vivarana" />
       <recent name="$PROJECT_DIR$/media" />
       <recent name="$PROJECT_DIR$/vivarana/static" />
-      <recent name="$PROJECT_DIR$/vivarana/static/js" />
-      <recent name="$PROJECT_DIR$/vivarana/templates/vivarana" />
-      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RunManager" selected="Django server.FYP">
@@ -528,7 +602,9 @@
       <option name="runNoReload" value="false" />
       <option name="useCustomRunCommand" value="false" />
       <option name="customRunCommand" value="" />
+      <RunnerSettings RunnerId="PyDebugRunner" />
       <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PyDebugRunner" />
       <ConfigurationWrapper RunnerId="PythonRunner" />
       <method />
     </configuration>
@@ -550,27 +626,27 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="465" y="23" width="930" height="860" extended-state="0" />
+    <frame x="-1" y="30" width="1368" height="739" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.6756303" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3277311" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2344086" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24848942" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24093656" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32941177" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3042017" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.66554624" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32941177" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -590,105 +666,11 @@
     </option>
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="13" />
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/upload.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
-          <caret line="11" column="14" selection-start-line="11" selection-start-column="14" selection-end-line="11" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/home.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="225">
-          <caret line="9" column="14" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="285" max-vertical-offset="375">
-          <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="570" max-vertical-offset="975">
-          <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/d3.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="892" max-vertical-offset="4620">
-          <caret line="85" column="54" selection-start-line="85" selection-start-column="54" selection-end-line="85" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="120" max-vertical-offset="315">
-          <caret line="8" column="38" selection-start-line="8" selection-start-column="38" selection-end-line="8" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="135">
-          <caret line="3" column="28" selection-start-line="3" selection-start-column="28" selection-end-line="3" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/FYP/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1230" max-vertical-offset="1470">
-          <caret line="82" column="59" selection-start-line="82" selection-start-column="59" selection-end-line="82" selection-end-column="59" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/upload.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
-          <caret line="11" column="14" selection-start-line="11" selection-start-column="14" selection-end-line="11" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/home.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="225">
-          <caret line="9" column="14" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="285" max-vertical-offset="375">
-          <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="345">
-          <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/d3.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="210">
@@ -717,7 +699,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="135">
           <caret line="3" column="28" selection-start-line="3" selection-start-column="28" selection-end-line="3" selection-end-column="28" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -733,7 +714,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
           <caret line="11" column="14" selection-start-line="11" selection-start-column="14" selection-end-line="11" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -741,15 +721,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="225">
           <caret line="9" column="14" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html">
+    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/preprocessor.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="285" max-vertical-offset="375">
           <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -789,7 +767,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="135">
           <caret line="3" column="28" selection-start-line="3" selection-start-column="28" selection-end-line="3" selection-end-column="28" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -805,7 +782,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
           <caret line="11" column="14" selection-start-line="11" selection-start-column="14" selection-end-line="11" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -813,15 +789,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="225">
           <caret line="9" column="14" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html">
+    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/preprocessor.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="285" max-vertical-offset="375">
           <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -861,7 +835,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="135">
           <caret line="3" column="28" selection-start-line="3" selection-start-column="28" selection-end-line="3" selection-end-column="28" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -888,37 +861,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/media/iris.csv">
-      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="1.1724138" vertical-offset="1755" max-vertical-offset="2355">
           <caret line="151" column="0" selection-start-line="151" selection-start-column="0" selection-end-line="151" selection-end-column="0" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.10518934" vertical-offset="0" max-vertical-offset="713">
-          <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/home.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="225">
-          <caret line="9" column="14" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="135">
-          <caret line="3" column="28" selection-start-line="3" selection-start-column="28" selection-end-line="3" selection-end-column="28" />
-          <folding />
-        </state>
+      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/FYP/settings.py">
@@ -929,52 +878,184 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.875" vertical-offset="0" max-vertical-offset="375">
-          <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="285">
-          <caret line="15" column="1" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/FYP/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="225">
-          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#51#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="252">
+          <caret line="6" column="71" selection-start-line="6" selection-start-column="71" selection-end-line="6" selection-end-column="71" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/d3.html">
+    <entry file="file://$PROJECT_DIR$/vivarana/forms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.2" vertical-offset="1290" max-vertical-offset="6405">
-          <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
-          <folding />
+        <state vertical-scroll-proportion="0.10055866" vertical-offset="0" max-vertical-offset="358">
+          <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/upload.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.875" vertical-offset="0" max-vertical-offset="255">
-          <caret line="11" column="14" selection-start-line="11" selection-start-column="14" selection-end-line="11" selection-end-column="14" />
+        <state vertical-scroll-proportion="-7.3333335" vertical-offset="0" max-vertical-offset="342">
+          <caret line="11" column="11" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="360">
+          <caret line="10" column="21" selection-start-line="10" selection-start-column="21" selection-end-line="10" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/preprocessor.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="468">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/home.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="270">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/d3.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6887608" vertical-offset="7339" max-vertical-offset="7686">
+          <caret line="421" column="0" selection-start-line="421" selection-start-column="0" selection-end-line="421" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/data.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="374">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/myfile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.3846154" vertical-offset="3204" max-vertical-offset="3366">
+          <caret line="180" column="18" selection-start-line="180" selection-start-column="18" selection-end-line="180" selection-end-column="18" />
+        </state>
+      </provider>
+      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/slickgrid/slick.grid.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.0" vertical-offset="7542" max-vertical-offset="59022">
+          <caret line="422" column="20" selection-start-line="422" selection-start-column="20" selection-end-line="422" selection-end-column="20" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/parallelcordinates/divgrid.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1170">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/parallelcordinates/d3.parcoords.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="882">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/parallelcordinates/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1206">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/slickgrid/slick.grid.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2916">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/slickgrid/slick.pager.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="828">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/slickgrid/slick-default-theme.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1344" max-vertical-offset="1890">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/css/ripples.min.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="533">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/css/material-wfont.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.34387353" vertical-offset="80760" max-vertical-offset="101790">
+          <caret line="4477" column="34" selection-start-line="4477" selection-start-column="34" selection-end-line="4477" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/css/material.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.2222223" vertical-offset="77718" max-vertical-offset="101628">
+          <caret line="4327" column="7" selection-start-line="4327" selection-start-column="1" selection-end-line="4327" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/visualize.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="8.666667" vertical-offset="810" max-vertical-offset="2826">
+          <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/templates/vivarana/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="324" max-vertical-offset="2250">
+          <caret line="24" column="55" selection-start-line="24" selection-start-column="55" selection-end-line="24" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/static/parallelcordinates/d3.parcoords.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="8669" max-vertical-offset="22302">
+          <caret line="485" column="18" selection-start-line="485" selection-start-column="13" selection-end-line="485" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vivarana/helper/aggregate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3255814" vertical-offset="0" max-vertical-offset="594">
+          <caret line="7" column="71" selection-start-line="7" selection-start-column="71" selection-end-line="7" selection-end-column="71" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/vivarana/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.95238096" vertical-offset="325" max-vertical-offset="870">
-          <caret line="58" column="5" selection-start-line="58" selection-start-column="5" selection-end-line="58" selection-end-column="5" />
+        <state vertical-scroll-proportion="2.9277108" vertical-offset="0" max-vertical-offset="936">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
           <folding />
         </state>
       </provider>
