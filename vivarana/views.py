@@ -22,6 +22,8 @@ def visualize(request):
     json = original_data_frame.to_json(orient='records')
     return render(request, 'vivarana/visualize.html', {'result': json, 'frame_size': len(original_data_frame)})
 
+def paracoords(request):
+    return render(request, 'vivarana/paracoords.html', {})
 
 def preprocessor(request):
     context = loadData(request.session['filename'])
