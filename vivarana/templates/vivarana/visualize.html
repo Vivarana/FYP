@@ -1,74 +1,214 @@
 {% extends 'vivarana/base.html' %}
 {% block body_block %}
 
-<style>
-body, html {
-  margin: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  font-size: 12px;
-}
-#grid, #pager {
-  position: fixed;
-  width: 100%;
-}
-#grid {
-  bottom: 0;
-  height: 200px;
-}
-#pager {
-  bottom: 206px;
-  height: 20px;
-}
-.slick-row:hover {
-  font-weight: bold;
-  color: #069;
-}
-{##example{#}
-{#    background-color: #ffffff;#}
-{#    -webkit-box-shadow: 0px 0px 4px 0px #fff; /* Android 2.3+, iOS 4.0.2-4.2, Safari 3-4 */#}
-{#          box-shadow: 0px 0px 4px 0px #fff; /* Chrome 6+, Firefox 4+, IE 9+, iOS 5+, Opera 10.50+ */#}
-{##}
+    <style>
+        #rule-right {
+            background-color: #000;
+            float: right;
+            width: 30%;
+            padding-right: 10px;
+        }
 
-</style>
+        .slick-row:hover {
+            font-weight: bold;
+            color: #069;
+        }
 
-{#<script src="lib/d3.min.js"></script>#}
+        #btn-clear, #btn-undo {
+            display: none;
+        }
 
-<div id="example" class="parcoords" style="height:340px;"></div>
-<div id="grid"></div>
-<div id="pager"></div>
-<script id="brushing">
+    </style>
+
+    {#<script src="lib/d3.min.js"></script>#}
+
+    <div id="example" class="parcoords" style="height:340px;"></div>
+    <div id="slickgrid-container">
+        <div id="rule-right">heedwefdwefhee</div>
+        <div id="slickgrid-container-inner-left">
+            <div id="grid"></div>
+            <div id="pager"></div>
+        </div>
+    </div>
+    <script id="brushing">
+
+    var new_grid_data;
+    var datastack = [100];
+
+    function keep_data() {
+        if (parcoords.brushed() == null) {
+            //TODO add a material popup on lower left corner
+            console.log('select data')
+
+        } else {
+            new_data = parcoords.brushed();
+            datastack.push(parcoords.data());
+            data = new_data;
+            new_grid_data = new_data;
+            parcoords.brushMode("1D-axes");
+            parcoords.brushMode("2D-strums");
+            parcoords
+                    .data(data)
+                    .resize()
+                    .render()
+                    .brushMode("1D-axes");
+            $("#btn-undo").css('display', 'block');
+            $("#btn-clear").css('display', 'block');
+        }
+    }
+
+    function exclude_data() {
+        new_data = _.difference(parcoords.data(), parcoords.brushed());
+        datastack.push(parcoords.data());
+        data = new_data;
+        new_grid_data = new_data;
+        parcoords.brushMode("1D-axes");
+        parcoords.brushMode("2D-strums");
+        parcoords
+                .data(data)
+                .resize()
+                .render()
+                .brushMode("1D-axes");
+        $("#btn-undo").css('display', 'block');
+        $("#btn-clear").css('display', 'block');
+    }
+
+    function undo() {
+        new_data = datastack.pop();
+        data = new_data;
+        new_grid_data = new_data;
+        parcoords.brushMode("1D-axes");
+        parcoords.brushMode("2D-strums");
+        parcoords
+                .data(data)
+                .resize()
+                .render()
+                .brushMode("1D-axes");
+        if (datastack.length < 1) {
+            $("#btn-undo").css('display', 'none');
+            $("#btn-clear").css('display', 'none');
+        }
+
+    }
+
+    function reset() {
+        new_data = datastack[1];
+        datastack = [];
+        data = new_data;
+        new_grid_data = new_data;
+        parcoords.brushMode("1D-axes");
+        parcoords.brushMode("2D-strums");
+        parcoords
+                .data(data)
+                .resize()
+                .render()
+                .brushMode("1D-axes");
+        $("#btn-undo").css('display', 'none');
+        $("#btn-clear").css('display', 'none');
+    }
+
+    function enable_cluster_coloring() {
+        var colorgen = d3.scale.category20();
+        var colors = {};
+        _(data).chain()
+                .pluck('cylinders') // todo change this to cluster axis name
+                .uniq()
+                .each(function (d, i) {
+                    colors[d] = colorgen(i);
+                });
 
 
-var parcoords = d3.parcoords()("#example")
-    .alpha(0.4)
-    .mode("queue") // progressive rendering
-    .height(d3.max([document.body.clientHeight-326, 220]))
-    .margin({
-      top: 36,
-      left: 0,
-      right: 0,
-      bottom: 16
+        var color = function (d) {
+            return colors[d.cylinders]; // todo change this to cluster axis name
+        };
+        parcoords.color(color).render();
+    }
+
+
+    d3.select("#btn-keep-data").on("click", keep_data);
+    d3.select("#btn-exclude-data").on("click", exclude_data);
+    d3.select("#btn-undo").on("click", undo);
+    d3.select("#btn-clear").on("click", reset);
+{#    d3.select("#clusterColoring-radio").on("click", enable_cluster_coloring());#}
+
+    $("input[type=radio][name=clusterColoring]").change(function () {
+        if ($('[id="clusterColoring-radio"]').is(':checked')) {
+            console.log("he");
+            enable_cluster_coloring();
+        }
     });
 
-{% autoescape off %}
-var j_data = JSON.parse('{{ result }}');
+     $("input[type=radio][name=brushingRadios]").change(function () {
+        if ($('[id="oneBrushing-radio"]').is(':checked')) {
+            parcoords.brushMode("1D-axes").render();
+        }
+        if ($('[id="twoBrushing-radio"]').is(':checked')){
+{#            parcoords.brushMode("2D-strums").render();#}
+        }
+        console.log('finished1');
+    });
 
-{% endautoescape %}
 
-var data = [];
-for (var i=0; i<{{ frame_size }};i++){ data[i] = j_data[i]}
-// load csv file and create the chart
-{#d3.csv('http://127.0.0.1:8000/media/cars.csv', function(data) {#}
+    $("#aplha-slider").on({
+        change: function () {
+            var alpha_opacity_value = $("#aplha-slider").val();
+            var new_alpha_opacity_value = Math.round(alpha_opacity_value * 100) / 100;
+            parcoords.alpha(new_alpha_opacity_value).render();
+            $("#alpha-opacity-text").text('Alpha Opacity: ' + alpha_opacity_value);
+        }
+    });
+
+    $("#curve-slider").on({
+        change: function () {
+            var curve_smooth_value = $("#curve-slider").val();
+            parcoords.smoothness(curve_smooth_value).render();
+            $("#curve-text").text('Curve Smoothness: ' + curve_smooth_value);
+        }
+    });
+
+    $("#bundling-slider").on({
+        change: function () {
+            var bundling_value = $("#bundling-slider").val();
+            parcoords.bundlingStrength(bundling_value).render();
+            $("#bundling-text").text('Bundling Strength: ' + bundling_value);
+        }
+    });
+
+    var parcoords = d3.parcoords()("#example")
+            .alpha(0.4)
+            .mode("queue") // progressive rendering
+            .height(d3.max([document.body.clientHeight - 326, 220]))
+            .margin({
+                top: 36,
+                left: 0,
+                right: 0,
+                bottom: 16
+            });
+
+    {% autoescape off %}
+        var j_data = JSON.parse('{{ result }}');
+    {% endautoescape %}
+
+    var data = [];
+    for (var i = 0; i <{{ frame_size }}; i++) {
+        data[i] = j_data[i]
+    }
+    // load csv file and create the chart
+    {#d3.csv('http://127.0.0.1:8000/media/cars.csv', function(data) {#}
     // slickgrid needs each data element to have an id
-    data.forEach(function(d,i) { d.id = d.id || i; });
+    data.forEach(function (d, i) {
+        d.id = d.id || i;
+    });
 
+    new_grid_data = data;
     parcoords
             .data(data)
+            .bundlingStrength(0)
+            .smoothness(0)
+            .bundleDimension("cylinders") //TODO change this to the name of cluster axis
             .render()
             .reorderable()
-            .brushMode("1D-axes");
+            .brushMode("1D-strums");
 
     // setting up grid
     var column_keys = d3.keys(data[0]);
@@ -126,7 +266,7 @@ for (var i=0; i<{{ frame_size }};i++){ data[i] = j_data[i]}
     // highlight row in chart
     grid.onMouseEnter.subscribe(function (e, args) {
         var i = grid.getCellFromEvent(e).row;
-        var d = parcoords.brushed() || data;
+        var d = parcoords.brushed() || new_grid_data;
         parcoords.highlight([d[i]]);
     });
     grid.onMouseLeave.subscribe(function (e, args) {
@@ -145,8 +285,9 @@ for (var i=0; i<{{ frame_size }};i++){ data[i] = j_data[i]}
         dataView.beginUpdate();
         dataView.setItems(data);
         dataView.endUpdate();
-    };
+    }
+    ;
 
-</script>
+    </script>
 
 {% endblock %}

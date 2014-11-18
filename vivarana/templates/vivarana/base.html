@@ -3,9 +3,10 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
 
-    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
+    {#<link rel="stylesheet" href="{% static "css/jquery.nouislider.min.css" %}" type="text/css"/>#}
     <link href="{% static "css/ripples.min.css" %}" rel="stylesheet">
-{#<link href="{% static "css/material.css" %}" rel="stylesheet">#}
+    {#<link href="{% static "css/material.css" %}" rel="stylesheet">#}
     <link href="{% static "css/material-wfont.css" %}" rel="stylesheet">
 
 
@@ -13,20 +14,22 @@
     <link rel="stylesheet" href="{% static "slickgrid/jquery-ui-1.8.16.custom.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "slickgrid/examples.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "slickgrid/slick.pager.css" %}" type="text/css"/>
-{#    <script src="{% static "slickgrid/jquery-1.7.min.js" %}"></script>#}
+    <link rel="stylesheet" href="{% static "css/yamm.css" %}" type="text/css"/>
+
+    {#    <script src="{% static "slickgrid/jquery-1.7.min.js" %}"></script>#}
 
     <!-- End SlickGrid -->
 
 
     <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/d3.parcoords.css" %}">
-{#    <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/style.css" %}">#}
+    {#    <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/style.css" %}">#}
 
 
     <script src="{% static "slickgrid/jquery-1.7.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
-
+    <script src="{% static "js/jquery.nouislider.min.js" %}"></script>
 
 
     <script src="{% static "slickgrid/jquery.event.drag-2.0.min.js" %}"></script>
@@ -38,63 +41,240 @@
     <script src="{% static "js/d3.js" %}"></script>
     <script src="{% static "parallelcordinates/d3.parcoords.js" %}"></script>
     <script src="{% static "parallelcordinates/divgrid.js" %}"></script>
-
+    <script src="{% static "js/underscore.js" %}"></script>
+    <script src="{% static "js/sylvester.js" %}"></script>
     <script>
         $(document).ready(function () {
             $.material.init();
-        });
-    </script>
 
+            $("#aplha-slider").noUiSlider({
+                start: 0.3,
+                connect: "lower",
+                step: 0.01,
+                range: {
+                    min: 0,
+                    max: 1
+                }
+            });
+
+            $("#curve-slider").noUiSlider({
+                start: 0,
+                connect: "lower",
+                step: 0.01,
+                range: {
+                    min: 0,
+                    max: 0.25
+                }
+            });
+
+            $("#bundling-slider").noUiSlider({
+                start: 0,
+                connect: "lower",
+                step: 0.05,
+                range: {
+                    min: 0,
+                    max: 1
+                }
+            });
+
+            $("#alpha-checkbox").change(function () {
+                if (this.checked) {
+                    $('#alpha-slider-container').show();
+                } else {
+                    $('#alpha-slider-container').hide();
+                }
+            });
+
+            $("#zscore-checkbox").change(function () {
+                if (this.checked) {
+                    $('input[id=clusterColoring-radio]').attr("disabled", true);
+                } else {
+                    $('input[id=clusterColoring-radio]').attr("disabled", false);
+                }
+            });
+
+            $('input[type=radio][name=clusterColoring]').change(function () {
+                if ($('[id="clusterBundling-radio"]').is(':checked')) {
+                    $('#curve-slider-container').show();
+                    $('#bundling-slider-container').show();
+                } else {
+                    $('#curve-slider-container').hide();
+                    $('#bundling-slider-container').hide();
+                }
+            });
+
+{#             $("input[type=radio][name=brushingRadios]").change(function () {#}
+{##}
+{#             });#}
+
+        });
+
+        $(document).on('click', '.yamm .dropdown-menu', function (e) {
+            e.stopPropagation()
+        })
+
+
+    </script>
+    <style>
+        .slider {
+            min-width: 150px;
+            margin: 5px 15px;
+        }
+
+        .slider-text {
+            margin-top: 5px;
+            text-align: center;
+            font-size: 8pt;
+            color: rgba(255, 255, 255, 0.84);
+        }
+
+        #curve-slider-container, #alpha-slider-container, #bundling-slider-container {
+            display: none;
+        }
+    </style>
     <title>{% block title %}Vivarana{% endblock %}</title>
 
 
 </head>
 
 <body>
-<div class="navbar navbar-default">
+<div class="navbar yamm navbar-default">
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="javascript:void(0)">Brand</a>
+        <a class="navbar-brand" href="javascript:void(0)">Vivarana</a>
     </div>
     <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">
-            <li class="active"><a href="javascript:void(0)">Active</a></li>
-            <li><a href="javascript:void(0)">Link</a></li>
             <li class="dropdown">
-                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b
+                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Features <b
                         class="caret"></b></a>
                 <ul class="dropdown-menu">
-                    <li><a href="javascript:void(0)">Action</a></li>
-                    <li><a href="javascript:void(0)">Another action</a></li>
-                    <li><a href="javascript:void(0)">Something else here</a></li>
-                    <li class="divider"></li>
-                    <li class="dropdown-header">Dropdown header</li>
-                    <li><a href="javascript:void(0)">Separated link</a></li>
-                    <li><a href="javascript:void(0)">One more separated link</a></li>
+
+
+                    <div class="yamm-content">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label class="control-label">Configuration options for parallel coordinates</label></br>
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <form class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="control-label">Brushing:</label>
+
+                                                <div class="radio radio-primary">
+                                                    <label>
+                                                        <input type="radio" name="brushingRadios" id="oneBrushing-radio"
+                                                               value="option1"
+                                                               checked="">
+                                                        1D Brushing
+                                                    </label>
+
+                                                    <div class="radio radio-primary">
+                                                        <label>
+                                                            <input type="radio" name="brushingRadios" id="twoBrushing-radio"
+                                                                   value="option2">
+                                                            2D Brushing
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+{#                                                todo remove zscore coloring#}
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input id="zscore-checkbox" type="checkbox"> Z Score Coloring
+                                                    </label>
+                                                </div>
+                                            </div>
+
+
+                                        </form>
+
+
+                                    </div>
+                                    <div class="col-xs-6 col-sm-6">
+                                        <form class="form-horizontal">
+
+                                            <div class="form-group">
+                                                <label class="control-label">Clustering:</label>
+
+                                                <div class="radio radio-primary">
+                                                    <label>
+                                                        <input type="radio" name="clusterColoring"
+                                                               id="clusterColoring-radio"
+                                                               value="option3"
+                                                               checked="">
+                                                        Enable Cluster Coloring
+                                                    </label>
+
+                                                    <div class="radio radio-primary">
+                                                        <label>
+                                                            <input type="radio" name="clusterColoring"
+                                                                   id="clusterBundling-radio"
+                                                                   value="option4">
+                                                            Enable Cluster Bundling
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input id="alpha-checkbox" type="checkbox"> Alpha Blending
+                                                    </label>
+                                                </div>
+                                            </div>
+
+
+                                        </form>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
                 </ul>
             </li>
         </ul>
-        <form class="navbar-form navbar-left">
-            <input type="text" class="form-control col-lg-8" placeholder="Search">
-        </form>
+
+
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="javascript:void(0)">Link</a></li>
-            <li class="dropdown">
-                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b
-                        class="caret"></b></a>
-                <ul class="dropdown-menu">
-                    <li><a href="javascript:void(0)">Action</a></li>
-                    <li><a href="javascript:void(0)">Another action</a></li>
-                    <li><a href="javascript:void(0)">Something else here</a></li>
-                    <li class="divider"></li>
-                    <li><a href="javascript:void(0)">Separated link</a></li>
-                </ul>
+            <li>
+                <div id="bundling-slider-container">
+                    <div id="bundling-text" class="slider-text">Bundling Strength</div>
+                    <div id="bundling-slider" class="slider slider-material-lightgrey"></div>
+                </div>
             </li>
+            <li>
+                <div id="curve-slider-container">
+                    <div id="curve-text" class="slider-text">Curve Smoothness</div>
+                    <div id="curve-slider" class="slider slider-material-lightgrey"></div>
+                </div>
+            </li>
+            <li>
+                <div id="alpha-slider-container">
+                    <div id="alpha-opacity-text" class="slider-text">Alpha Opacity</div>
+                    <div id="aplha-slider" class="slider slider-material-lightgrey"></div>
+                </div>
+            </li>
+            <li><a href="javascript:void(0)"><span class="mdi-editor-border-vertical" style="font-weight: bold"></span></a>
+            </li>
+            <li><a id="btn-keep-data" href="javascript:void(0)"><span class="mdi-image-blur-on"
+                                                                      style="font-weight: bold"></span></a></li>
+            <li><a id="btn-exclude-data" href="javascript:void(0)"><span class="mdi-image-blur-off"
+                                                                         style="font-weight: bold"></span></a></li>
+            <li><a id="btn-undo" href="javascript:void(0)"><span class="mdi-content-undo"
+                                                                 style="font-weight: bold"></span></a></li>
+            <li><a id="btn-clear" href="javascript:void(0)"><span class="mdi-content-clear"
+                                                                  style="font-weight: bold"></span></a></li>
         </ul>
+
+
     </div>
 </div>
 
