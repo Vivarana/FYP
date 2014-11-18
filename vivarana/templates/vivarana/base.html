@@ -4,9 +4,7 @@
 <head>
 
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
-    {#<link rel="stylesheet" href="{% static "css/jquery.nouislider.min.css" %}" type="text/css"/>#}
     <link href="{% static "css/ripples.min.css" %}" rel="stylesheet">
-    {#<link href="{% static "css/material.css" %}" rel="stylesheet">#}
     <link href="{% static "css/material-wfont.css" %}" rel="stylesheet">
 
 
@@ -15,14 +13,10 @@
     <link rel="stylesheet" href="{% static "slickgrid/examples.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "slickgrid/slick.pager.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "css/yamm.css" %}" type="text/css"/>
-
-    {#    <script src="{% static "slickgrid/jquery-1.7.min.js" %}"></script>#}
-
-    <!-- End SlickGrid -->
+    <link rel="stylesheet" href="{% static "css/custom.css" %}" type="text/css"/>
 
 
     <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/d3.parcoords.css" %}">
-    {#    <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/style.css" %}">#}
 
 
     <script src="{% static "slickgrid/jquery-1.7.min.js" %}"></script>
@@ -43,95 +37,11 @@
     <script src="{% static "parallelcordinates/divgrid.js" %}"></script>
     <script src="{% static "js/underscore.js" %}"></script>
     <script src="{% static "js/sylvester.js" %}"></script>
-    <script>
-        $(document).ready(function () {
-            $.material.init();
-
-            $("#aplha-slider").noUiSlider({
-                start: 0.3,
-                connect: "lower",
-                step: 0.01,
-                range: {
-                    min: 0,
-                    max: 1
-                }
-            });
-
-            $("#curve-slider").noUiSlider({
-                start: 0,
-                connect: "lower",
-                step: 0.01,
-                range: {
-                    min: 0,
-                    max: 0.25
-                }
-            });
-
-            $("#bundling-slider").noUiSlider({
-                start: 0,
-                connect: "lower",
-                step: 0.05,
-                range: {
-                    min: 0,
-                    max: 1
-                }
-            });
-
-            $("#alpha-checkbox").change(function () {
-                if (this.checked) {
-                    $('#alpha-slider-container').show();
-                } else {
-                    $('#alpha-slider-container').hide();
-                }
-            });
-
-            $("#zscore-checkbox").change(function () {
-                if (this.checked) {
-                    $('input[id=clusterColoring-radio]').attr("disabled", true);
-                } else {
-                    $('input[id=clusterColoring-radio]').attr("disabled", false);
-                }
-            });
-
-            $('input[type=radio][name=clusterColoring]').change(function () {
-                if ($('[id="clusterBundling-radio"]').is(':checked')) {
-                    $('#curve-slider-container').show();
-                    $('#bundling-slider-container').show();
-                } else {
-                    $('#curve-slider-container').hide();
-                    $('#bundling-slider-container').hide();
-                }
-            });
-
-{#             $("input[type=radio][name=brushingRadios]").change(function () {#}
-{##}
-{#             });#}
-
-        });
-
-        $(document).on('click', '.yamm .dropdown-menu', function (e) {
-            e.stopPropagation()
-        })
+    <script src="{% static "js/divgrid.js" %}"></script>
+    <script src="{% static "js/underscore.math.js" %}"></script>
+    <script src="{% static "js/custom.js" %}"></script>
 
 
-    </script>
-    <style>
-        .slider {
-            min-width: 150px;
-            margin: 5px 15px;
-        }
-
-        .slider-text {
-            margin-top: 5px;
-            text-align: center;
-            font-size: 8pt;
-            color: rgba(255, 255, 255, 0.84);
-        }
-
-        #curve-slider-container, #alpha-slider-container, #bundling-slider-container {
-            display: none;
-        }
-    </style>
     <title>{% block title %}Vivarana{% endblock %}</title>
 
 
@@ -175,17 +85,17 @@
 
                                                     <div class="radio radio-primary">
                                                         <label>
-                                                            <input type="radio" name="brushingRadios" id="twoBrushing-radio"
+                                                            <input type="radio" name="brushingRadios"
+                                                                   id="twoBrushing-radio"
                                                                    value="option2">
                                                             2D Brushing
                                                         </label>
                                                     </div>
 
                                                 </div>
-{#                                                todo remove zscore coloring#}
                                                 <div class="checkbox">
                                                     <label>
-                                                        <input id="zscore-checkbox" type="checkbox"> Z Score Coloring
+                                                        <input id="bundling-checkbox" type="checkbox"> Cluster Bundling
                                                     </label>
                                                 </div>
                                             </div>
@@ -199,23 +109,22 @@
                                         <form class="form-horizontal">
 
                                             <div class="form-group">
-                                                <label class="control-label">Clustering:</label>
+                                                <label class="control-label">Coloring:</label>
 
                                                 <div class="radio radio-primary">
                                                     <label>
-                                                        <input type="radio" name="clusterColoring"
+                                                        <input type="radio" name="coloringRadios"
                                                                id="clusterColoring-radio"
-                                                               value="option3"
-                                                               checked="">
+                                                               value="option3">
                                                         Enable Cluster Coloring
                                                     </label>
 
                                                     <div class="radio radio-primary">
                                                         <label>
-                                                            <input type="radio" name="clusterColoring"
-                                                                   id="clusterBundling-radio"
+                                                            <input type="radio" name="coloringRadios"
+                                                                   id="zScoreColoring-radio"
                                                                    value="option4">
-                                                            Enable Cluster Bundling
+                                                            Enable Z Score Coloring
                                                         </label>
                                                     </div>
                                                 </div>
@@ -246,32 +155,32 @@
         <ul class="nav navbar-nav navbar-right">
             <li>
                 <div id="bundling-slider-container">
-                    <div id="bundling-text" class="slider-text">Bundling Strength</div>
+                    <div id="bundling-text" class="slider-text">Bundling Strength: 0</div>
                     <div id="bundling-slider" class="slider slider-material-lightgrey"></div>
                 </div>
             </li>
             <li>
                 <div id="curve-slider-container">
-                    <div id="curve-text" class="slider-text">Curve Smoothness</div>
+                    <div id="curve-text" class="slider-text">Curve Smoothness: 0</div>
                     <div id="curve-slider" class="slider slider-material-lightgrey"></div>
                 </div>
             </li>
             <li>
                 <div id="alpha-slider-container">
-                    <div id="alpha-opacity-text" class="slider-text">Alpha Opacity</div>
+                    <div id="alpha-opacity-text" class="slider-text">Alpha Opacity: 0.3</div>
                     <div id="aplha-slider" class="slider slider-material-lightgrey"></div>
                 </div>
             </li>
-            <li><a href="javascript:void(0)"><span class="mdi-editor-border-vertical" style="font-weight: bold"></span></a>
+            <li><a href="#"><span class="mdi-editor-border-vertical" style="font-weight: bold"></span></a>
             </li>
-            <li><a id="btn-keep-data" href="javascript:void(0)"><span class="mdi-image-blur-on"
-                                                                      style="font-weight: bold"></span></a></li>
-            <li><a id="btn-exclude-data" href="javascript:void(0)"><span class="mdi-image-blur-off"
-                                                                         style="font-weight: bold"></span></a></li>
-            <li><a id="btn-undo" href="javascript:void(0)"><span class="mdi-content-undo"
-                                                                 style="font-weight: bold"></span></a></li>
-            <li><a id="btn-clear" href="javascript:void(0)"><span class="mdi-content-clear"
-                                                                  style="font-weight: bold"></span></a></li>
+            <li><a id="btn-keep-data" href="#"><span class="mdi-image-blur-on"
+                                                     style="font-weight: bold"></span></a></li>
+            <li><a id="btn-exclude-data" href="#"><span class="mdi-image-blur-off"
+                                                        style="font-weight: bold"></span></a></li>
+            <li><a id="btn-undo" href="#"><span class="mdi-content-undo"
+                                                style="font-weight: bold"></span></a></li>
+            <li><a id="btn-clear" href="#"><span class="mdi-content-clear"
+                                                 style="font-weight: bold"></span></a></li>
         </ul>
 
 

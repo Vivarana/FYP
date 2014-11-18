@@ -1,28 +1,7 @@
 {% extends 'vivarana/base.html' %}
 {% block body_block %}
 
-    <style>
-        #rule-right {
-            background-color: #000;
-            float: right;
-            width: 30%;
-            padding-right: 10px;
-        }
-
-        .slick-row:hover {
-            font-weight: bold;
-            color: #069;
-        }
-
-        #btn-clear, #btn-undo {
-            display: none;
-        }
-
-    </style>
-
-    {#<script src="lib/d3.min.js"></script>#}
-
-    <div id="example" class="parcoords" style="height:340px;"></div>
+    <div id="parcoords-main" class="parcoords"></div>
     <div id="slickgrid-container">
         <div id="rule-right">heedwefdwefhee</div>
         <div id="slickgrid-container-inner-left">
@@ -33,14 +12,11 @@
     <script id="brushing">
 
     var new_grid_data;
-    var datastack = [100];
+    var datastack = [];         // stores data history (for undo operation)
 
     function keep_data() {
-        if (parcoords.brushed() == null) {
-            //TODO add a material popup on lower left corner
-            console.log('select data')
-
-        } else {
+        console.log(parcoords.brushed());
+        if (parcoords.brushed()) {
             new_data = parcoords.brushed();
             datastack.push(parcoords.data());
             data = new_data;
@@ -54,6 +30,10 @@
                     .brushMode("1D-axes");
             $("#btn-undo").css('display', 'block');
             $("#btn-clear").css('display', 'block');
+
+        } else {
+            //TODO add a material popup on lower left corner
+            console.log('select data')
         }
     }
 
@@ -84,15 +64,15 @@
                 .resize()
                 .render()
                 .brushMode("1D-axes");
+        console.log(datastack.length);
         if (datastack.length < 1) {
             $("#btn-undo").css('display', 'none');
             $("#btn-clear").css('display', 'none');
         }
-
     }
 
     function reset() {
-        new_data = datastack[1];
+        new_data = datastack[0];
         datastack = [];
         data = new_data;
         new_grid_data = new_data;
@@ -107,6 +87,12 @@
         $("#btn-clear").css('display', 'none');
     }
 
+    d3.select("#btn-keep-data").on("click", keep_data);
+    d3.select("#btn-exclude-data").on("click", exclude_data);
+    d3.select("#btn-undo").on("click", undo);
+    d3.select("#btn-clear").on("click", reset);
+
+    //Cluster Coloring method
     function enable_cluster_coloring() {
         var colorgen = d3.scale.category20();
         var colors = {};
@@ -124,31 +110,68 @@
         parcoords.color(color).render();
     }
 
+    // Z-Score coloring methods*********************************
 
-    d3.select("#btn-keep-data").on("click", keep_data);
-    d3.select("#btn-exclude-data").on("click", exclude_data);
-    d3.select("#btn-undo").on("click", undo);
-    d3.select("#btn-clear").on("click", reset);
-{#    d3.select("#clusterColoring-radio").on("click", enable_cluster_coloring());#}
+    // color scale for zscores
+    var zcolorscale = d3.scale.linear()
+            .domain([-2, -0.5, 0.5, 2])
+            .range(["brown", "#999", "#999", "steelblue"])
+            .interpolate(d3.interpolateLab);
 
-    $("input[type=radio][name=clusterColoring]").change(function () {
+    // return color function based on plot and dimension
+    function zcolor(col, dimension) {
+        var z = zscore(_(col).pluck(dimension).map(parseFloat));
+        return function (d) {
+            return zcolorscale(z(d[dimension]))
+        }
+    }
+
+    // color by zscore
+    function zscore(col) {
+        var n = col.length,
+                mean = _(col).mean(),
+                sigma = _(col).stdDeviation();
+        return function (d) {
+            return (d - mean) / sigma;
+        }
+    }
+
+    // update color
+    function change_color(dimension) {
+        parcoords.svg.selectAll(".dimension")
+                .style("font-weight", "normal")
+                .filter(function (d) {
+                    return d == dimension;
+                })
+                .style("font-weight", "bold");
+
+        parcoords.color(zcolor(parcoords.data(), dimension)).render();
+    }
+
+    // coloring radio option set
+    $("input[type=radio][name=coloringRadios]").change(function () {
         if ($('[id="clusterColoring-radio"]').is(':checked')) {
-            console.log("he");
             enable_cluster_coloring();
+        } else {
+            parcoords.svg.selectAll(".dimension")
+                    .on("click", change_color)
+                    .selectAll(".label")
+                    .style("font-size", "14px");
         }
     });
 
-     $("input[type=radio][name=brushingRadios]").change(function () {
+    // brushing radio option set
+    $("input[type=radio][name=brushingRadios]").change(function () {
         if ($('[id="oneBrushing-radio"]').is(':checked')) {
             parcoords.brushMode("1D-axes").render();
         }
-        if ($('[id="twoBrushing-radio"]').is(':checked')){
-{#            parcoords.brushMode("2D-strums").render();#}
+        if ($('[id="twoBrushing-radio"]').is(':checked')) {
+            {#            parcoords.brushMode("2D-strums").render();#}
         }
         console.log('finished1');
     });
 
-
+    // Alpha blending slider
     $("#aplha-slider").on({
         change: function () {
             var alpha_opacity_value = $("#aplha-slider").val();
@@ -158,6 +181,19 @@
         }
     });
 
+    // alpha blending checkbox
+    $("#alpha-checkbox").change(function () {
+        if (this.checked) {
+            $('#alpha-slider-container').show();
+        } else {
+            $("#aplha-slider").val(0.3);
+            parcoords.alpha(0.3).render();
+            $("#alpha-opacity-text").text('Alpha Opacity: 0.3');
+            $('#alpha-slider-container').hide();
+        }
+    });
+
+    // curve smoothness slider
     $("#curve-slider").on({
         change: function () {
             var curve_smooth_value = $("#curve-slider").val();
@@ -166,6 +202,7 @@
         }
     });
 
+    // bundling strength slider
     $("#bundling-slider").on({
         change: function () {
             var bundling_value = $("#bundling-slider").val();
@@ -174,10 +211,29 @@
         }
     });
 
-    var parcoords = d3.parcoords()("#example")
-            .alpha(0.4)
+    // bundling checkbox
+    $("#bundling-checkbox").change(function () {
+        if (this.checked) {
+            $('#curve-slider-container').show();
+            $('#bundling-slider-container').show();
+        } else {
+            $("#curve-slider").val(0);
+            $("#bundling-slider").val(0);
+            parcoords.smoothness(0)
+                    .bundlingStrength(0)
+                    .render();
+            $("#curve-text").text('Curve Smoothness: 0');
+            $("#bundling-text").text('Bundling Strength: 0');
+            $('#curve-slider-container').hide();
+            $('#bundling-slider-container').hide();
+        }
+    });
+
+
+    var parcoords = d3.parcoords()("#parcoords-main")
+            .alpha(0.3)
             .mode("queue") // progressive rendering
-            .height(d3.max([document.body.clientHeight - 326, 220]))
+            .height(550)
             .margin({
                 top: 36,
                 left: 0,
@@ -193,9 +249,7 @@
     for (var i = 0; i <{{ frame_size }}; i++) {
         data[i] = j_data[i]
     }
-    // load csv file and create the chart
-    {#d3.csv('http://127.0.0.1:8000/media/cars.csv', function(data) {#}
-    // slickgrid needs each data element to have an id
+
     data.forEach(function (d, i) {
         d.id = d.id || i;
     });
@@ -208,7 +262,7 @@
             .bundleDimension("cylinders") //TODO change this to the name of cluster axis
             .render()
             .reorderable()
-            .brushMode("1D-strums");
+            .brushMode("1D-axes");
 
     // setting up grid
     var column_keys = d3.keys(data[0]);
@@ -286,7 +340,6 @@
         dataView.setItems(data);
         dataView.endUpdate();
     }
-    ;
 
     </script>
 

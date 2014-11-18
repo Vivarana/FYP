@@ -78,7 +78,7 @@ classes should alter those!
 }
 
 .slick-sortable-placeholder {
-  background: silver !important;
+  background: red !important;
 }
 
 .slick-row.odd {
