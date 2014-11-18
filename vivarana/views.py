@@ -50,7 +50,7 @@ def handle_uploaded_file(fileIn):
 def loadData(fileName):
     with open('media/' + fileName, 'r') as csv_file:
         global original_data_frame
-        original_data_frame = pd.read_csv(csv_file, delim_whitespace=True)
+        original_data_frame = pd.read_csv(csv_file)
         cols = list(original_data_frame.columns)
     return {"filename": fileName, "columns": cols}
 
