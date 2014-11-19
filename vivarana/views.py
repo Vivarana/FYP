@@ -6,7 +6,6 @@ from helper import file_helper
 
 original_data_frame = ""
 
-
 def home(request):
     context = {}
     return render(request, 'vivarana/home.html', context)
@@ -16,12 +15,15 @@ def visualize(request):
     json = original_data_frame.to_json(orient='records')
     return render(request, 'vivarana/visualize.html', {'result': json, 'frame_size': len(original_data_frame)})
 
+
 def paracoords(request):
     return render(request, 'vivarana/paracoords.html', {})
 
+
 def preprocessor(request):
-    context = file_helper.load_data(original_data_frame)
+    context = file_helper.load_data(request.session['filename'], original_data_frame)
     return render(request, 'vivarana/preprocessor.html', context)
+
 
 def upload(request):
     if request.method == 'POST':

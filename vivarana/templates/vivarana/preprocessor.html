@@ -3,19 +3,64 @@
 {% block title %}Home{% endblock %}
 
 {% block body_block %}
-    <h1>Welcome!!!!</h1>
 
-    <a href="/vivarana/upload">Select Data</a>
+    <style>
 
-{#    {%  if request.session.filename %}#}
-    <h3>Current File -> {{ filename }}</h3>
-{#    {% endif %}#}
+        .table {
+            position: absolute;
+            width :1000px;
+            top : 30%;
+            left : 15%;
+            text-align:center;
+        }
 
-    <ul>
-    {% for col in columns %}
-        <li>{{ col }}</li>
-    {% endfor %}
-    </ul>
+        tbody{
+          overflow: -moz-scrollbars-vertical;
+          overflow-y: scroll;
+          height: 250px;
+          position: absolute;
+        }
 
-    <a href="/vivarana/visualize">visualize</a>
+        th, td {
+            text-align:center;
+            overflow: hidden;
+            width: 400px;
+        }
+
+        #move-button {
+            position: absolute;
+            top: 70%;
+            left: 68%;
+        }
+
+    </style>
+
+    <h3 style="position: absolute; left : 15%; top : 15%;">Select Columns to Visualize</h3>
+
+    <h4 style="position: absolute; left : 15%; top : 22%;">Data Set-> {{ filename }}</h4>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Column ID</th>
+                <th>Column Type</th>
+                <th>Select</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for col in columns %}
+            <tr>
+                    <td>{{ col.0 }}</td>
+                    <td>{{ col.1 }}</td>
+                    <td><input type="checkbox" name="column" value="{{forloop.counter}}"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button id="move-button" type="button" class="btn btn-primary">
+        Go to visualization
+        <span class="glyphicon glyphicon-chevron-right"></span>
+    </button>
+
 {% endblock %}

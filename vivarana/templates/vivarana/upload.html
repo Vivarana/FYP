@@ -101,7 +101,9 @@
 
                     if(data.result.success==true) {
                         $( "#form-container").after('<div class="alert alert-success" role="alert">'+ data.result['file_name'] +' Succefully uploaded.</div>')
-                        window.location.replace("/vivarana/preprocessor");
+                        setTimeout(function(){
+                            window.location.replace("/vivarana/preprocessor");
+                        }, 1000);
                     }
                     else{
                         $( "#form-container").after('<div class="alert alert-warning" role="alert">'+data.result['error']+'</div>')
