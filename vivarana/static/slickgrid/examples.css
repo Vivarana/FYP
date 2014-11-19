@@ -4,11 +4,11 @@
     position: relative;
     width: 100%;
 }
-#slickgrid-container.parent * {
-    -webkit-box-sizing: inherit !important;
-    -moz-box-sizing: border-box !important;
-    box-sizing: inherit !important;
-}
+/*#slickgrid-container.parent * {*/
+    /*-webkit-box-sizing: inherit !important;*/
+    /*-moz-box-sizing: border-box !important;*/
+    /*box-sizing: inherit !important;*/
+/*}*/
 #slickgrid-container-inner-left {
     float: left;
     width: 70%;
