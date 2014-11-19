@@ -499,7 +499,6 @@ d3.parcoords = function(config) {
             .html('<span style="font-size: 15px;" data-dropdown="#dropdown" class="glyphicon glyphicon-th-list"></span>')
             .on("click", function(d){
                 var selected_element = document.getElementById(d);
-                console.log($(selected_element).position())
                 var position = $(selected_element).position();
                 $(d3.select('.dropdown-menu')[0]).toggle('Drop');
                 d3.select('.dropdown-menu').style("left", position["left"]-75 + "px")

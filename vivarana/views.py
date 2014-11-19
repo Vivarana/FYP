@@ -1,14 +1,8 @@
-import simplejson
-from django.core import serializers
-from django.http import HttpResponseRedirect
-
-from django.shortcuts import render, render_to_response
-from .forms import UploadFileForm
-import csv
-import scipy as sp
-import numpy as np
-import pandas as pd
 import json
+
+from django.http import HttpResponse
+from django.shortcuts import render
+from helper import file_helper
 
 original_data_frame = ""
 
@@ -26,33 +20,39 @@ def paracoords(request):
     return render(request, 'vivarana/paracoords.html', {})
 
 def preprocessor(request):
-    context = loadData(request.session['filename'])
+    context = file_helper.load_data(request.session['filename'])
     return render(request, 'vivarana/preprocessor.html', context)
 
 
 def upload(request):
     if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            handle_uploaded_file(request.FILES['file'])
-            request.session['filename'] = request.FILES['file'].name
+        response_data = {}
+        try:
+            input_file = request.FILES['fileinput']
 
-            return HttpResponseRedirect('/vivarana/preprocessor')
+            output = file_helper.handle_uploaded_file(input_file)
+
+            if output['success']:
+                request.session['filename'] = input_file.name
+
+                response_data['file_name'] = input_file.name
+                response_data['success'] = True
+            else:
+                if output['error']=='PARSE-ERROR':
+                    response_data = output
+                else:
+                    response_data['error'] = output['error']
+                    response_data['success'] = False
+
+        except Exception,e:
+            print str(e)
+            response_data['error'] = "Error while setting up file. Please try again."
+            response_data['success'] = False
+
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
-        form = UploadFileForm()
-    return render(request, 'vivarana/upload.html', {'form': form})
+        return render(request, 'vivarana/upload.html', {})
 
 
-def handle_uploaded_file(fileIn):
-    with open("media/" + fileIn.name, 'wb+') as destination:
-        for chunk in fileIn.chunks():
-            destination.write(chunk)
 
-
-def loadData(fileName):
-    with open('media/' + fileName, 'r') as csv_file:
-        global original_data_frame
-        original_data_frame = pd.read_csv(csv_file)
-        cols = list(original_data_frame.columns)
-    return {"filename": fileName, "columns": cols}
 

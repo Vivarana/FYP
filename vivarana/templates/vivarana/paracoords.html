@@ -95,6 +95,8 @@ body, html {
 
 <script id="brushing">
 
+document.onclick = function() { $('.dropdown-menu').display('none'); };
+
 var parcoords = d3.parcoords()("#example")
     .alpha(0.4)
     .mode("queue") // progressive rendering
