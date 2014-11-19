@@ -17,12 +17,15 @@ d3.parcoords = function(config) {
         bundleDimension: null,
         smoothness: 0.25,
         showControlPoints: false,
-        hideAxis : []
+        hideAxis : [],
+        rules:[]
     };
 
     extend(__, config);
     var pc = function(selection) {
         selection = pc.selection = d3.select(selection);
+
+//        __.rules.append("Test");
 
         __.width = selection[0][0].clientWidth;
         __.height = selection[0][0].clientHeight;
@@ -486,6 +489,25 @@ d3.parcoords = function(config) {
             .attr("class", "dimension")
             .attr("transform", function(d) { return "translate(" + xscale(d) + ")"; });
 
+        g.append("foreignObject")
+            .attr("x", -10)
+            .attr("y", -47)
+            .attr("width", 20)
+            .attr("height", 20)
+            .append("xhtml:body")
+            .attr("id",function(d){return d;})
+            .html('<span style="font-size: 15px;" data-dropdown="#dropdown" class="glyphicon glyphicon-th-list"></span>')
+            .on("click", function(d){
+                var selected_element = document.getElementById(d);
+                var position = $(selected_element).position();
+                $(d3.select('.dropdown-menu')[0]).toggle('Drop');
+                d3.select('.dropdown-menu').style("left", position["left"]-75 + "px")
+                                                 .style("top", position["top"] + "px");
+                d3.event.stopPropagation();
+            })
+            .on("mousedown", function(){d3.event.stopPropagation();})
+            .on("mouseup", function(){d3.event.stopPropagation();});
+
         // Add an axis and title.
         g.append("svg:g")
             .attr("class", "axis")
@@ -503,13 +525,6 @@ d3.parcoords = function(config) {
                 return d in __.dimensionTitles ? __.dimensionTitles[d] : d;  // dimension display names
             });
 
-        g.append("image")
-            .attr("xlink:href", "https://github.com/favicon.ico")
-            .attr("x", -8)
-            .attr("y", -45)
-            .attr("width", 16)
-            .attr("height", 16)
-            .on('contextmenu', function (d, i) { alert(d); });
 
         flags.axes= true;
         return this;
@@ -630,7 +645,6 @@ d3.parcoords = function(config) {
 // @param newSelection - The new set of data items that is currently contained
 //                       by the brushes
     function brushUpdated(newSelection) {
-        console.log(newSelection)
         __.brushed = newSelection;
         events.brush.call(pc,__.brushed);
         pc.render();
@@ -692,6 +706,18 @@ d3.parcoords = function(config) {
     (function() {
         var brushes = {};
 
+        //function to identify cep rules from brushes
+        function set_rules() {
+             __.rules = [];
+
+            var actives = __.dimensions.filter(is_brushed),
+                extents = actives.map(function(p) { return brushes[p].extent(); });
+
+            for( acc in actives){
+                __.rules[actives[acc]]= [extents[acc][0], extents[acc][1]];
+            }
+        }
+
         function is_brushed(p) {
             return !brushes[p].empty();
         }
@@ -700,6 +726,9 @@ d3.parcoords = function(config) {
         function selected() {
             var actives = __.dimensions.filter(is_brushed),
                 extents = actives.map(function(p) { return brushes[p].extent(); });
+
+            //Set the rules identified from brushes
+            set_rules();
 
             // We don't want to return the full data set when there are no axes brushed.
             // Actually, when there are no axes brushed, by definition, no items are
@@ -930,6 +959,7 @@ d3.parcoords = function(config) {
         }
 
         function selected() {
+
             var ids = Object.getOwnPropertyNames(strums),
                 brushed = __.data;
 

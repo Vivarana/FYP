@@ -17,6 +17,7 @@
 <!-- End SlickGrid -->
 <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/d3.parcoords.css" %}">
 <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/style.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.css" %}">
 
 <script src="{% static "js/d3.js" %}"></script>
 <script src="{% static "parallelcordinates/d3.parcoords.js" %}"></script>
@@ -31,15 +32,21 @@ body, html {
   font-size: 12px;
 }
 #grid, #pager {
-  position: fixed;
-  width: 100%;
+    border-right: none;
+    position: absolute;
+    width: 70%;
 }
 #grid {
+  margin-left: 5;
+  border-right: 1px solid;
+  border-left: 1px solid;
+  border-color: #808080;
   bottom: 0;
-  height: 300px;
+  height: 220px;
 }
+
 #pager {
-  bottom: 306px;
+  bottom: 226px;
   height: 20px;
 }
 .slick-row:hover {
@@ -52,16 +59,48 @@ body, html {
 }
 
 </style>
+<div id="parc" class="row">
+    <div id="example" class="parcoords" style="height: 528px"></div>
+</div>
+<div class="row" id="controls">
+        <div id="grid"></div>
+        <div id="pager"></div>
+    </div>
+    <div id="rule-table" class="col-md-3 pull-right">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>Rule</th>
+            </tr>
+          </thead>
+          <tbody id="rule-table-body">
 
-<div id="example" class="parcoords" style="height:240px;"></div>
-<div id="grid"></div>
-<div id="pager"></div>
+          </tbody>
+        </table>
+    </div>
+</div>
+
+<div style="position: absolute;top: 20px;" id="dropdown1" class="dropdown dropdown-tip">
+    <ul style="position: absolute" class="dropdown-menu">
+        <li><a href="#1">Item 1</a></li>
+        <li><a href="#2">Item 2</a></li>
+        <li><a href="#3">Item 3</a></li>
+        <li class="dropdown-divider"></li>
+        <li><a href="#4">Item 4</a></li>
+        <li><a href="#5">Item 5</a></li>
+        <li><a href="#5">Item 6</a></li>
+    </ul>
+</div>
+
 <script id="brushing">
+
+document.onclick = function() { $('.dropdown-menu').display('none'); };
 
 var parcoords = d3.parcoords()("#example")
     .alpha(0.4)
     .mode("queue") // progressive rendering
-    .height(d3.max([document.body.clientHeight-326, 220]))
+    .height(d3.max([document.body.clientHeight-250, 220]))
     .margin({
       top: 45,
       left: 0,
@@ -122,7 +161,7 @@ d3.csv('/media/nutrients.csv', function(data) {
     var x = a[sortcol], y = b[sortcol];
     return (x == y ? 0 : (x > y ? 1 : -1));
   }
-  
+
   // click header to sort grid column
   grid.onSort.subscribe(function (e, args) {
     sortdir = args.sortAsc ? 1 : -1;
@@ -150,14 +189,27 @@ d3.csv('/media/nutrients.csv', function(data) {
 
   // update grid on brush
   parcoords.on("brush", function(d) {
-    //console.log(parcoords.state());
+{#    console.log(parcoords.state);#}
+
+{#    console.log(parcoords.state.rules);#}
+    printRules(parcoords.state.rules)
     gridUpdate(d);
+
   });
 
   function gridUpdate(data) {
     dataView.beginUpdate();
     dataView.setItems(data);
     dataView.endUpdate();
+  };
+
+  function printRules(rules) {
+        tbody = document.getElementById("rule-table").getElementsByTagName("tbody");
+        $("#rule-table-body").empty();
+        for (rule in rules) {
+            $("#rule-table-body").append('<tr><td>'+ rule +'</td><td>'+ rules[rule][0]+', '+ rules[rule][1] +'</td></tr>');
+        }
+        console.log(tbody)
   };
 
 });
