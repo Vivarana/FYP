@@ -6,7 +6,7 @@
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
     <link href="{% static "css/ripples.min.css" %}" rel="stylesheet">
     <link href="{% static "css/material-wfont.css" %}" rel="stylesheet">
-
+    <link href="{% static "css/snackbar.min.css" %}" rel="stylesheet">
 
     <link rel="stylesheet" href="{% static "slickgrid/slick.grid.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "slickgrid/jquery-ui-1.8.16.custom.css" %}" type="text/css"/>
@@ -19,16 +19,14 @@
     <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/d3.parcoords.css" %}">
 
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    {#    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>#}
 
-{#    <script src="{% static "slickgrid/jquery-1.7.min.js" %}"></script>#}
+    <script src="{% static "slickgrid/jquery-1.7.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
     <script src="{% static "js/jquery.nouislider.min.js" %}"></script>
-
-
-
+    <script src="{% static "js/snackbar.min.js" %}"></script>
 
     <script src="{% static "slickgrid/jquery.event.drag-2.0.min.js" %}"></script>
     <script src="{% static "slickgrid/slick.core.js" %}"></script>
@@ -38,7 +36,6 @@
 
     <script src="{% static "js/d3.js" %}"></script>
     <script src="{% static "parallelcordinates/d3.parcoords.js" %}"></script>
-    <script src="{% static "parallelcordinates/divgrid.js" %}"></script>
     <script src="{% static "js/underscore.js" %}"></script>
     <script src="{% static "js/sylvester.js" %}"></script>
     <script src="{% static "js/divgrid.js" %}"></script>
@@ -175,16 +172,22 @@
                     <div id="aplha-slider" class="slider slider-material-lightgrey"></div>
                 </div>
             </li>
-            <li><a href="#"><span class="mdi-editor-border-vertical" style="font-weight: bold"></span></a>
+            <li data-toggle="tooltip" data-placement="right" data-original-title="Hide ticks"><a href="#"><span
+                    class="mdi-editor-border-vertical" style="font-weight: bold"></span></a>
             </li>
-            <li><a id="btn-keep-data" href="#"><span class="mdi-image-blur-on"
-                                                     style="font-weight: bold"></span></a></li>
-            <li><a id="btn-exclude-data" href="#"><span class="mdi-image-blur-off"
-                                                        style="font-weight: bold"></span></a></li>
-            <li><a id="btn-undo" href="#"><span class="mdi-content-undo"
-                                                style="font-weight: bold"></span></a></li>
-            <li><a id="btn-clear" href="#"><span class="mdi-content-clear"
+            <li data-toggle="tooltip" data-placement="bottom" data-original-title="Keep selected data"><a
+                    id="btn-keep-data" href="#"><span class="mdi-image-blur-on"
+                                                      style="font-weight: bold"></span></a></li>
+            <li data-toggle="tooltip" data-placement="left" data-original-title="Exclude selected data"><a
+                    id="btn-exclude-data" href="#"><span class="mdi-image-blur-off"
+                                                         style="font-weight: bold"></span></a></li>
+            <li data-toggle="tooltip" data-placement="left" data-original-title="Undo last keep/exclude data"><a
+                    id="btn-undo" href="#"><span class="mdi-content-undo"
                                                  style="font-weight: bold"></span></a></li>
+            <li data-toggle="tooltip" data-placement="left" data-original-title="Reset all selections"><a id="btn-clear"
+                                                                                                          href="#"><span
+                    class="mdi-content-clear"
+                    style="font-weight: bold"></span></a></li>
         </ul>
 
 

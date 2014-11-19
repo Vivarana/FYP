@@ -4,26 +4,33 @@
  * 
  * @geedmo - Licensed under the MIT license
  */
-.yamm .nav{
+.yamm .nav {
     height: 40px;
 }
+
 .yamm .nav,
 .yamm .collapse,
 .yamm .dropup,
 .yamm .dropdown {
-  position: static;
+    position: static;
 }
+
 .yamm .container {
-  position: relative;
+    position: relative;
 }
+
 .yamm .dropdown-menu {
-  left: auto;
+    z-index: 9000;
+    left: auto;
 }
+
 .yamm .yamm-content {
-  padding: 20px 30px;
+    z-index: 9000;
+    padding: 20px 30px;
     min-width: 460px;
 }
+
 .yamm .dropdown.yamm-fw .dropdown-menu {
-  left: 0;
-  right: 0;
+    left: 0;
+    right: 0;
 }

@@ -13,58 +13,54 @@
 
     var new_grid_data;
     var datastack = [];         // stores data history (for undo operation)
+    var data = [];
 
-    function keep_data() {
-        console.log(parcoords.brushed());
-        if (parcoords.brushed()) {
-            new_data = parcoords.brushed();
-            datastack.push(parcoords.data());
-            data = new_data;
-            new_grid_data = new_data;
-            parcoords.brushMode("1D-axes");
-            parcoords.brushMode("2D-strums");
+    function drawData(new_data) {
+        data = new_data;
+        new_grid_data = new_data;
+        parcoords.brushMode("1D-axes");
+        parcoords.brushMode("2D-strums");
+        if ($('[id="oneBrushing-radio"]').is(':checked')) {
             parcoords
                     .data(data)
                     .resize()
                     .render()
                     .brushMode("1D-axes");
+        } else {
+            parcoords
+                    .data(data)
+                    .resize()
+                    .render()
+                    .brushMode("2D-strums");
+        }
+    }
+
+    function keep_data() {
+        if (parcoords.brushed()) {
+
+            var new_data = parcoords.brushed();
+            datastack.push(parcoords.data());
+            drawData(new_data);
+
             $("#btn-undo").css('display', 'block');
             $("#btn-clear").css('display', 'block');
 
         } else {
-            //TODO add a material popup on lower left corner
-            console.log('select data')
+            $.snackbar({content: 'Please brush some data before clicking keep data button', style: 'toast'});
         }
     }
 
     function exclude_data() {
-        new_data = _.difference(parcoords.data(), parcoords.brushed());
+        var new_data = _.difference(parcoords.data(), parcoords.brushed());
         datastack.push(parcoords.data());
-        data = new_data;
-        new_grid_data = new_data;
-        parcoords.brushMode("1D-axes");
-        parcoords.brushMode("2D-strums");
-        parcoords
-                .data(data)
-                .resize()
-                .render()
-                .brushMode("1D-axes");
+        drawData(new_data);
         $("#btn-undo").css('display', 'block');
         $("#btn-clear").css('display', 'block');
     }
 
     function undo() {
-        new_data = datastack.pop();
-        data = new_data;
-        new_grid_data = new_data;
-        parcoords.brushMode("1D-axes");
-        parcoords.brushMode("2D-strums");
-        parcoords
-                .data(data)
-                .resize()
-                .render()
-                .brushMode("1D-axes");
-        console.log(datastack.length);
+        var new_data = datastack.pop();
+        drawData(new_data);
         if (datastack.length < 1) {
             $("#btn-undo").css('display', 'none');
             $("#btn-clear").css('display', 'none');
@@ -72,20 +68,13 @@
     }
 
     function reset() {
-        new_data = datastack[0];
+        var new_data = datastack[0];
         datastack = [];
-        data = new_data;
-        new_grid_data = new_data;
-        parcoords.brushMode("1D-axes");
-        parcoords.brushMode("2D-strums");
-        parcoords
-                .data(data)
-                .resize()
-                .render()
-                .brushMode("1D-axes");
+        drawData(new_data);
         $("#btn-undo").css('display', 'none');
         $("#btn-clear").css('display', 'none');
     }
+
 
     d3.select("#btn-keep-data").on("click", keep_data);
     d3.select("#btn-exclude-data").on("click", exclude_data);
@@ -139,11 +128,9 @@
     // update color
     function change_color(dimension) {
         parcoords.svg.selectAll(".dimension")
-                .style("font-weight", "normal")
                 .filter(function (d) {
                     return d == dimension;
-                })
-                .style("font-weight", "bold");
+                });
 
         parcoords.color(zcolor(parcoords.data(), dimension)).render();
     }
@@ -152,23 +139,24 @@
     $("input[type=radio][name=coloringRadios]").change(function () {
         if ($('[id="clusterColoring-radio"]').is(':checked')) {
             enable_cluster_coloring();
+            parcoords.svg.selectAll(".dimension")
+                    .on("click", enable_cluster_coloring())
+                    .selectAll(".label");
         } else {
             parcoords.svg.selectAll(".dimension")
                     .on("click", change_color)
-                    .selectAll(".label")
-                    .style("font-size", "14px");
+                    .selectAll(".label");
         }
     });
 
     // brushing radio option set
     $("input[type=radio][name=brushingRadios]").change(function () {
         if ($('[id="oneBrushing-radio"]').is(':checked')) {
-            parcoords.brushMode("1D-axes").render();
+            parcoords.brushMode("1D-axes");
         }
         if ($('[id="twoBrushing-radio"]').is(':checked')) {
-            {#            parcoords.brushMode("2D-strums").render();#}
+            parcoords.brushMode("2D-strums");
         }
-        console.log('finished1');
     });
 
     // Alpha blending slider
@@ -245,7 +233,7 @@
         var j_data = JSON.parse('{{ result }}');
     {% endautoescape %}
 
-    var data = [];
+
     for (var i = 0; i <{{ frame_size }}; i++) {
         data[i] = j_data[i]
     }

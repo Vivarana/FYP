@@ -35,4 +35,8 @@ $(document).ready(function () {
         e.stopPropagation()
     });
 
+    $(function () {
+        $("[data-toggle='tooltip']").tooltip();
+    });
+
 });
