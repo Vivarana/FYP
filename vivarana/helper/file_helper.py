@@ -62,3 +62,7 @@ def load_data(filename, dataframe):
     data_types = list(dataframe.dtypes)
     column_data = [(columns[col], data_types[col]) for col in xrange(len(columns))]
     return {"filename": filename, "columns": column_data}
+
+def remove_columns(needed_columns, dataframe):
+    column_list = [dataframe.columns[int(i)-1] for i in needed_columns]
+    return  dataframe[column_list]

@@ -1,10 +1,11 @@
 import json
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from helper import file_helper
 
 original_data_frame = ""
+current_data_frame = ""
 
 def home(request):
     context = {}
@@ -12,8 +13,8 @@ def home(request):
 
 
 def visualize(request):
-    json = original_data_frame.to_json(orient='records')
-    return render(request, 'vivarana/visualize.html', {'result': json, 'frame_size': len(original_data_frame)})
+    json = current_data_frame.to_json(orient='records')
+    return render(request, 'vivarana/visualize.html', {'result': json, 'frame_size': len(current_data_frame)})
 
 
 def paracoords(request):
@@ -21,8 +22,14 @@ def paracoords(request):
 
 
 def preprocessor(request):
-    context = file_helper.load_data(request.session['filename'], original_data_frame)
-    return render(request, 'vivarana/preprocessor.html', context)
+    if request.method == 'POST':
+        columns = request.POST.getlist('column')
+        global current_data_frame
+        current_data_frame = file_helper.remove_columns(columns, original_data_frame)
+        return redirect('/vivarana/visualize')
+    else:
+        context = file_helper.load_data(request.session['filename'], original_data_frame)
+        return render(request, 'vivarana/preprocessor.html', context)
 
 
 def upload(request):
@@ -34,8 +41,9 @@ def upload(request):
             output = file_helper.handle_uploaded_file(input_file)
 
             if output['success']:
-                global original_data_frame
+                global original_data_frame, current_data_frame
                 original_data_frame = output['dataframe']
+                current_data_frame = original_data_frame
 
                 request.session['filename'] = input_file.name
 

@@ -7,10 +7,10 @@
     <style>
 
         .table {
-            position: absolute;
+            position: fixed;
             width :1000px;
-            top : 30%;
-            left : 15%;
+            top: 220px;
+            left: 215px;
             text-align:center;
         }
 
@@ -27,24 +27,37 @@
             width: 400px;
         }
 
-        #move-button {
-            position: absolute;
-            top: 70%;
-            left: 68%;
+        #submit-button {
+            position: fixed;
+            top: 550px;
+            left: 980px;
+        }
+
+        #warning {
+            position: fixed;
+            top: 8%;
+            width: 60%;
+            left: 20%;
+            text-align: center;
+            display : none;
+            background-color: #DB0A0A;
         }
 
     </style>
+    <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
 
-    <h3 style="position: absolute; left : 15%; top : 15%;">Select Columns to Visualize</h3>
+    <h3 style="position: fixed; left : 215px; top : 115px;">Select Columns to Visualize</h3>
 
-    <h4 style="position: absolute; left : 15%; top : 22%;">Data Set-> {{ filename }}</h4>
+    <h4 style="position: fixed; left : 215px; top : 162px;">Data Set-> {{ filename }}</h4>
 
+    <form method="POST" action="" onsubmit="return validateForm()">
+    {% csrf_token %}
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Column ID</th>
                 <th>Column Type</th>
-                <th>Select</th>
+                <th>Select  <input type="checkbox" name="select-all" id="select-all" checked/></th>
             </tr>
         </thead>
         <tbody>
@@ -52,15 +65,38 @@
             <tr>
                     <td>{{ col.0 }}</td>
                     <td>{{ col.1 }}</td>
-                    <td><input type="checkbox" name="column" value="{{forloop.counter}}"></td>
+                    <td><input type="checkbox" name="column" value="{{forloop.counter}}" checked></td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <button id="move-button" type="button" class="btn btn-primary">
+    <button id="submit-button" type="submit" class="btn btn-primary">
         Go to visualization
         <span class="glyphicon glyphicon-chevron-right"></span>
     </button>
+    </form>
+
+    <script>
+        $('#select-all').click(function(event) {
+            var is_checked = this.checked;
+                // Iterate each checkbox
+                $(':checkbox').each(function() {
+                    this.checked = is_checked;
+                });
+        });
+
+        function validateForm(){
+            if($('input[type=checkbox]:checked').length!=0){
+                return true;
+            }
+            else{
+                $('#warning').show();
+                return false;
+            }
+            return false;
+        }
+
+    </script>
 
 {% endblock %}
