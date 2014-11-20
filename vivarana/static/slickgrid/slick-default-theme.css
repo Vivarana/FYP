@@ -6,7 +6,7 @@ classes should alter those!
 */
 
 .slick-header-columns {
-  border-bottom: 1px solid silver;
+  /*border-bottom: 1px solid silver;*/
 }
 
 .slick-header-column {
@@ -82,9 +82,15 @@ classes should alter those!
 }
 
 .slick-row.odd {
-  background: #fafafa;
-}
 
+  background: #ffffff;
+}
+.slick-row{
+    /*padding: 8px;*/
+    height: 30px;
+
+line-height: 1.42857143;
+}
 .slick-row.ui-state-active {
   background: #F5F7D7;
 }

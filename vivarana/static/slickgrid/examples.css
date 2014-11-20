@@ -15,10 +15,10 @@
 }
 
 #grid {
-    background: white;
     outline: 0;
     width: 100%;
     height: 200px;
+    background: #f9f9f9;
 }
 
 #pager {

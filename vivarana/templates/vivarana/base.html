@@ -8,20 +8,19 @@
     <link href="{% static "css/material-wfont.css" %}" rel="stylesheet">
     <link href="{% static "css/snackbar.min.css" %}" rel="stylesheet">
 
+        <link rel="stylesheet" href="{% static "slickgrid/jquery-ui-1.8.16.custom.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "slickgrid/slick.grid.css" %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static "slickgrid/jquery-ui-1.8.16.custom.css" %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static "slickgrid/examples.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "slickgrid/slick.pager.css" %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static "slickgrid/examples.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "css/yamm.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "css/custom.css" %}" type="text/css"/>
-
 
     <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/d3.parcoords.css" %}">
 
 
     {#    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>#}
 
-    <script src="{% static "slickgrid/jquery-1.7.min.js" %}"></script>
+    <script src="{% static "js/jquery-1.7.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
@@ -61,7 +60,7 @@
     <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">
             <li class="dropdown">
-                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Features <b
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b
                         class="caret"></b></a>
                 <ul class="dropdown-menu">
 
@@ -131,7 +130,8 @@
                                                 </div>
                                                 <div class="checkbox">
                                                     <label>
-                                                        <input id="alpha-checkbox" type="checkbox" checked=""> Alpha Blending
+                                                        <input id="alpha-checkbox" type="checkbox" checked=""> Alpha
+                                                        Blending
                                                     </label>
                                                 </div>
                                             </div>
