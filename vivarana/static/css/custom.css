@@ -10,15 +10,21 @@
     color: rgba(255, 255, 255, 0.84);
 }
 
-#curve-slider-container, #alpha-slider-container, #bundling-slider-container {
+#curve-slider-container, #bundling-slider-container {
     display: none;
 }
 
 #rule-right {
-    background-color: #000;
     float: right;
     width: 30%;
     padding-right: 10px;
+}
+
+#rule-right-table-head {
+    background-color: #2C3E50;
+    /*-webkit-box-shadow: 0px 5px 40px 0px #000;*/
+    /*box-shadow: 0px 5px 40px 0px #000;*/
+    min-height: 28px;
 }
 
 .slick-row:hover {
