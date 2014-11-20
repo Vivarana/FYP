@@ -21,6 +21,8 @@ d3.parcoords = function(config) {
     rules:[]
   };
 
+//var dropdown=false;
+
   extend(__, config);
 var pc = function(selection) {
   selection = pc.selection = d3.select(selection);
@@ -504,8 +506,6 @@ pc.createAxes = function() {
         return d in __.dimensionTitles ? __.dimensionTitles[d] : d;  // dimension display names
       });
 
-   var ops = ["Group By", "SUM", "AVG"];
-
    g.append("foreignObject")
             .attr("x", -10)
             .attr("y", -47)
@@ -513,24 +513,32 @@ pc.createAxes = function() {
             .attr("height", 20)
             .append("xhtml:body")
             .attr("id",function(d,i){return 'col_'+i;})
-            .html('<span style="font-size: 15px;" data-dropdown="#dropdown1" class="glyphicon glyphicon-th-list"></span>')
-            .on("click", function(d,i){
-                var selected_element = document.getElementById('col_'+i);
-                var position = $(selected_element).position();
-                $(d3.select('#dropdown-menu')[0]).empty();
+            .html('<span style="font-size: 15px;" data-dropdown="#dropdown" class="glyphicon glyphicon-align-justify"></span>')
+            .on("contextmenu", function(d,i){
 
-                for (op in ops){
-                    $(d3.select('#dropdown-menu')[0]).append('<li><a href="#3">'+ops[op]+'</a></li>');
-                    $(d3.select('#dropdown-menu')[0]).append('<li class="dropdown-divider"></li>');
+                $('#column_dropdown-menu').empty();
+
+                $('#column_dropdown-menu').append('<li><a href="#3">SUM</a></li>');
+                $('#column_dropdown-menu').append('<li><a href="#3">AVG</a></li>');
+
+                if(__.types[d] == 'number'){
+                    $('#column_dropdown-menu').append('<li><a href="#3">NUMBER</a></li>');
+                }
+                else{
+                    $('#column_dropdown-menu').append('<li><a href="#3">ORDER BY</a></li>');
                 }
 
-                $(d3.select('#dropdown-menu')[0]).toggle('Drop');
-                d3.select('#dropdown-menu').style("left", position["left"]-75 + "px")
-                                                 .style("top", position["top"] + "px");
-                d3.event.stopPropagation();
-            })
-            .on("mousedown", function(){d3.event.stopPropagation();})
-            .on("mouseup", function(){d3.event.stopPropagation();});
+                d3.select('#column_dropdown-menu').style("left", d3.event.pageX -80 + "px")
+                        .style('position', 'absolute')
+                        .style("top", d3.event.pageY-2  + "px")
+                        .style('display', 'block')
+                        .on('mouseleave', function() {
+                            d3.select('#column_dropdown-menu').style('display', 'none');
+                            context = null;
+                          });
+
+                d3.event.preventDefault();
+            });
 
   flags.axes= true;
   return this;

@@ -2,6 +2,12 @@
 {% block body_block %}
 
     <div id="parcoords-main" class="parcoords"></div>
+
+    <div id="column_dropdown" class="dropdown-tip">
+        <ul id="column_dropdown-menu" class="dropdown dropdown-menu">
+        </ul>
+    </div>
+
     <div id="slickgrid-container">
         <div id="rule-right">
             <div id="rule-right-table-head"></div>
@@ -30,10 +36,6 @@
             <div id="grid"></div>
             <div id="pager"></div>
         </div>
-    </div>
-    <div style="position: absolute;top: 20px;" id="dropdown1" class="dropdown dropdown-tip">
-        <ul style="position: absolute" id="dropdown-menu" class="dropdown-menu">
-        </ul>
     </div>
 
     <script id="brushing">
@@ -256,7 +258,7 @@
             .height(550)
             .color('#2980b9')
             .margin({
-                top: 36,
+                top: 42,
                 left: 0,
                 right: 0,
                 bottom: 16
