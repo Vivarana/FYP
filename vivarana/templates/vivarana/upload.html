@@ -96,17 +96,19 @@
                 url: "",
                 dataType: 'json',
                 done: function (e, data) {
+
+                    $( "#alert").remove()
 {#                    $( "#form-container" ).css( "transform", "translate(0,-150px)" )#}
 {#                                          .css( "transition", "all 1s ease-in-out" );#}
 
                     if(data.result.success==true) {
-                        $( "#form-container").after('<div class="alert alert-success" role="alert">'+ data.result['file_name'] +' Succefully uploaded.</div>')
+                        $( "#form-container").after('<div id="alert" class="alert alert-success" role="alert">'+ data.result['file_name'] +' Succefully uploaded.</div>')
                         setTimeout(function(){
                             window.location.replace("/vivarana/preprocessor");
                         }, 1000);
                     }
                     else{
-                        $( "#form-container").after('<div class="alert alert-warning" role="alert">'+data.result['error']+'</div>')
+                        $( "#form-container").after('<div id="alert" class="alert alert-warning" role="alert">'+data.result['error']+'</div>')
                     }
 
                 },

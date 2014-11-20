@@ -3,3 +3,4 @@ media/*
 db.sqlite3
 vivarana/helper/apachelog.pyc
 vivarana/helper/file_helper.pyc
+*.pyc

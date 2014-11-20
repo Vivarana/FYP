@@ -17,7 +17,8 @@ d3.parcoords = function(config) {
     bundleDimension: null,
     smoothness: 0.25,
     showControlPoints: false,
-    hideAxis : []
+    hideAxis : [],
+    rules:[]
   };
 
   extend(__, config);
@@ -503,6 +504,34 @@ pc.createAxes = function() {
         return d in __.dimensionTitles ? __.dimensionTitles[d] : d;  // dimension display names
       });
 
+   var ops = ["Group By", "SUM", "AVG"];
+
+   g.append("foreignObject")
+            .attr("x", -10)
+            .attr("y", -47)
+            .attr("width", 20)
+            .attr("height", 20)
+            .append("xhtml:body")
+            .attr("id",function(d,i){return 'col_'+i;})
+            .html('<span style="font-size: 15px;" data-dropdown="#dropdown1" class="glyphicon glyphicon-th-list"></span>')
+            .on("click", function(d,i){
+                var selected_element = document.getElementById('col_'+i);
+                var position = $(selected_element).position();
+                $(d3.select('#dropdown-menu')[0]).empty();
+
+                for (op in ops){
+                    $(d3.select('#dropdown-menu')[0]).append('<li><a href="#3">'+ops[op]+'</a></li>');
+                    $(d3.select('#dropdown-menu')[0]).append('<li class="dropdown-divider"></li>');
+                }
+
+                $(d3.select('#dropdown-menu')[0]).toggle('Drop');
+                d3.select('#dropdown-menu').style("left", position["left"]-75 + "px")
+                                                 .style("top", position["top"] + "px");
+                d3.event.stopPropagation();
+            })
+            .on("mousedown", function(){d3.event.stopPropagation();})
+            .on("mouseup", function(){d3.event.stopPropagation();});
+
   flags.axes= true;
   return this;
 };
@@ -687,10 +716,25 @@ pc.brushMode = function(mode) {
     return !brushes[p].empty();
   }
 
+
+  //function to identify cep rules from brushes
+    function set_rules() {
+         __.rules = [];
+
+        var actives = __.dimensions.filter(is_brushed),
+            extents = actives.map(function(p) { return brushes[p].extent(); });
+
+        for( acc in actives){
+            __.rules[actives[acc]]= [extents[acc][0], extents[acc][1]];
+        }
+    }
+
   // data within extents
   function selected() {
     var actives = __.dimensions.filter(is_brushed),
         extents = actives.map(function(p) { return brushes[p].extent(); });
+
+    set_rules();
 
     // We don't want to return the full data set when there are no axes brushed.
     // Actually, when there are no axes brushed, by definition, no items are

@@ -10,7 +10,7 @@ def handle_uploaded_file(file_in):
     elif file_extension == 'log':
         return handle_log(file_in)
     else:
-        return {'success': False, 'error': 'Sorry. File type '+file_extension+' not supported'}
+        return {'success': False, 'error': 'Sorry. File type '+file_extension+' is not supported'}
 
 
 def handle_csv(file_in):
