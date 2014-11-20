@@ -12,7 +12,7 @@ $(document).ready(function () {
     });
 
     $("#curve-slider").noUiSlider({
-        start: 0,
+        start: 0.2,
         connect: "lower",
         step: 0.01,
         range: {
@@ -22,7 +22,7 @@ $(document).ready(function () {
     });
 
     $("#bundling-slider").noUiSlider({
-        start: 0,
+        start: 0.7,
         connect: "lower",
         step: 0.05,
         range: {

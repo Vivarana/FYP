@@ -10,12 +10,11 @@
     color: rgba(255, 255, 255, 0.84);
 }
 
-#curve-slider-container, #alpha-slider-container, #bundling-slider-container {
+#curve-slider-container, #bundling-slider-container {
     display: none;
 }
 
 #rule-right {
-    background-color: #000;
     float: right;
     width: 30%;
     padding-right: 10px;

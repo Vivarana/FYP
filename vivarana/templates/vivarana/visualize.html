@@ -3,7 +3,21 @@
 
     <div id="parcoords-main" class="parcoords"></div>
     <div id="slickgrid-container">
-        <div id="rule-right">heedwefdwefhee</div>
+        <div id="rule-right">
+            <div id="rule-table">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>Rule</th>
+                    </tr>
+                    </thead>
+                    <tbody id="rule-table-body">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
         <div id="slickgrid-container-inner-left">
             <div id="grid"></div>
             <div id="pager"></div>
@@ -204,6 +218,11 @@
         if (this.checked) {
             $('#curve-slider-container').show();
             $('#bundling-slider-container').show();
+            parcoords
+                    .bundleDimension("cylinders")  //todo change this accordingly
+                    .smoothness(0.2)
+                    .bundlingStrength(0.7)
+                    .render();
         } else {
             $("#curve-slider").val(0);
             $("#bundling-slider").val(0);
@@ -247,7 +266,6 @@
             .data(data)
             .bundlingStrength(0)
             .smoothness(0)
-            .bundleDimension("cylinders") //TODO change this to the name of cluster axis
             .render()
             .reorderable()
             .brushMode("1D-axes");
