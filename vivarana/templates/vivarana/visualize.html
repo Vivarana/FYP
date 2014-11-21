@@ -357,15 +357,34 @@
         gridUpdate(d);
     });
 
-    function sum(col_name, col_number){
+    function sum(col_name, col_number) {
         alert("SUM " + col_name + " Column No - " + col_number);
     }
 
-    function average(col_name, col_number){
+    function average(col_name, col_number) {
         alert("Avarage " + col_name + " Column No - " + col_number);
     }
 
-    function temp(input){
+    function removeAxis(col_name, col_number) {
+        //todo send AJAX call to backend
+        parcoords.svg.selectAll(".dimension")
+                .filter(function (d) {
+                    return d == col_name;
+                });
+
+        parcoords.hideAxis([col_name]).updateAxes().render();
+    }
+
+    function flipAxis(col_name, col_number) {
+        parcoords.svg.selectAll(".dimension")
+                .filter(function (d) {
+                    return d == col_name;
+                });
+
+        parcoords.flip(col_name).updateAxes().render();
+    }
+
+    function temp(input) {
         alert(input);
     }
 

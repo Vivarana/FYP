@@ -518,8 +518,10 @@ pc.createAxes = function() {
 
                 $('#column_dropdown-menu').empty();
 
-                $('#column_dropdown-menu').append('<li><a onclick="sum(\''+ d +'\', '+ i +')" href="#3">SUM</a></li>');
-                $('#column_dropdown-menu').append('<li><a onclick="average(\''+ d +'\', '+ i +')" href="#3">AVG</a></li>');
+                $('#column_dropdown-menu').append('<li><a onclick="sum(\''+ d +'\', '+ i +')" href="#">SUM</a></li>');
+                $('#column_dropdown-menu').append('<li><a onclick="average(\''+ d +'\', '+ i +')" href="#">AVG</a></li>');
+                $('#column_dropdown-menu').append('<li><a onclick="removeAxis(\''+ d +'\', '+ i +')" href="#">Remove Axis</a></li>');
+                $('#column_dropdown-menu').append('<li><a onclick="flipAxis(\''+ d +'\', '+ i +')" href="#">Flip Axis</a></li>');
 
                 if(__.types[d] == 'number'){
                     $('#column_dropdown-menu').append('<li><a onclick="temp(\''+ d +'\', '+ i +')"  href="#3">NUMBER</a></li>');
