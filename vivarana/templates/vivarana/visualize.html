@@ -357,6 +357,18 @@
         gridUpdate(d);
     });
 
+    function sum(col_name, col_number){
+        alert("SUM " + col_name + " Column No - " + col_number);
+    }
+
+    function average(col_name, col_number){
+        alert("Avarage " + col_name + " Column No - " + col_number);
+    }
+
+    function temp(input){
+        alert(input);
+    }
+
     function gridUpdate(data) {
         dataView.beginUpdate();
         dataView.setItems(data);

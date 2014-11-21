@@ -518,14 +518,14 @@ pc.createAxes = function() {
 
                 $('#column_dropdown-menu').empty();
 
-                $('#column_dropdown-menu').append('<li><a href="#3">SUM</a></li>');
-                $('#column_dropdown-menu').append('<li><a href="#3">AVG</a></li>');
+                $('#column_dropdown-menu').append('<li><a onclick="sum(\''+ d +'\', '+ i +')" href="#3">SUM</a></li>');
+                $('#column_dropdown-menu').append('<li><a onclick="average(\''+ d +'\', '+ i +')" href="#3">AVG</a></li>');
 
                 if(__.types[d] == 'number'){
-                    $('#column_dropdown-menu').append('<li><a href="#3">NUMBER</a></li>');
+                    $('#column_dropdown-menu').append('<li><a onclick="temp(\''+ d +'\', '+ i +')"  href="#3">NUMBER</a></li>');
                 }
                 else{
-                    $('#column_dropdown-menu').append('<li><a href="#3">ORDER BY</a></li>');
+                    $('#column_dropdown-menu').append('<li><a onclick="temp(\''+ d +'\', '+ i +')" href="#3">ORDER BY</a></li>');
                 }
 
                 d3.select('#column_dropdown-menu').style("left", d3.event.pageX -80 + "px")
