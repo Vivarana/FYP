@@ -8,38 +8,11 @@
     <link href="{% static "css/material-wfont.css" %}" rel="stylesheet">
     <link href="{% static "css/snackbar.min.css" %}" rel="stylesheet">
 
-        <link rel="stylesheet" href="{% static "slickgrid/jquery-ui-1.8.16.custom.css" %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static "slickgrid/slick.grid.css" %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static "slickgrid/slick.pager.css" %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static "slickgrid/examples.css" %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static "css/yamm.css" %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static "css/custom.css" %}" type="text/css"/>
-
-    <link rel="stylesheet" type="text/css" href="{% static "parallelcordinates/d3.parcoords.css" %}">
-
-
-    {#    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>#}
-
     <script src="{% static "js/jquery-1.7.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
-    <script src="{% static "js/jquery.nouislider.min.js" %}"></script>
-    <script src="{% static "js/snackbar.min.js" %}"></script>
 
-    <script src="{% static "slickgrid/jquery.event.drag-2.0.min.js" %}"></script>
-    <script src="{% static "slickgrid/slick.core.js" %}"></script>
-    <script src="{% static "slickgrid/slick.grid.js" %}"></script>
-    <script src="{% static "slickgrid/slick.pager.js" %}"></script>
-    <script src="{% static "slickgrid/slick.dataview.js" %}"></script>
-
-    <script src="{% static "js/d3.js" %}"></script>
-    <script src="{% static "parallelcordinates/d3.parcoords.js" %}"></script>
-    <script src="{% static "js/underscore.js" %}"></script>
-    <script src="{% static "js/sylvester.js" %}"></script>
-    <script src="{% static "js/divgrid.js" %}"></script>
-    <script src="{% static "js/underscore.math.js" %}"></script>
-    <script src="{% static "js/custom.js" %}"></script>
 
 
     <title>{% block title %}Vivarana{% endblock %}</title>
@@ -59,135 +32,12 @@
     </div>
     <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b
-                        class="caret"></b></a>
-                <ul class="dropdown-menu">
 
-
-                    <div class="yamm-content">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <label class="control-label">Configuration options for parallel coordinates</label></br>
-                                <div class="row">
-                                    <div class="col-xs-6 col-sm-6">
-                                        <form class="form-horizontal">
-                                            <div class="form-group">
-                                                <label class="control-label">Brushing:</label>
-
-                                                <div class="radio radio-primary">
-                                                    <label>
-                                                        <input type="radio" name="brushingRadios" id="oneBrushing-radio"
-                                                               value="option1"
-                                                               checked="">
-                                                        1D Brushing
-                                                    </label>
-
-                                                    <div class="radio radio-primary">
-                                                        <label>
-                                                            <input type="radio" name="brushingRadios"
-                                                                   id="twoBrushing-radio"
-                                                                   value="option2">
-                                                            2D Brushing
-                                                        </label>
-                                                    </div>
-
-                                                </div>
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <input id="bundling-checkbox" type="checkbox"> Cluster Bundling
-                                                    </label>
-                                                </div>
-                                            </div>
-
-
-                                        </form>
-
-
-                                    </div>
-                                    <div class="col-xs-6 col-sm-6">
-                                        <form class="form-horizontal">
-
-                                            <div class="form-group">
-                                                <label class="control-label">Coloring:</label>
-
-                                                <div class="radio radio-primary">
-                                                    <label>
-                                                        <input type="radio" name="coloringRadios"
-                                                               id="clusterColoring-radio"
-                                                               value="option3">
-                                                        Enable Cluster Coloring
-                                                    </label>
-
-                                                    <div class="radio radio-primary">
-                                                        <label>
-                                                            <input type="radio" name="coloringRadios"
-                                                                   id="zScoreColoring-radio"
-                                                                   value="option4">
-                                                            Enable Z Score Coloring
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <input id="alpha-checkbox" type="checkbox" checked=""> Alpha
-                                                        Blending
-                                                    </label>
-                                                </div>
-                                            </div>
-
-
-                                        </form>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-
-                    </div>
-
-
-                </ul>
-            </li>
         </ul>
 
 
         <ul class="nav navbar-nav navbar-right">
-            <li>
-                <div id="bundling-slider-container">
-                    <div id="bundling-text" class="slider-text">Bundling Strength: 0.7</div>
-                    <div id="bundling-slider" class="slider slider-material-lightgrey"></div>
-                </div>
-            </li>
-            <li>
-                <div id="curve-slider-container">
-                    <div id="curve-text" class="slider-text">Curve Smoothness: 0.2</div>
-                    <div id="curve-slider" class="slider slider-material-lightgrey"></div>
-                </div>
-            </li>
-            <li>
-                <div id="alpha-slider-container">
-                    <div id="alpha-opacity-text" class="slider-text">Alpha Opacity: 0.3</div>
-                    <div id="aplha-slider" class="slider slider-material-lightgrey"></div>
-                </div>
-            </li>
-            <li data-toggle="tooltip" data-placement="right" data-original-title="Hide ticks"><a href="#"><span
-                    class="mdi-editor-border-vertical" style="font-weight: bold"></span></a>
-            </li>
-            <li data-toggle="tooltip" data-placement="bottom" data-original-title="Keep selected data"><a
-                    id="btn-keep-data" href="#"><span class="mdi-image-blur-on"
-                                                      style="font-weight: bold"></span></a></li>
-            <li data-toggle="tooltip" data-placement="left" data-original-title="Exclude selected data"><a
-                    id="btn-exclude-data" href="#"><span class="mdi-image-blur-off"
-                                                         style="font-weight: bold"></span></a></li>
-            <li data-toggle="tooltip" data-placement="left" data-original-title="Undo last keep/exclude data"><a
-                    id="btn-undo" href="#"><span class="mdi-content-undo"
-                                                 style="font-weight: bold"></span></a></li>
-            <li data-toggle="tooltip" data-placement="left" data-original-title="Reset all selections"><a id="btn-clear"
-                                                                                                          href="#"><span
-                    class="mdi-content-clear"
-                    style="font-weight: bold"></span></a></li>
+
         </ul>
 
 

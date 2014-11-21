@@ -513,7 +513,7 @@ pc.createAxes = function() {
             .attr("height", 20)
             .append("xhtml:body")
             .attr("id",function(d,i){return 'col_'+i;})
-            .html('<span style="font-size: 15px;" data-dropdown="#dropdown" class="glyphicon glyphicon-align-justify"></span>')
+            .html('<span style="font-size: 15px;" data-dropdown="#dropdown" ><i class="mdi-editor-format-align-justify"></i></span>')
             .on("contextmenu", function(d,i){
 
                 $('#column_dropdown-menu').empty();
