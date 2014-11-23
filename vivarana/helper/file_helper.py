@@ -30,7 +30,8 @@ def handle_csv(file_in):
 
 
 def handle_log(file_in):
-    log_format = r'%h %l %u %t \"%r\" %>s %b'
+    #Set the log format to common
+    log_format = apachelog.formats['common']
     parser = apachelog.parser(log_format)
 
     with open("media/temp.log", 'wb+') as destination:
@@ -49,11 +50,19 @@ def handle_log(file_in):
 
     original_data_frame = pd.DataFrame(log_list)
 
-    original_data_frame['%b'] = original_data_frame['%b'].replace('-', 0)
-    original_data_frame['%b'].apply(int)
-    original_data_frame['%b'] = original_data_frame['%b'].astype(int)
+    #Convert the size column to integer from string
+    if 'Size(bytes)' in original_data_frame.columns:
+        original_data_frame['Size(bytes)'] = original_data_frame['Size(bytes)'].replace('-', 0)
+        original_data_frame['Size(bytes)'].apply(int)
+        original_data_frame['Size(bytes)'] = original_data_frame['Size(bytes)'].astype(int)
 
-    print original_data_frame.info()
+    #Splitting the request line. todo : Fix the errors when the format doesnt match
+    if 'request' in original_data_frame.columns:
+        temp = original_data_frame.request.str.split(' ')
+        original_data_frame['Method'] = temp.str[0]
+        original_data_frame['URL'] = temp.str[1]
+        original_data_frame['Protocol'] = temp.str[-1]
+
     return {'success': True, 'dataframe' : original_data_frame}
 
 

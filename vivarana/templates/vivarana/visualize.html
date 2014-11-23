@@ -16,18 +16,11 @@
                     <thead>
                     <tr>
                         <th>Column</th>
-                        <th>Rule</th>
+                        <th>Conditions</th>
                     </tr>
                     </thead>
                     <tbody id="rule-table-body">
-                    <tr>
-                        <td>Tanmay</td>
-                        <td>Bangalore</td>
-                    </tr>
-                    <tr>
-                        <td>Sachin</td>
-                        <td>Mumbai</td>
-                    </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -355,7 +348,16 @@
     // update grid on brush
     parcoords.on("brush", function (d) {
         gridUpdate(d);
+        ruleTableUpdate(d);
     });
+
+    function ruleTableUpdate(d){
+        $('#rule-table-body').empty()
+        var rules = parcoords.state.rules;
+        for( rule in rules ){
+            $('#rule-table-body').append('<tr><td>'+ rule +'</td><td>'+ rules[rule][0] + ' <= '+ 'x' + ' <= '+ rules[rule][1] +'</td></tr>')
+        }
+    }
 
     function sum(col_name, col_number) {
         alert("SUM " + col_name + " Column No - " + col_number);

@@ -735,7 +735,7 @@ pc.brushMode = function(mode) {
             extents = actives.map(function(p) { return brushes[p].extent(); });
 
         for( acc in actives){
-            __.rules[actives[acc]]= [extents[acc][0], extents[acc][1]];
+            __.rules[actives[acc]]= [extents[acc][0].toFixed(2), extents[acc][1].toFixed(2)];
         }
     }
 

@@ -190,14 +190,29 @@ class parser:
 
     def alias(self, name):
         """
-        Override / replace this method if you want to map format
-        field names to something else. This method is called
-        when the parser is constructed, not when actually parsing
-        a log file
-        
-        Takes and returns a string fieldname
+        Overriden by Vimuth Fernando. Change as necessary
         """
-        return name
+        column_names = {'%b' : 'Size(bytes)',
+                        '%h' : 'Remote host',
+                        '%l' : 'Remote logname',
+                        '%u' : 'Remote user',
+                        '%t' : 'Time',
+                        '%r' : 'request',
+                        '%>s' : 'Status',
+                        '%a' : 'RemoteIP',
+                        '%A' : 'LocalIP',
+                        '%B' : 'SizeWithHeaders(bytes)',
+                        '%f' : 'File Name',
+                        '%m' : 'Request Method',
+                        '%p' : 'Port',
+                        '%P' : 'Process ID',
+                        '%q' : 'Query String',
+                        '%s' : 'Original Status',
+                        '%U' : 'URL',
+                        };
+
+
+        return column_names.get(name,name)
 
     def pattern(self):
         """
