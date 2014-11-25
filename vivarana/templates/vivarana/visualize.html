@@ -355,7 +355,7 @@
         $('#rule-table-body').empty()
         var rules = parcoords.state.rules;
         for( rule in rules ){
-            $('#rule-table-body').append('<tr><td>'+ rule +'</td><td>'+ rules[rule][0] + ' <= '+ 'x' + ' <= '+ rules[rule][1] +'</td></tr>')
+            $('#rule-table-body').append('<tr><td>'+ rule +'</td><td>'+ rules[rule] +'</td></tr>')
         }
     }
 

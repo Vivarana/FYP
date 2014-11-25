@@ -1,11 +1,11 @@
 import json
-
+import pandas
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from helper import file_helper
 
-original_data_frame = ""
-current_data_frame = ""
+original_data_frame = None
+current_data_frame = None
 
 def home(request):
     context = {}
@@ -13,6 +13,9 @@ def home(request):
 
 
 def visualize(request):
+    if not type(original_data_frame) is pandas.core.frame.DataFrame:
+        return redirect('/vivarana/upload/')
+
     json = current_data_frame.to_json(orient='records')
     return render(request, 'vivarana/visualize.html', {'result': json, 'frame_size': len(current_data_frame)})
 
@@ -22,6 +25,9 @@ def paracoords(request):
 
 
 def preprocessor(request):
+    if not type(original_data_frame) is pandas.core.frame.DataFrame:
+        return redirect('/vivarana/upload/')
+
     if request.method == 'POST':
         columns = request.POST.getlist('column')
         global current_data_frame
