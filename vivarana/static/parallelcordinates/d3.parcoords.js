@@ -255,7 +255,8 @@ pc.commonScale = function(global, type) {
 
 	return this;
 };pc.detectDimensions = function() {
-  pc.types(pc.detectDimensionTypes(__.data));
+//  pc.types(pc.detectDimensionTypes(__.data));
+//  console.log(__.types)
   pc.dimensions(d3.keys(pc.types()));
   return this;
 };

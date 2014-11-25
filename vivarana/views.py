@@ -7,6 +7,7 @@ from helper import file_helper
 original_data_frame = None
 current_data_frame = None
 
+
 def home(request):
     context = {}
     return render(request, 'vivarana/home.html', context)
@@ -16,8 +17,10 @@ def visualize(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
         return redirect('/vivarana/upload/')
 
-    json = current_data_frame.to_json(orient='records')
-    return render(request, 'vivarana/visualize.html', {'result': json, 'frame_size': len(current_data_frame)})
+    column_types = file_helper.get_compatible_column_types(current_data_frame)
+    json_output = current_data_frame.to_json(orient='records')
+    return render(request, 'vivarana/visualize.html', {'result': json_output, 'frame_size': len(current_data_frame)
+                                                                            , 'columns': column_types})
 
 
 def paracoords(request):

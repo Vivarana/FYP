@@ -1,6 +1,7 @@
 import pandas as pd
-import numpy as np
 import apachelog
+
+CATEGORICAL_COLUMN_THRESHOLD = 10
 
 
 def handle_uploaded_file(file_in):
@@ -72,6 +73,27 @@ def load_data(filename, dataframe):
     column_data = [(columns[col], data_types[col]) for col in xrange(len(columns))]
     return {"filename": filename, "columns": column_data}
 
+
 def remove_columns(needed_columns, dataframe):
     column_list = [dataframe.columns[int(i)-1] for i in needed_columns]
-    return  dataframe[column_list]
+    return dataframe[column_list]
+
+#return the column types in a format compatible with the paracoords library
+def get_compatible_column_types(dataframe):
+
+    columns = list(dataframe.columns)
+    data_types = list(dataframe.dtypes)
+
+    for i, col_type in enumerate(data_types):
+        if col_type == 'object':
+            data_types[i] = 'string'
+        elif col_type == 'int64':
+            if len(pd.unique(dataframe[columns[i]])) <= CATEGORICAL_COLUMN_THRESHOLD:
+                data_types[i] = 'string'
+            else:
+                data_types[i] = 'number'
+        elif col_type == 'float64':
+            data_types[i] = 'number'
+
+    column_data = [(columns[col], data_types[col]) for col in xrange(len(columns))]
+    return dict(column_data)

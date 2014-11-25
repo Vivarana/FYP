@@ -244,11 +244,17 @@
         }
     });
 
+    {% autoescape off %}
+
+    var data_types = {{ columns }};
+    //Adding the type for id column so that it comes last
+    data_types['id'] = 'number';
 
     var parcoords = d3.parcoords()("#parcoords-main")
             .alpha(0.3)
             .mode("queue") // progressive rendering
             .height(550)
+            .types(data_types)
             .color('#2980b9')
             .margin({
                 top: 42,
@@ -257,7 +263,6 @@
                 bottom: 16
             });
 
-    {% autoescape off %}
         var j_data = JSON.parse('{{ result }}');
     {% endautoescape %}
 
