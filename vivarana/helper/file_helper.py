@@ -20,7 +20,7 @@ def handle_csv(file_in):
                 destination.write(chunk)
 
         with open("media/temp.csv", 'r') as csv_file:
-            original_data_frame = pd.read_csv(csv_file)
+            original_data_frame = pd.read_csv(csv_file, parse_dates=[0])
 
             print list(original_data_frame.columns)
             return {'success': True, 'dataframe' : original_data_frame}

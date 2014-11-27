@@ -40,3 +40,16 @@ $(document).ready(function () {
     });
 
 });
+
+
+function setTimeWindow() {
+//    todo restrict this to numeric values
+    var timeGranularity = $("#granularity-select option:selected").text();
+    var timeWindowValue = $("#time-window").val();
+
+    $.get('/vivarana/set_time_window/', {time_granularity: timeGranularity, time_window_val: timeWindowValue}, function (data) {
+        console.log(data);
+    });
+
+
+}

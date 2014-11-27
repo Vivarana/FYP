@@ -351,16 +351,25 @@
         ruleTableUpdate(d);
     });
 
-    function ruleTableUpdate(d){
+    function ruleTableUpdate(d) {
         $('#rule-table-body').empty()
         var rules = parcoords.state.rules;
-        for( rule in rules ){
-            $('#rule-table-body').append('<tr><td>'+ rule +'</td><td>'+ rules[rule][0] + ' <= '+ 'x' + ' <= '+ rules[rule][1] +'</td></tr>')
+        for (rule in rules) {
+            $('#rule-table-body').append('<tr><td>' + rule + '</td><td>' + rules[rule][0] + ' <= ' + 'x' + ' <= ' + rules[rule][1] + '</td></tr>')
         }
     }
 
     function sum(col_name, col_number) {
-        alert("SUM " + col_name + " Column No - " + col_number);
+        $.get('/vivarana/get_sum/', {attribute_name: col_name}, function (data) {
+            var j_data = JSON.parse(data);
+{#            todo how to proparly render#}
+{#            todo there are so many unwanted axis#}
+            parcoords
+                    .data(j_data)
+                    .resize()
+                    .render();
+        });
+{#        alert("SUM " + col_name + " Column No - " + col_number);#}
     }
 
     function average(col_name, col_number) {
