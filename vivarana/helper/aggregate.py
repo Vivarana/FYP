@@ -1,4 +1,5 @@
 from pandas import rolling_mean, rolling_max
+import pandas as pd
 import numpy as np
 from datetime import timedelta
 
@@ -11,14 +12,17 @@ def sum_window(row):
 
 
 def sum_of_window(time_window_value, time_granularity, attribute_name, current_data_frame):
+    # todo prevent further sum
+    # todo add method to reset axix
     global df, attribute
-    df = current_data_frame
     attribute = attribute_name
-    print current_data_frame['Date']
-    start_dates = current_data_frame['Date'] - timedelta(minutes=int(time_window_value))
-    current_data_frame['start_index'] = current_data_frame['Date'].values.searchsorted(start_dates, side='right')
-    current_data_frame['end_index'] = np.arange(len(current_data_frame))
-    new_row = current_data_frame.apply(sum_window, axis=1)
+    df = current_data_frame[['Date', attribute]]
+    df['Date'] = pd.to_datetime(df['Date'])
+    start_dates = df['Date'] - timedelta(minutes=int(time_window_value))
+    df['start_index'] = df['Date'].values.searchsorted(start_dates, side='right')
+    df['end_index'] = np.arange(len(df))
+    new_row = df.apply(sum_window, axis=1)
+
     current_data_frame.pop(attribute_name)
     current_data_frame[attribute_name] = new_row
     return current_data_frame

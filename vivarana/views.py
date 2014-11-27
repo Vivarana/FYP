@@ -8,7 +8,6 @@ from helper import aggregate
 original_data_frame = None
 current_data_frame = None
 
-
 parameters_map = {}
 
 
@@ -23,8 +22,9 @@ def visualize(request):
 
     column_types = file_helper.get_compatible_column_types(current_data_frame)
     json_output = current_data_frame.to_json(orient='records')
-    return render(request, 'vivarana/visualize.html', {'result': json_output, 'frame_size': len(current_data_frame)
-                                                                            , 'columns': column_types})
+    return render(request, 'vivarana/visualize.html',
+                  {'columns': column_types, 'result': json_output, 'frame_size': len(current_data_frame)
+                  })
 
 
 def paracoords(request):
