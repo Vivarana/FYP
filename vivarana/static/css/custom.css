@@ -39,3 +39,7 @@
 #parcoords-main {
     height: 550px;
 }
+
+#granularity-select{
+    min-height: 28px;
+}

@@ -21,6 +21,10 @@ d3.parcoords = function(config) {
     rules:[]
   };
 
+
+var rule_actives = [];
+var rule_extents = [];
+
 //var dropdown=false;
 
   extend(__, config);
@@ -251,7 +255,8 @@ pc.commonScale = function(global, type) {
 
 	return this;
 };pc.detectDimensions = function() {
-  pc.types(pc.detectDimensionTypes(__.data));
+//  pc.types(pc.detectDimensionTypes(__.data));
+//  console.log(__.types)
   pc.dimensions(d3.keys(pc.types()));
   return this;
 };
@@ -655,6 +660,30 @@ var brush = {
   }
 };
 
+//function to identify cep rules from brushes
+function set_rules() {
+     __.rules = [];
+
+    for( acc in rule_actives){
+        if( __.types[rule_actives[acc]] == 'string' ){
+
+            var unique = {};
+            var distinct = [];
+            for( var i in __.brushed){
+                if( typeof(unique[__.brushed[i][rule_actives[acc]]]) == "undefined"){
+                  distinct.push(__.brushed[i][rule_actives[acc]]);
+                }
+                unique[__.brushed[i][rule_actives[acc]]] = 0;
+            }
+
+            __.rules[rule_actives[acc]]= [distinct.join(' OR ')]
+        }
+        else {
+            __.rules[rule_actives[acc]] = [rule_extents[acc][0].toFixed(2)+" <= x <= "+ rule_extents[acc][1].toFixed(2)];
+        }
+    }
+}
+
 // This function can be used for 'live' updates of brushes. That is, during the
 // specification of a brush, this method can be called to update the view.
 //
@@ -662,6 +691,7 @@ var brush = {
 //                       by the brushes
 function brushUpdated(newSelection) {
   __.brushed = newSelection;
+  set_rules();
   events.brush.call(pc,__.brushed);
   pc.render();
 }
@@ -726,25 +756,13 @@ pc.brushMode = function(mode) {
     return !brushes[p].empty();
   }
 
-
-  //function to identify cep rules from brushes
-    function set_rules() {
-         __.rules = [];
-
-        var actives = __.dimensions.filter(is_brushed),
-            extents = actives.map(function(p) { return brushes[p].extent(); });
-
-        for( acc in actives){
-            __.rules[actives[acc]]= [extents[acc][0].toFixed(2), extents[acc][1].toFixed(2)];
-        }
-    }
-
   // data within extents
   function selected() {
     var actives = __.dimensions.filter(is_brushed),
         extents = actives.map(function(p) { return brushes[p].extent(); });
 
-    set_rules();
+      rule_actives = actives;
+      rule_extents = extents;
 
     // We don't want to return the full data set when there are no axes brushed.
     // Actually, when there are no axes brushed, by definition, no items are

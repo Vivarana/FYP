@@ -244,20 +244,25 @@
         }
     });
 
-
-    var parcoords = d3.parcoords()("#parcoords-main")
-            .alpha(0.3)
-            .mode("queue") // progressive rendering
-            .height(550)
-            .color('#2980b9')
-            .margin({
-                top: 42,
-                left: 0,
-                right: 0,
-                bottom: 16
-            });
-
     {% autoescape off %}
+
+        var data_types = {{ columns }};
+        //Adding the type for id column so that it comes last
+        data_types['id'] = 'number';
+
+        var parcoords = d3.parcoords()("#parcoords-main")
+                .alpha(0.3)
+                .mode("queue") // progressive rendering
+                .height(550)
+                .types(data_types)
+                .color('#2980b9')
+                .margin({
+                    top: 42,
+                    left: 0,
+                    right: 0,
+                    bottom: 16
+                });
+
         var j_data = JSON.parse('{{ result }}');
     {% endautoescape %}
 
@@ -351,16 +356,27 @@
         ruleTableUpdate(d);
     });
 
-    function ruleTableUpdate(d){
+    function ruleTableUpdate(d) {
         $('#rule-table-body').empty()
         var rules = parcoords.state.rules;
-        for( rule in rules ){
-            $('#rule-table-body').append('<tr><td>'+ rule +'</td><td>'+ rules[rule][0] + ' <= '+ 'x' + ' <= '+ rules[rule][1] +'</td></tr>')
+        for (rule in rules) {
+            $('#rule-table-body').append('<tr><td>' + rule + '</td><td>' + rules[rule][0] + ' <= ' + 'x' + ' <= ' + rules[rule][1] + '</td></tr>')
+
         }
     }
 
     function sum(col_name, col_number) {
-        alert("SUM " + col_name + " Column No - " + col_number);
+        $.get('/vivarana/get_sum/', {attribute_name: col_name}, function (data) {
+            var j_data = JSON.parse(data);
+            {#            todo how to proparly render#}
+            {#            todo there are so many unwanted axis#}
+            j_data.forEach(function (d, i) {
+                d.id = d.id || i;
+            });
+            drawData(j_data);
+            gridUpdate(j_data);
+        });
+        {#        alert("SUM " + col_name + " Column No - " + col_number);#}
     }
 
     function average(col_name, col_number) {

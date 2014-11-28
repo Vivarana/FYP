@@ -1,12 +1,17 @@
 import json
-
+import pandas
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from helper import file_helper
 from dataformat import categorize
+from helper import aggregate
 
-original_data_frame = ""
-current_data_frame = ""
+original_data_frame = None
+current_data_frame = None
+
+parameters_map = {}
+
+
 
 def home(request):
     context = {}
@@ -14,8 +19,15 @@ def home(request):
 
 
 def visualize(request):
-    json_data = current_data_frame.to_json(orient='records')
-    return render(request, 'vivarana/visualize.html', {'result': json_data, 'frame_size': len(current_data_frame)})
+
+    if not type(original_data_frame) is pandas.core.frame.DataFrame:
+        return redirect('/vivarana/upload/')
+
+    column_types = file_helper.get_compatible_column_types(current_data_frame)
+    json_output = current_data_frame.to_json(orient='records')
+    return render(request, 'vivarana/visualize.html',
+                  {'columns': column_types, 'result': json_output, 'frame_size': len(current_data_frame)
+                  })
 
 
 def paracoords(request):
@@ -25,7 +37,24 @@ def sunburst(request):
     return render(request, 'vivarana/sunburst.html', {})
 
 
+def get_sum(request):
+    attribute_name = request.GET['attribute_name']
+    new_data_frame = aggregate.sum_of_window(parameters_map['time_window_value'], parameters_map['time_granularity'],
+                                             attribute_name, current_data_frame)
+    json = new_data_frame.to_json(orient='records')
+    return HttpResponse(json)
+
+
+def set_time(request):
+    parameters_map['time_granularity'] = request.GET['time_granularity']
+    parameters_map['time_window_value'] = request.GET['time_window_val']
+    return HttpResponse('hello world')
+
+
 def preprocessor(request):
+
+    if not type(original_data_frame) is pandas.core.frame.DataFrame:
+        return redirect('/vivarana/upload/')
 
     if request.method == 'POST':
         columns = request.POST.getlist('column')
@@ -56,12 +85,13 @@ def upload(request):
                 response_data['file_name'] = input_file.name
                 response_data['success'] = True
             else:
-                if output['error']=='PARSE-ERROR':
+                if output['error'] == 'PARSE-ERROR':
                     response_data = output
                 else:
                     response_data['error'] = output['error']
                     response_data['success'] = False
-        except Exception,e:
+
+        except Exception, e:
             print str(e)
             response_data['error'] = "Error while setting up file. Please try again."
             response_data['success'] = False
