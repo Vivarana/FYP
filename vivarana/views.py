@@ -26,11 +26,6 @@ def visualize(request):
                   {'columns': column_types, 'result': json_output, 'frame_size': len(current_data_frame)
                   })
 
-
-def paracoords(request):
-    return render(request, 'vivarana/paracoords.html', {})
-
-
 def get_sum(request):
     attribute_name = request.GET['attribute_name']
     new_data_frame = aggregate.sum_of_window(parameters_map['time_window_value'], parameters_map['time_granularity'],
