@@ -61,6 +61,7 @@
     <script src="{% static "js/jquery.fileupload.js" %}"></script>
 
     <script>
+
         function getCookie(name) {
         var cookieValue = null;
             if (document.cookie && document.cookie != '') {
@@ -85,8 +86,10 @@
 
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
+
                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
+
                 }
             }
         });
@@ -97,26 +100,31 @@
                 dataType: 'json',
                 done: function (e, data) {
 
-                    $( "#alert").remove()
-{#                    $( "#form-container" ).css( "transform", "translate(0,-150px)" )#}
-{#                                          .css( "transition", "all 1s ease-in-out" );#}
+                    $("#alert").remove();
 
-                    if(data.result.success==true) {
-                        $( "#form-container").after('<div id="alert" class="alert alert-success" role="alert">'+ data.result['file_name'] +' Succefully uploaded.</div>')
-                        setTimeout(function(){
+                    {#                    $( "#form-container" ).css( "transform", "translate(0,-150px)" )#}
+                    {#                                          .css( "transition", "all 1s ease-in-out" );#}
+
+                    if (data.result.success == true) {
+                        $("#form-container").after('<div id="alert" class="alert alert-success" role="alert">' + data.result['file_name'] + ' Succefully uploaded.</div>')
+                        setTimeout(function () {
                             window.location.replace("/vivarana/preprocessor");
                         }, 1000);
                     }
-                    else{
-                        $( "#form-container").after('<div id="alert" class="alert alert-warning" role="alert">'+data.result['error']+'</div>')
+                    else {
+                        $("#form-container").after('<div id="alert" class="alert alert-warning" role="alert">' + data.result['error'] + '</div>')
                     }
 
+                },
+                error: function (e, data) {
+                 //   console.log("readyState: "+e.readyState+"\nstatus: "+e.status);
+                   // console.log("responseText: "+e.responseText);
                 },
                 progressall: function (e, data) {
                     var progress = parseInt(data.loaded / data.total * 100, 10);
                     $('#progress .bar').css(
-                        'width',
-                        4.4*progress
+                            'width',
+                                    4.4 * progress
                     );
                 }
             });

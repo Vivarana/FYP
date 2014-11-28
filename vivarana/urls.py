@@ -8,4 +8,5 @@ urlpatterns = patterns('',
     url(r'^preprocessor/$', views.preprocessor, name='preprocessor'),
     url(r'^visualize/$', views.visualize , name='visualize'),
     url(r'^paracoords/$', views.paracoords , name='paracoords'),
+    url(r'^sunburst/$', views.sunburst , name='sunburst'),
 )

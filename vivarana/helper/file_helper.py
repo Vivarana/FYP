@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import apachelog
@@ -33,7 +34,6 @@ def handle_log(file_in):
     #Set the log format to common
     log_format = apachelog.formats['common']
     parser = apachelog.parser(log_format)
-
     with open("media/temp.log", 'wb+') as destination:
             for chunk in file_in.chunks():
                 destination.write(chunk)
