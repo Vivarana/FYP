@@ -523,17 +523,20 @@ pc.createAxes = function() {
 
                 $('#column_dropdown-menu').empty();
 
-                $('#column_dropdown-menu').append('<li><a onclick="sum(\''+ d +'\', '+ i +')" href="#">SUM</a></li>');
-                $('#column_dropdown-menu').append('<li><a onclick="average(\''+ d +'\', '+ i +')" href="#">AVG</a></li>');
-                $('#column_dropdown-menu').append('<li><a onclick="removeAxis(\''+ d +'\', '+ i +')" href="#">Remove Axis</a></li>');
-                $('#column_dropdown-menu').append('<li><a onclick="flipAxis(\''+ d +'\', '+ i +')" href="#">Flip Axis</a></li>');
-
                 if(__.types[d] == 'number'){
-                    $('#column_dropdown-menu').append('<li><a onclick="temp(\''+ d +'\', '+ i +')"  href="#3">NUMBER</a></li>');
+                    $('#column_dropdown-menu').append('<li><a onclick="sum(\''+ d +'\', '+ i +','+ 'this' + ')" href="#">Sum</a></li>');
+                    $('#column_dropdown-menu').append('<li><a onclick="average(\''+ d +'\', '+ i +','+ 'this' + ')" href="#">Average</a></li>');
+                    $('#column_dropdown-menu').append('<li><a onclick="max(\''+ d +'\', '+ i +','+ 'this' + ')" href="#">Maximum</a></li>');
+                    $('#column_dropdown-menu').append('<li><a onclick="min(\''+ d +'\', '+ i +','+ 'this' + ')" href="#">Minimum</a></li>');
+                    $('#column_dropdown-menu').append('<li><a onclick="count(\''+ d +'\', '+ i +','+ 'this' + ')" href="#">Count</a></li>');
                 }
                 else{
-                    $('#column_dropdown-menu').append('<li><a onclick="temp(\''+ d +'\', '+ i +')" href="#3">ORDER BY</a></li>');
+                    $('#column_dropdown-menu').append('<li><a onclick="temp(\''+ d +'\', '+ i +')" href="#3">Order By</a></li>');
                 }
+
+                $('#column_dropdown-menu').append('<li><a onclick="removeAxis(\''+ d +'\', '+ i +')" href="#">Remove Axis</a></li>');
+                $('#column_dropdown-menu').append('<li><a onclick="flipAxis(\''+ d +'\', '+ i +')" href="#">Flip Axis</a></li>');
+                $('#column_dropdown-menu').append('<li><a onclick="resetAxis(\''+ d +'\', '+ i +')" href="#">Reset Axis</a></li>');
 
                 d3.select('#column_dropdown-menu').style("left", d3.event.pageX -80 + "px")
                         .style('position', 'absolute')
@@ -1232,7 +1235,7 @@ function position(d) {
   return v == null ? xscale(d) : v;
 }
   pc.toString = function() { return "Parallel Coordinates: " + __.dimensions.length + " dimensions (" + d3.keys(__.data[0]).length + " total) , " + __.data.length + " rows"; };
-  
+
   pc.version = "0.4.0";
 
   return pc;
