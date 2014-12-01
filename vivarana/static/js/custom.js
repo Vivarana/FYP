@@ -2,12 +2,15 @@ $(document).ready(function () {
     $.material.init();
 
     $("#aplha-slider").noUiSlider({
-        start: 0.3,
+        start: 0.2,
         connect: "lower",
-        step: 0.01,
         range: {
-            min: 0,
-            max: 1
+            'min': [0 ],
+            '20%': [0.05],
+            '50%': [0.1],
+            '70%': [0.25],
+            '80%': [0.4],
+            'max': [0.5]
         }
     });
 

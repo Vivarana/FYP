@@ -198,7 +198,7 @@
         } else {
             $("#aplha-slider").val(0.3);
             parcoords.alpha(0.3).render();
-            $("#alpha-opacity-text").text('Alpha Opacity: 0.3');
+            $("#alpha-opacity-text").text('Alpha Opacity: 0.2');
             $('#alpha-slider-container').hide();
         }
     });
@@ -262,7 +262,7 @@
                     right: 0,
                     bottom: 16
                 });
-
+        {#        todo replace json with csv file#}
         var j_data = JSON.parse('{{ result }}');
     {% endautoescape %}
 
@@ -365,23 +365,47 @@
         }
     }
 
-    function sum(col_name, col_number) {
-        $.get('/vivarana/get_sum/', {attribute_name: col_name}, function (data) {
-            var j_data = JSON.parse(data);
-            {#            todo how to proparly render#}
-            {#            todo there are so many unwanted axis#}
-            j_data.forEach(function (d, i) {
-                d.id = d.id || i;
-            });
-            drawData(j_data);
-            gridUpdate(j_data);
+    function aggregate_func(data, obj) {
+        var j_data = JSON.parse(data);
+        j_data.forEach(function (d, i) {
+            d.id = d.id || i;
         });
-        {#        alert("SUM " + col_name + " Column No - " + col_number);#}
+        drawData(j_data);
+        gridUpdate(j_data);
+{#        todo fix popup menu redrawing everytime#}
+        $(obj).parent().addClass("disabled");
     }
 
-    function average(col_name, col_number) {
-        alert("Avarage " + col_name + " Column No - " + col_number);
+    function sum(col_name, col_number, obj) {
+        $.get('/vivarana/aggregator/', {aggregate_func: 0, attribute_name: col_name}, function (data) {
+            aggregate_func(data, obj);
+        });
     }
+
+    function average(col_name, col_number, obj) {
+        $.get('/vivarana/aggregator/', {aggregate_func: 1, attribute_name: col_name}, function (data) {
+            aggregate_func(data, obj);
+        });
+    }
+
+    function min(col_name, col_number, obj) {
+        $.get('/vivarana/aggregator/', {aggregate_func: 2, attribute_name: col_name}, function (data) {
+            aggregate_func(data, obj);
+        });
+    }
+
+    function max(col_name, col_number, obj) {
+        $.get('/vivarana/aggregator/', {aggregate_func: 3, attribute_name: col_name}, function (data) {
+            aggregate_func(data, obj);
+        });
+    }
+
+    function count(col_name, col_number, obj) {
+        $.get('/vivarana/aggregator/', {aggregate_func: 4, attribute_name: col_name}, function (data) {
+            aggregate_func(data, obj);
+        });
+    }
+
 
     function removeAxis(col_name, col_number) {
         //todo send AJAX call to backend
