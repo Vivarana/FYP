@@ -90,7 +90,6 @@ def upload(request):
                 else:
                     response_data['error'] = output['error']
                     response_data['success'] = False
-
         except Exception, e:
             print str(e)
             response_data['error'] = "Error while setting up file. Please try again."
