@@ -8,7 +8,7 @@ from helper import aggregate
 original_data_frame = None
 current_data_frame = None
 
-parameters_map = {}
+properties_map = {}
 
 
 def home(request):
@@ -23,21 +23,20 @@ def visualize(request):
     column_types = file_helper.get_compatible_column_types(current_data_frame)
     json_output = current_data_frame.to_json(orient='records')
     return render(request, 'vivarana/visualize.html',
-                  {'columns': column_types, 'result': json_output, 'frame_size': len(current_data_frame)
-                  })
+                  {'columns': column_types, 'result': json_output, 'frame_size': len(current_data_frame)})
 
 
 def aggregator(request):
-    new_data_frame = aggregate.aggregate_window(int(request.GET['aggregate_func']), parameters_map['time_window_value'],
-                                                parameters_map['time_granularity'],
+    new_data_frame = aggregate.aggregate_window(int(request.GET['aggregate_func']), properties_map['time_window_value'],
+                                                properties_map['time_granularity'],
                                                 request.GET['attribute_name'], current_data_frame)
     json = new_data_frame.to_json(orient='records')
     return HttpResponse(json)
 
 
 def set_time(request):
-    parameters_map['time_granularity'] = request.GET['time_granularity']
-    parameters_map['time_window_value'] = request.GET['time_window_val']
+    properties_map['time_granularity'] = request.GET['time_granularity']
+    properties_map['time_window_value'] = request.GET['time_window_val']
     return HttpResponse('hello world')
 
 

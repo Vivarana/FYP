@@ -520,33 +520,14 @@ pc.createAxes = function() {
             .attr("id",function(d,i){return 'col_'+i;})
             .html('<span style="font-size: 15px;" data-dropdown="#dropdown" ><i class="mdi-editor-format-align-justify"></i></span>')
             .on("contextmenu", function(d,i){
-
-                $('#column_dropdown-menu').empty();
-
-                if(__.types[d] == 'number'){
-                    $('#column_dropdown-menu').append('<li><a onclick="sum(\''+ d +'\', '+ i +','+ 'this' + ')" href="#">Sum</a></li>');
-                    $('#column_dropdown-menu').append('<li><a onclick="average(\''+ d +'\', '+ i +','+ 'this' + ')" href="#">Average</a></li>');
-                    $('#column_dropdown-menu').append('<li><a onclick="max(\''+ d +'\', '+ i +','+ 'this' + ')" href="#">Maximum</a></li>');
-                    $('#column_dropdown-menu').append('<li><a onclick="min(\''+ d +'\', '+ i +','+ 'this' + ')" href="#">Minimum</a></li>');
-                    $('#column_dropdown-menu').append('<li><a onclick="count(\''+ d +'\', '+ i +','+ 'this' + ')" href="#">Count</a></li>');
-                }
-                else{
-                    $('#column_dropdown-menu').append('<li><a onclick="temp(\''+ d +'\', '+ i +')" href="#3">Order By</a></li>');
-                }
-
-                $('#column_dropdown-menu').append('<li><a onclick="removeAxis(\''+ d +'\', '+ i +')" href="#">Remove Axis</a></li>');
-                $('#column_dropdown-menu').append('<li><a onclick="flipAxis(\''+ d +'\', '+ i +')" href="#">Flip Axis</a></li>');
-                $('#column_dropdown-menu').append('<li><a onclick="resetAxis(\''+ d +'\', '+ i +')" href="#">Reset Axis</a></li>');
-
-                d3.select('#column_dropdown-menu').style("left", d3.event.pageX -80 + "px")
+                d3.select('#column_dropdown-menu_'+d).style("left", d3.event.pageX -80 + "px")
                         .style('position', 'absolute')
                         .style("top", d3.event.pageY-2  + "px")
                         .style('display', 'block')
                         .on('mouseleave', function() {
-                            d3.select('#column_dropdown-menu').style('display', 'none');
+                            d3.select('#column_dropdown-menu_'+d).style('display', 'none');
                             context = null;
                           });
-
                 d3.event.preventDefault();
             });
 

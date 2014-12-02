@@ -2,11 +2,27 @@
 {% block body_block %}
 
     <div id="parcoords-main" class="parcoords"></div>
+    {% autoescape off %}
+        {% for col,type in columns.items %}
+            <div id="column_dropdown_{{col}}" class="dropdown-tip">
+                <ul id="column_dropdown-menu_{{col}}" class="dropdown dropdown-menu">
+                    {% if type == "string" %}
+                        <li><a onclick="temp('{{ col }}',{{forloop.counter}}), this" href="#">Order By</a></li>
+                    {% else %}
+                        <li><a onclick="sum('{{ col }}',{{forloop.counter}},this)" href="#">Sum</a></li>
+                        <li><a onclick="average('{{ col }}',{{forloop.counter}}), this" href="#">Average</a></li>
+                        <li><a onclick="max('{{ col }}',{{forloop.counter}})" href="#">Maximum</a></li>
+                        <li><a onclick="min('{{ col }}',{{forloop.counter}})" href="#">Minimum</a></li>
+                        <li><a onclick="count('{{ col }}',{{forloop.counter}})" href="#">Count</a></li>
+                    {% endif %}
+                    <li><a onclick="temp('{{ col }}',{{forloop.counter}})" href="#">Remove Axis</a></li>
+                    <li><a onclick="temp('{{ col }}',{{forloop.counter}})" href="#">Flip Axis</a></li>
+                    <li><a onclick="temp('{{ col }}',{{forloop.counter}})" href="#">Reset Axis</a></li>
+                </ul>
+            </div>
+        {% endfor %}
+    {% endautoescape %}
 
-    <div id="column_dropdown" class="dropdown-tip">
-        <ul id="column_dropdown-menu" class="dropdown dropdown-menu">
-        </ul>
-    </div>
 
     <div id="slickgrid-container">
         <div id="rule-right">
@@ -373,6 +389,7 @@
         drawData(j_data);
         gridUpdate(j_data);
 {#        todo fix popup menu redrawing everytime#}
+        console.log(obj);
         $(obj).parent().addClass("disabled");
     }
 
