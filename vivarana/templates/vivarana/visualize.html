@@ -372,6 +372,12 @@
         ruleTableUpdate(d);
     });
 
+    parcoords.on("brushend", function(d) {
+     gridUpdate(d);
+     ruleTableUpdate(d);
+   });
+
+
     function ruleTableUpdate(d) {
         $('#rule-table-body').empty()
         var rules = parcoords.state.rules;
