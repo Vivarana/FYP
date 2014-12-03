@@ -103,21 +103,25 @@ def get_compatible_column_types(dataframe):
         elif col_type == 'int64':
             if len(pd.unique(dataframe[columns[i]])) <= CATEGORICAL_COLUMN_THRESHOLD:
                 data_types[i] = 'string'
+                dataframe[columns[i]] = dataframe[columns[i]].astype('object')
             else:
                 data_types[i] = 'number'
         elif col_type == 'float64':
             if len(pd.unique(dataframe[columns[i]])) <= CATEGORICAL_COLUMN_THRESHOLD:
                 data_types[i] = 'string'
+                dataframe[columns[i]] = dataframe[columns[i]].astype('object')
             else:
                 data_types[i] = 'number'
         elif col_type == 'int32':
             if len(pd.unique(dataframe[columns[i]])) <= CATEGORICAL_COLUMN_THRESHOLD:
                 data_types[i] = 'string'
+                dataframe[columns[i]] = dataframe[columns[i]].astype('object')
             else:
                 data_types[i] = 'number'
         elif col_type == 'float32':
             if len(pd.unique(dataframe[columns[i]])) <= CATEGORICAL_COLUMN_THRESHOLD:
                 data_types[i] = 'string'
+                dataframe[columns[i]] = dataframe[columns[i]].astype('object')
             else:
                 data_types[i] = 'number'
         else:

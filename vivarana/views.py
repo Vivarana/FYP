@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 
 from helper import file_helper
 from helper import aggregate
+from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
 
 
@@ -110,6 +111,16 @@ def upload(request):
     else:
         return render(request, 'vivarana/upload.html', {})
 
+
+def rule_gen(request):
+    if request.method == 'POST':
+        rule_list = rule_generator.generate(request.body, current_data_frame)
+        json_response = json.dumps({'rules': rule_list})
+        return HttpResponse(json_response)
+    else:
+        print request.GET['selected_ids']
+        json_responce = "{'message' : done!}"
+        return HttpResponse(json_responce)
 
 
 

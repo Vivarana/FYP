@@ -10,4 +10,5 @@ urlpatterns = patterns('',
     url(r'^visualize/$', views.visualize , name='visualize'),
     url(r'^set_time_window/$', views.set_time, name='set_time'),
     url(r'^aggregator/$', views.aggregator, name='aggregator'),
+    url(r'^rule_gen/$', views.rule_gen, name='rule_gen'),
 )
