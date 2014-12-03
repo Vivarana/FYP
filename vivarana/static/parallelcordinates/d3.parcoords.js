@@ -253,8 +253,15 @@ pc.commonScale = function(global, type) {
 
 	return this;
 };pc.detectDimensions = function() {
-        //todo add clusterID and id to the end of the list
-  pc.dimensions(d3.keys(pc.types()));
+
+  var dimension_list = d3.keys(pc.types())
+  //Moving the clusterID to the end of the list
+  if (dimension_list.indexOf('clusterID') >= 0) {
+    dimension_list[dimension_list.indexOf('clusterID')] = dimension_list[dimension_list.length-2]
+    dimension_list[dimension_list.length-2] = 'clusterID'
+  }
+
+  pc.dimensions(dimension_list);
   return this;
 };
 

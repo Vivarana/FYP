@@ -156,7 +156,7 @@
     // color by zscore
     function zscore(col) {
         var n = col.length,
-                mean = _(col).mean(),
+                mean = _(col).underscore.mean(),
                 sigma = _(col).stdDeviation();
         return function (d) {
             return (d - mean) / sigma;
@@ -222,7 +222,7 @@
     // curve smoothness slider
     $("#curve-slider").on({
         change: function () {
-            var curve_smooth_value = $("#curve-slider").val();
+            var curve_smooth_value = parseInt($("#curve-slider").val());
             parcoords.smoothness(curve_smooth_value).render();
             $("#curve-text").text('Curve Smoothness: ' + curve_smooth_value);
         }
