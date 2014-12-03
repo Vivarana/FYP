@@ -35,24 +35,34 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.yamm .dropdown-menu', function (e) {
-        e.stopPropagation()
+        e.stopPropagation();
     });
 
     $(function () {
         $("[data-toggle='tooltip']").tooltip();
     });
 
+
 });
 
 
 function setTimeWindow() {
-//    todo restrict this to numeric values
     var timeGranularity = $("#granularity-select option:selected").text();
     var timeWindowValue = $("#time-window").val();
 
-    $.get('/vivarana/set_time_window/', {time_granularity: timeGranularity, time_window_val: timeWindowValue}, function (data) {
-        console.log(data);
-    });
+    if (isInt(timeWindowValue)) {
+        $.get('/vivarana/set_time_window/', {time_granularity: timeGranularity, time_window_val: timeWindowValue}, function (data) {
+            $.snackbar({content: 'Time window has set to ' + timeWindowValue + ' ' + timeGranularity, style: 'toast'});
+        });
+    } else {
+        $.snackbar({content: 'Please specify an integer as the time window value', style: 'toast'});
+    }
+    return false;
 
+}
 
+function isInt(value) {
+    return !isNaN(value) && (function (x) {
+        return (x | 0) === x;
+    })(parseFloat(value))
 }

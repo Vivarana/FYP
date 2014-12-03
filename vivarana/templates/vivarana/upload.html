@@ -104,7 +104,7 @@
                     if(data.result.success==true) {
                         $( "#form-container").after('<div id="alert" class="alert alert-success" role="alert">'+ data.result['file_name'] +' Succefully uploaded.</div>')
                         setTimeout(function(){
-                            window.location.replace("/vivarana/preprocessor");
+                            window.location.replace("/vivarana/clustering");
                         }, 1000);
                     }
                     else{

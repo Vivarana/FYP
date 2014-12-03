@@ -75,8 +75,9 @@ def load_data(filename, dataframe):
 
 
 def remove_columns(needed_columns, dataframe):
-    column_list = [dataframe.columns[int(i)-1] for i in needed_columns]
-    return dataframe[column_list]
+    new_dataframe = dataframe.copy(deep=True)
+    column_list = [new_dataframe.columns[int(i)-1] for i in needed_columns]
+    return new_dataframe[column_list]
 
 #return the column types in a format compatible with the paracoords library
 def get_compatible_column_types(dataframe):

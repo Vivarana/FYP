@@ -1,0 +1,136 @@
+{% extends 'vivarana/base.html' %}
+{% block title %}Upload Data{% endblock %}
+
+{% block body_block %}
+
+    <style>
+        .container-clustering {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        #warning {
+            display: none;
+        }
+
+    </style>
+    <div class="container-clustering">
+        <div class="row">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2> Clustering Data</h2>
+                </div>
+                <div class="col-md-2">
+                    <a href="/vivarana/preprocessor" class="btn btn-warning btn-raised">Skip Clustering</a>
+                </div>
+            </div>
+            <div class="row">
+                <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
+                <h3>Please select attributes to cluster</h3>
+
+                <form method="POST" action="" onsubmit="return validateForm()">
+                    {% csrf_token %}
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Column ID</th>
+                            <th>Column Type</th>
+                            <th>Select <input type="checkbox" name="select-all" id="select-all" checked/></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for col in columns %}
+                            <tr>
+                                <td>{{ col.0 }}</td>
+                                <td>{{ col.1 }}</td>
+                                <td><input type="checkbox" name="column" value="{{ forloop.counter }}" checked></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <h4>Select clustering algorithm: </h4>
+
+                            <div class="form-group">
+                                <div class="radio radio-primary">
+                                    <label>
+                                        <input type="radio" name="clustering-algo-radios"
+                                               id="kmeans-radio"
+                                               value="kmeans-cluster">
+                                        K-Means Clustering
+                                    </label>
+                                </div>
+                                <div class="radio radio-primary">
+                                    <label>
+                                        <input type="radio" name="clustering-algo-radios"
+                                               id="hierarchical-radio"
+                                               value="hierarchical-cluster">
+                                        Hierarchical Clustering
+                                    </label>
+                                </div>
+                                <div class="radio radio-primary">
+                                    <label>
+                                        <input type="radio" name="clustering-algo-radios"
+                                               id="fuzzy-radio"
+                                               value="fuzzy-cluster">
+                                        Fuzzy Clustering
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="col-lg-7">
+                                    <h4> Specify the number of clusters:</h4>
+                                </div>
+                                <div class="col-lg-3">
+                                    <input type="number" class="form-control" name="number-of-clusters"
+                                           id="numberofclusters" placeholder="3">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8">
+
+                        </div>
+                        <div class="col-lg-4">
+                            <button id="submit-button" type="submit" class="btn btn-primary">
+                                Cluster
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $('#select-all').click(function (event) {
+            var is_checked = this.checked;
+            // Iterate each checkbox
+            $(':checkbox').each(function () {
+                this.checked = is_checked;
+            });
+        });
+
+        function validateForm() {
+            if ($('input[type=checkbox]:checked').length != 0) {
+                return true;
+            }
+            else {
+                $('#warning').show();
+                return false;
+            }
+            return false;
+        }
+
+    </script>
+{% endblock %}

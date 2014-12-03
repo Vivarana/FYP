@@ -1,9 +1,13 @@
 import json
 import pandas
+
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+
 from helper import file_helper
 from helper import aggregate
+from helper.cluster import *
+
 
 original_data_frame = None
 current_data_frame = None
@@ -29,7 +33,7 @@ def visualize(request):
 def aggregator(request):
     new_data_frame = aggregate.aggregate_window(int(request.GET['aggregate_func']), properties_map['time_window_value'],
                                                 properties_map['time_granularity'],
-                                                request.GET['attribute_name'], current_data_frame)
+                                                request.GET['attribute_name'], original_data_frame)
     json = new_data_frame.to_json(orient='records')
     return HttpResponse(json)
 
@@ -40,18 +44,37 @@ def set_time(request):
     return HttpResponse('hello world')
 
 
-def preprocessor(request):
+def clustering(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
         return redirect('/vivarana/upload/')
+
+    if request.method == GET:
+        context = file_helper.load_data(request.session['filename'], original_data_frame)
+        return render(request, CLUSTERING_PAGE, context)
+    if request.method == POST:
+        columns = request.POST.getlist('column')
+        cluster_method = request.POST[CLUSTERING_METHOD]
+        number_of_clusters = int(request.POST[NUMBER_OF_CLUSTERS])
+
+        data_frame = file_helper.remove_columns(columns, original_data_frame)
+        global current_data_frame
+        apply_clustering(cluster_method, number_of_clusters, current_data_frame, data_frame)
+
+        return redirect(PREPROCESSOR_PATH)
+
+
+def preprocessor(request):
+    if not type(original_data_frame) is pandas.core.frame.DataFrame:
+        return redirect(UPLOAD_PATH)
 
     if request.method == 'POST':
         columns = request.POST.getlist('column')
         global current_data_frame
-        current_data_frame = file_helper.remove_columns(columns, original_data_frame)
-        return redirect('/vivarana/visualize')
+        current_data_frame = file_helper.remove_columns(columns, current_data_frame)
+        return redirect(VISUALIZE_PATH)
     else:
-        context = file_helper.load_data(request.session['filename'], original_data_frame)
-        return render(request, 'vivarana/preprocessor.html', context)
+        context = file_helper.load_data(request.session['filename'], current_data_frame)
+        return render(request, PREPROCESSOR_PAGE, context)
 
 
 def upload(request):
@@ -65,7 +88,7 @@ def upload(request):
             if output['success']:
                 global original_data_frame, current_data_frame
                 original_data_frame = output['dataframe']
-                current_data_frame = original_data_frame
+                current_data_frame = original_data_frame.copy(deep=True)
 
                 request.session['filename'] = input_file.name
 

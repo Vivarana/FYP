@@ -12,12 +12,16 @@
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
-
+    <script src="{% static "js/snackbar.min.js" %}"></script>
 
 
     <title>{% block title %}Vivarana{% endblock %}</title>
 
-
+    <script>
+        $(document).ready(function () {
+            $.material.init();
+        });
+    </script>
 </head>
 
 <body>

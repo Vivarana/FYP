@@ -21,13 +21,11 @@ d3.parcoords = function(config) {
     rules:[]
   };
 
-
 var rule_actives = [];
 var rule_extents = [];
 
-//var dropdown=false;
-
   extend(__, config);
+
 var pc = function(selection) {
   selection = pc.selection = d3.select(selection);
 
@@ -255,8 +253,7 @@ pc.commonScale = function(global, type) {
 
 	return this;
 };pc.detectDimensions = function() {
-//  pc.types(pc.detectDimensionTypes(__.data));
-//  console.log(__.types)
+        //todo add clusterID and id to the end of the list
   pc.dimensions(d3.keys(pc.types()));
   return this;
 };

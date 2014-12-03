@@ -16,7 +16,7 @@
                         <li><a onclick="count('{{ col }}',{{forloop.counter}})" href="#">Count</a></li>
                     {% endif %}
                     <li><a onclick="temp('{{ col }}',{{forloop.counter}})" href="#">Remove Axis</a></li>
-                    <li><a onclick="temp('{{ col }}',{{forloop.counter}})" href="#">Flip Axis</a></li>
+                    <li><a onclick="flipAxis('{{ col }}',{{forloop.counter}})" href="#">Flip Axis</a></li>
                     <li><a onclick="temp('{{ col }}',{{forloop.counter}})" href="#">Reset Axis</a></li>
                 </ul>
             </div>
@@ -124,7 +124,7 @@
         var colorgen = d3.scale.category20();
         var colors = {};
         _(data).chain()
-                .pluck('cylinders') // todo change this to cluster axis name
+                .pluck('clusterID') // todo change this to cluster axis name
                 .uniq()
                 .each(function (d, i) {
                     colors[d] = colorgen(i);
@@ -132,7 +132,7 @@
 
 
         var color = function (d) {
-            return colors[d.cylinders]; // todo change this to cluster axis name
+            return colors[d.clusterID]; // todo change this to cluster axis name
         };
         parcoords.color(color).render();
     }
@@ -243,7 +243,7 @@
             $('#curve-slider-container').show();
             $('#bundling-slider-container').show();
             parcoords
-                    .bundleDimension("cylinders")  //todo change this accordingly
+                    .bundleDimension("clusterID")  //todo change this accordingly
                     .smoothness(0.2)
                     .bundlingStrength(0.7)
                     .render();
@@ -388,8 +388,6 @@
         });
         drawData(j_data);
         gridUpdate(j_data);
-{#        todo fix popup menu redrawing everytime#}
-        console.log(obj);
         $(obj).parent().addClass("disabled");
     }
 
