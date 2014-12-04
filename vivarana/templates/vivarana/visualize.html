@@ -456,7 +456,7 @@
                     return d == col_name;
                 });
 
-        parcoords.flip(col_name).updateAxes().render();
+        parcoords.flip(col_name).updateAxes().brushReset().render(); //TODO update when brushing fixed with flipping
     }
 
     function temp(input) {
