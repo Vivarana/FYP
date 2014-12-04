@@ -7,6 +7,7 @@ from rpy2.robjects import pandas2ri
 import rpy2.robjects as ro
 import pandas.rpy.common as com
 from pandas import DataFrame
+import vivarana.constants as constants
 
 
 r_code = '''rules <- function(model)
@@ -42,28 +43,116 @@ r_code = '''rules <- function(model)
 '''
 
 
-def merge_rules_categorical_and(rule1, rule2):
-    return set(rule1) & set(rule2)
+def merge_rules(rule1, rule2):
+
+    # Handle the merging when both operations are equal. And when one is '='
+    if rule1['operation'] == '=':
+        if rule2['operation'] == '=':
+            return {'operation': '=', 'operand': set(rule1['operand']) & set(rule2['operand'])}
+        else:
+            return {'operation': '=', 'operand': rule1['operand']}
+    elif rule2['operation'] == '=':
+        return {'operation': '=', 'operand': rule2['operand']}
+    elif rule1['operation'] == '<' and rule2['operation'] == '<':
+            return {'operation': '<', 'operand': [min([float(rule1['operand'][0]), float(rule2['operand'][0])])]}
+    elif rule1['operation'] == '>' and rule2['operation'] == '>':
+        return {'operation': '>', 'operand': [max([float(rule1['operand'][0]), float(rule2['operand'][0])])]}
+    elif rule1['operation'] == '<=' and rule2['operation'] == '<=':
+            return {'operation': '<=', 'operand': [min([float(rule1['operand'][0]), float(rule2['operand'][0])])]}
+    elif rule1['operation'] == '>=' and rule2['operation'] == '>=':
+        return {'operation': '>=', 'operand': [max([float(rule1['operand'][0]), float(rule2['operand'][0])])]}
+
+    operations = [rule1['operation'], rule2['operation']]
+    operands = [float(rule1['operand'][0]), float(rule2['operand'][0])]
+
+    if '>' in operations:
+        op_index = operations.index('>')
+        # > and <
+        if operations[(op_index+1) % 2] == '<':
+            return {'operation': '<>', 'operand': sorted(operands)}
+        # > and <=
+        if operations[(op_index+1) % 2] == '<=':
+            return {'operation': '<=>', 'operand':  sorted(operands)}
+        # > and >=
+        if operations[(op_index+1) % 2] == '>=':
+            if max(operands) == operands[op_index]:
+                return {'operation': '>', 'operand': [max(operands)]}
+            else:
+                return {'operation': '>=', 'operand': [max(operands)]}
+    elif '<' in operations:
+        op_index = operations.index('<')
+        # < and >=
+        if operations[(op_index+1) % 2] == '>=':
+            return {'operation': '<>=', 'operand':  sorted(operands)}
+        # < and <=
+        if operations[(op_index+1) % 2] == '<=':
+            if max(operands) == operands[op_index]:
+                return {'operation': '<', 'operand': [min(operands)]}
+            else:
+                return {'operation': '<=', 'operand': [min(operands)]}
+    elif '<=' in operations and '>=' in operations:
+        return {'operation': '<=>=', 'operand': [min(operands)]}
 
 
 def parse_rule(rule_list):
     rules = rule_list.split('_AND_')
+
     rule_dict = {}
-    ruleStrings = []
+    rule_strings = []
     for rule in rules:
-        if '=' in rule:
-            rule_variable, rule_parameters = rule.split('=')
+        print rule
+        if '<=' in rule:
+            rule_variable, rule_parameters = rule.split('<=')
             if rule_variable in rule_dict.keys():
-                rule_dict[rule_variable] = merge_rules_categorical_and(rule_dict[rule_variable] , rule_parameters.split(','))
+                rule_dict[rule_variable] = merge_rules(rule_dict[rule_variable], rule_parameters.split(','))
             else:
-                rule_dict[rule_variable] = rule_parameters.split(',')
+                rule_dict[rule_variable] = {'operation': '<=', 'operand': {'operation': '<=', 'operand': rule_parameters.split(',')}}
+        elif '>=' in rule:
+            rule_variable, rule_parameters = rule.split('>=')
+            if rule_variable in rule_dict.keys():
+                rule_dict[rule_variable] = merge_rules(rule_dict[rule_variable], {'operation': '>=', 'operand': rule_parameters.split(',')})
+            else:
+                rule_dict[rule_variable] = {'operation': '>=', 'operand': rule_parameters.split(',')}
+        elif '=' in rule:
+            splits = rule.split('=')
+            rule_variable = splits[0]
+            rule_parameters = ''.join(splits[1:])
+            if rule_variable in rule_dict.keys():
+                rule_dict[rule_variable] = merge_rules(rule_dict[rule_variable], {'operation': '=', 'operand': rule_parameters.split(',')})
+            else:
+                rule_dict[rule_variable] = {'operation': '=', 'operand': rule_parameters.split(',')}
+        elif '<' in rule:
+            rule_variable, rule_parameters = rule.split('<')
+            if rule_variable in rule_dict.keys():
+                rule_dict[rule_variable] = merge_rules(rule_dict[rule_variable], {'operation': '<', 'operand': rule_parameters.split(',')})
+            else:
+                rule_dict[rule_variable] = {'operation': '<', 'operand': rule_parameters.split(',')}
+        elif '>' in rule:
+            rule_variable, rule_parameters = rule.split('>')
+            if rule_variable in rule_dict.keys():
+                rule_dict[rule_variable] = merge_rules(rule_dict[rule_variable], {'operation': '>', 'operand': rule_parameters.split(',')})
+            else:
+                rule_dict[rule_variable] = {'operation': '>', 'operand': rule_parameters.split(',')}
 
-    for key in rule_dict:
-        rule = rule_dict[key]
-        ruleStrings.append(key + " = " + ' OR '.join(rule))
+    print "Rules processed. Now merging them together and parsing as CEP rule.."
+    print rule_dict
 
-    final_rule = ' AND '.join(ruleStrings)
-    print final_rule
+    for rule_key in rule_dict:
+        rule = rule_dict[rule_key]
+        if rule['operation'] == '=':
+            rule_strings.append(rule_key + rule['operation'] + ' OR '.join(rule['operand']))
+        elif rule['operation'] == '<=>':
+            rule_strings.append(str(int(rule['operand'][0])) + ' <= ' + rule_key + ' < ' + str(int(rule['operand'][1])))
+        elif rule['operation'] == '<>=':
+            rule_strings.append(str(int(rule['operand'][0])) + ' < ' + rule_key + ' <= ' + str(int(rule['operand'][1])))
+        elif rule['operation'] == '<=>=':
+            rule_strings.append(str(int(rule['operand'][0])) + ' <= ' + rule_key + ' <= ' + str(int(rule['operand'][1])))
+        else:
+            rule_strings.append(rule_key + rule['operation'] + str(int(float(rule['operand'][0]))))
+
+    print "Combining all the rules together."
+    print rule_strings
+    final_rule = ' AND '.join(rule_strings)
     return final_rule
 
 
@@ -72,18 +161,22 @@ def generate(selected_ids, dataframe):
         rules = []
         selected_ids = json.loads(selected_ids)
         temporary_dataframe = dataframe.copy(deep=True)
-        temporary_dataframe["SELECTED_FOR_RULEGEN"] = 0
-        temporary_dataframe["SELECTED_FOR_RULEGEN"][temporary_dataframe.index.isin(selected_ids)] = 1
+        temporary_dataframe[constants.RULEGEN_COLUMN_NAME] = 0
+        temporary_dataframe[constants.RULEGEN_COLUMN_NAME][temporary_dataframe.index.isin(selected_ids)] = 1
+
+        if 'clusterID' in temporary_dataframe.columns:
+            temporary_dataframe = temporary_dataframe.drop('clusterID', 1)
 
         r_dataframe = com.convert_to_r_dataframe(temporary_dataframe)
         ro.r(r_code)
         rpart = importr('rpart')
-        temp = rpart.rpart('SELECTED_FOR_RULEGEN ~ .', method="class", data=r_dataframe)
+        temp = rpart.rpart(constants.RULEGEN_COLUMN_NAME + ' ~ .', method="class", data=r_dataframe)
 
         ro.r.assign('temp', temp)
         r_get_rules_function = ro.globalenv['rules']
 
         rule_set = com.convert_robj(r_get_rules_function(temp))
+        print temp
         for index, row in rule_set.iterrows():
             rules.append({'rule': parse_rule(row['rulelist']), 'coverage': row['coverage']})
 

@@ -46,7 +46,7 @@ def handle_log(file_in):
         with open("media/temp.log", 'r') as log_file:
             for line in log_file.readlines():
                 log_list.append(parser.parse(line))
-    except apachelog.ApacheLogParserError,e:
+    except apachelog.ApacheLogParserError, e:
         print e
         return {'success': False, 'error': 'PARSE-ERROR'}
 
@@ -67,6 +67,7 @@ def handle_log(file_in):
         original_data_frame['Method'] = temp.str[0]
         original_data_frame['URL'] = temp.str[1]
         original_data_frame['Protocol'] = temp.str[-1]
+        original_data_frame = original_data_frame.drop('request', 1)
 
     return {'success': True, 'dataframe' : original_data_frame}
 
