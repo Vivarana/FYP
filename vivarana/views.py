@@ -61,7 +61,7 @@ def clustering(request):
         global current_data_frame
         apply_clustering(cluster_method, number_of_clusters, original_data_frame,
                          data_frame)  # todo should pass current data frmae
-
+        current_data_frame['clusterID'] = original_data_frame['clusterID']
         return redirect(PREPROCESSOR_PATH)
 
 
