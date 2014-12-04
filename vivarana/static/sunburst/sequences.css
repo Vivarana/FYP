@@ -12,16 +12,19 @@ body {
     float: left;
     min-width: 750px;
     overflow: hidden;
-   /* width: 750px;*/
+    /* width: 750px;*/
 }
+
 #subchart {
     float: left;
-    position:relative;
+    position: relative;
 }
+
 #sidebar {
     float: right;
     width: 100px;
 }
+
 #sequence {
     /*width: 600px;*/
     height: 70px;
@@ -35,7 +38,6 @@ body {
     font-weight: 600;
     fill: #fff;
 }
-
 
 #chart {
     position: relative;

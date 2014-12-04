@@ -12,7 +12,7 @@ def handle_uploaded_file(file_in):
     elif file_extension == 'log':
         return handle_log(file_in)
     else:
-        return {'success': False, 'error': 'Sorry. File type '+file_extension+' is not supported'}
+        return {'success': False, 'error': 'Sorry. File type ' + file_extension + ' is not supported'}
 
 
 def handle_csv(file_in):
@@ -25,19 +25,19 @@ def handle_csv(file_in):
             original_data_frame = pd.read_csv(csv_file)
 
             print list(original_data_frame.columns)
-            return {'success': True, 'dataframe' : original_data_frame}
-    except Exception,e:
+            return {'success': True, 'dataframe': original_data_frame}
+    except Exception, e:
         print str(e)
         return {'success': False}
 
 
 def handle_log(file_in):
-    #Set the log format to common
+    # Set the log format to common
     log_format = apachelog.formats['common']
     parser = apachelog.parser(log_format)
     with open("media/temp.log", 'wb+') as destination:
-            for chunk in file_in.chunks():
-                destination.write(chunk)
+        for chunk in file_in.chunks():
+            destination.write(chunk)
 
     log_list = []
 
@@ -45,7 +45,7 @@ def handle_log(file_in):
         with open("media/temp.log", 'r') as log_file:
             for line in log_file.readlines():
                 log_list.append(parser.parse(line))
-    except apachelog.ApacheLogParserError,e:
+    except apachelog.ApacheLogParserError, e:
         print e
         return {'success': False, 'error': 'PARSE-ERROR'}
 
@@ -64,7 +64,7 @@ def handle_log(file_in):
         original_data_frame['URL'] = temp.str[1]
         original_data_frame['Protocol'] = temp.str[-1]
 
-    return {'success': True, 'dataframe' : original_data_frame}
+    return {'success': True, 'dataframe': original_data_frame}
 
 
 def load_data(filename, dataframe):
@@ -75,12 +75,12 @@ def load_data(filename, dataframe):
 
 
 def remove_columns(needed_columns, dataframe):
-    column_list = [dataframe.columns[int(i)-1] for i in needed_columns]
+    column_list = [dataframe.columns[int(i) - 1] for i in needed_columns]
     return dataframe[column_list]
 
-#return the column types in a format compatible with the paracoords library
-def get_compatible_column_types(dataframe):
 
+# return the column types in a format compatible with the paracoords library
+def get_compatible_column_types(dataframe):
     columns = list(dataframe.columns)
     data_types = list(dataframe.dtypes)
 

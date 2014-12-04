@@ -1,6 +1,6 @@
 // Dimensions of sunburst.
 var width = 1300;
-var height = 600    ;
+var height = 600;
 var radius = Math.min(width, height) / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
@@ -30,20 +30,30 @@ var vis = d3.select("#chart").append("svg:svg")
 
 var partition = d3.layout.partition()
     .size([2 * Math.PI, radius * radius])
-    .value(function(d) { return d.size; })
-  //  .children(function children(d){return d.children});
-    //.sort(function comparator(a,b){return a.value - b.value });
+    .value(function (d) {
+        return d.size;
+    })
+//  .children(function children(d){return d.children});
+//.sort(function comparator(a,b){return a.value - b.value });
 
 
 var arc = d3.svg.arc()
-    .startAngle(function(d) { return d.x; })
-    .endAngle(function(d) { return d.x + d.dx; })
-    .innerRadius(function(d) { return Math.sqrt(d.y); })
-    .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
+    .startAngle(function (d) {
+        return d.x;
+    })
+    .endAngle(function (d) {
+        return d.x + d.dx;
+    })
+    .innerRadius(function (d) {
+        return Math.sqrt(d.y);
+    })
+    .outerRadius(function (d) {
+        return Math.sqrt(d.y + d.dy);
+    });
 
 // Use d3.text and d3.csv.parseRows so that we do not need to have a header
 // row, and can receive the csv as an array of arrays.
-d3.text("../../media/visit-sequences.csv", function(text) {
+d3.text("../../media/visit-sequences.csv", function (text) {
     var csv = d3.csv.parseRows(text);
     var json = buildHierarchy(csv);
     //alert(JSON.stringify(json));
@@ -66,19 +76,23 @@ function createVisualization(json) {
 
     // For efficiency, filter nodes to keep only those large enough to see.
     var nodes = partition.nodes(json)
-        .filter(function(d) {
+        .filter(function (d) {
             return (d.dx > 0.005); // 0.005 radians = 0.29 degrees
         });
 
- //   alert(nodes[7].children);
+    //   alert(nodes[7].children);
 
     var path = vis.data([json]).selectAll("path")
         .data(nodes)
         .enter().append("svg:path")
-        .attr("display", function(d) { return d.depth ? null : "none"; })
+        .attr("display", function (d) {
+            return d.depth ? null : "none";
+        })
         .attr("d", arc)
         .attr("fill-rule", "evenodd")
-        .style("fill", function(d) { return colors[d.name]; })
+        .style("fill", function (d) {
+            return colors[d.name];
+        })
         .style("opacity", 1)
         .on("mouseover", mouseover)
         .on("click", mouseclick);
@@ -92,7 +106,7 @@ function createVisualization(json) {
 
 // on click generate subchart
 
-function mouseclick(d){
+function mouseclick(d) {
     d3.select("#subcontainer").selectAll("*").remove();
     createSubchart(d);
 }
@@ -100,7 +114,7 @@ function mouseclick(d){
 // Fade all but the current sequence, and show it in the breadcrumb trail.
 function mouseover(d) {
     vis.attr("transform", "translate(" + 375 + "," + 300 + ")");
-    subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")scale("+1/2+")");
+    subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")scale(" + 1 / 2 + ")");
     var percentage = (100 * d.value / totalSize).toPrecision(3);
     var percentageString = percentage + "%";
     if (percentage < 0.1) {
@@ -122,12 +136,12 @@ function mouseover(d) {
 
     // Then highlight only those that are an ancestor of the current segment.
     vis.selectAll("path")
-        .filter(function(node) {
+        .filter(function (node) {
             return (sequenceArray.indexOf(node) >= 0);
         })
         .style("opacity", 1);
     subvis.selectAll("path")
-        .filter(function(node) {
+        .filter(function (node) {
             return (sequenceArray.indexOf(node) >= 0);
         })
         .style("opacity", 1);
@@ -148,7 +162,7 @@ function mouseleave(d) {
         .transition()
         .duration(1000)
         .style("opacity", 1)
-        .each("end", function() {
+        .each("end", function () {
             d3.select(this).on("mouseover", mouseover);
         });
 
@@ -200,24 +214,30 @@ function updateBreadcrumbs(nodeArray, percentageString) {
     // Data join; key function combines name and depth (= position in sequence).
     var g = d3.select("#trail")
         .selectAll("g")
-        .data(nodeArray, function(d) { return d.name + d.depth; });
+        .data(nodeArray, function (d) {
+            return d.name + d.depth;
+        });
 
     // Add breadcrumb and label for entering nodes.
     var entering = g.enter().append("svg:g");
 
     entering.append("svg:polygon")
         .attr("points", breadcrumbPoints)
-        .style("fill", function(d) { return colors[d.name]; });
+        .style("fill", function (d) {
+            return colors[d.name];
+        });
 
     entering.append("svg:text")
         .attr("x", (b.w + b.t) / 2)
         .attr("y", b.h / 2)
         .attr("dy", "0.35em")
         .attr("text-anchor", "middle")
-        .text(function(d) { return d.name; });
+        .text(function (d) {
+            return d.name;
+        });
 
     // Set position for entering and updating nodes.
-    g.attr("transform", function(d, i) {
+    g.attr("transform", function (d, i) {
         return "translate(" + i * (b.w + b.s) + ", 0)";
     });
 
@@ -252,7 +272,7 @@ function drawLegend() {
     var g = legend.selectAll("g")
         .data(d3.entries(colors))
         .enter().append("svg:g")
-        .attr("transform", function(d, i) {
+        .attr("transform", function (d, i) {
             return "translate(0," + i * (li.h + li.s) + ")";
         });
 
@@ -261,14 +281,18 @@ function drawLegend() {
         .attr("ry", li.r)
         .attr("width", li.w)
         .attr("height", li.h)
-        .style("fill", function(d) { return d.value; });
+        .style("fill", function (d) {
+            return d.value;
+        });
 
     g.append("svg:text")
         .attr("x", li.w / 2)
         .attr("y", li.h / 2)
         .attr("dy", "0.35em")
         .attr("text-anchor", "middle")
-        .text(function(d) { return d.key; });
+        .text(function (d) {
+            return d.key;
+        });
 }
 
 function toggleLegend() {

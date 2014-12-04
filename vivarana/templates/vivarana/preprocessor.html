@@ -7,90 +7,131 @@
     <style>
 
         .table {
-            position: fixed;
-            width :1000px;
-            top: 220px;
-            left: 215px;
-            text-align:center;
+            position: relative;
+            width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 25px;
+            text-align: center;
         }
 
-        tbody{
-          overflow: -moz-scrollbars-vertical;
-          overflow-y: scroll;
-          height: 250px;
-          position: absolute;
+        tbody {
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+            height: 250px;
+            position: absolute;
         }
 
         th, td {
-            text-align:center;
+            text-align: center;
             overflow: hidden;
             width: 400px;
         }
 
+        .inputs{
+            position: relative;
+            margin-left: auto;
+    margin-right: auto;
+            margin-top: 25px;
+            margin-bottom: 25px;
+    width: 100%;
+            text-align: center;
+        }
+
         #submit-button {
-            position: fixed;
-            top: 550px;
-            left: 980px;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 25px;
+            margin-bottom: 25px;
+            text-align: left;
         }
 
         #warning {
-            position: fixed;
+            position: relative;
             top: 8%;
             width: 60%;
             left: 20%;
             text-align: center;
-            display : none;
+            display: none;
             background-color: #DB0A0A;
         }
 
     </style>
     <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
 
-    <h3 style="position: fixed; left : 215px; top : 115px;">Select Columns to Visualize</h3>
+    <div class="container" style="text-align: left">
+    <tr class="col-xs-4">
+         <h3 >Select Visualization Method</h3>
+    </tr>
+    <tr class="col-xs-4">
+        <td>
+             <input type="radio" name="visualization" value="parellel" checked>Parellel Coordinates
+        </td>
+        <td>
+               <input type="radio" name="visualization" value="sunburst">Sunburst
+        </td>
+    </tr>
 
-    <h4 style="position: fixed; left : 215px; top : 162px;">Data Set-> {{ filename }}</h4>
 
-    <form method="POST" action="" onsubmit="return validateForm()">
-    {% csrf_token %}
-    <table class="table table-striped">
-        <thead>
+
+
+
+        </div>
+
+    <div class="container" style="text-align: left">
+         <h3>Select Columns to Visualize</h3>
+         <h4>Data Set-> {{ filename }}</h4>
+    </div>
+
+
+
+    <form class="container" style="text-align: left" name='prepocessorform' method="POST" action="" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <table class="table table-striped">
+            <thead>
             <tr>
                 <th>Column ID</th>
                 <th>Column Type</th>
-                <th>Select  <input type="checkbox" name="select-all" id="select-all" checked/></th>
+                <th>Select <input type="checkbox" name="select-all" id="select-all" checked/></th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             {% for col in columns %}
-            <tr>
+                <tr>
                     <td>{{ col.0 }}</td>
                     <td>{{ col.1 }}</td>
-                    <td><input type="checkbox" name="column" value="{{forloop.counter}}" checked></td>
-            </tr>
+                    <td><input type="checkbox" name="column" value="{{ forloop.counter }}" checked></td>
+                </tr>
             {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-    <button id="submit-button" type="submit" class="btn btn-primary">
-        Go to visualization
-        <span class="glyphicon glyphicon-chevron-right"></span>
-    </button>
+        <button id="submit-button" type="submit" class="btn btn-primary">
+            Go to visualization
+            <span class="glyphicon glyphicon-chevron-right"></span>
+        </button>
     </form>
 
     <script>
-        $('#select-all').click(function(event) {
+        $('#select-all').click(function (event) {
             var is_checked = this.checked;
-                // Iterate each checkbox
-                $(':checkbox').each(function() {
-                    this.checked = is_checked;
-                });
+            // Iterate each checkbox
+            $(':checkbox').each(function () {
+                this.checked = is_checked;
+            });
         });
 
-        function validateForm(){
-            if($('input[type=checkbox]:checked').length!=0){
+        function validateForm() {
+
+            $("input[name ='visualization']").on("click", function () {
+                document.prepocessorform.action = "?vistype=" + $("input:checked").val();
+            });
+
+            if ($('input[type=checkbox]:checked').length != 0) {
                 return true;
             }
-            else{
+            else {
                 $('#warning').show();
                 return false;
             }

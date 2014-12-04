@@ -28,6 +28,10 @@ def visualize(request):
                   })
 
 
+def sunburst(request):
+    return render(request, 'vivarana/sunburst.html', {})
+
+
 def aggregator(request):
     new_data_frame = aggregate.aggregate_window(int(request.GET['aggregate_func']), parameters_map['time_window_value'],
                                                 parameters_map['time_granularity'],
@@ -41,16 +45,22 @@ def set_time(request):
     parameters_map['time_window_value'] = request.GET['time_window_val']
     return HttpResponse('hello world')
 
-
+# form data from preprocess page comes here
 def preprocessor(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
         return redirect('/vivarana/upload/')
 
     if request.method == 'POST':
         columns = request.POST.getlist('column')
+        vistype = request.POST.get('visualization')
         global current_data_frame
         current_data_frame = file_helper.remove_columns(columns, original_data_frame)
-        return redirect('/vivarana/visualize')
+        if vistype == 'parellel':
+            return redirect('/vivarana/visualize')
+        else:
+            if vistype == 'sunburst':
+                return redirect('/vivarana/sunburst')
+
     else:
         context = file_helper.load_data(request.session['filename'], original_data_frame)
         return render(request, 'vivarana/preprocessor.html', context)
@@ -61,7 +71,7 @@ def upload(request):
         response_data = {}
         try:
             input_file = request.FILES['fileinput']
-            #print request.path
+            # print request.path
             output = file_helper.handle_uploaded_file(input_file)
 
             if output['success']:
