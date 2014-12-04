@@ -12,11 +12,15 @@
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
-
+    <script src="{% static "js/snackbar.min.js" %}"></script>
 
     <title>{% block title %}Vivarana{% endblock %}</title>
 
-
+    <script>
+        $(document).ready(function () {
+            $.material.init();
+        });
+    </script>
 </head>
 
 <body>
@@ -27,7 +31,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/vivarana/">Vivarana</a>
+        <a class="navbar-brand" href="/">Vivarana</a>
     </div>
     <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">

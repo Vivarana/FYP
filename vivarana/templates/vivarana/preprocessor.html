@@ -5,7 +5,14 @@
 {% block body_block %}
 
     <style>
+        .container-clustering {
+            width: 980px;
+            min-width: 980px;
+            margin: 0 auto;
+            padding: 0 50px;
+        }
 
+{% comment %}<<<<<<< HEAD
         .table {
             position: relative;
             width: 1000px;
@@ -45,6 +52,28 @@
             margin-top: 25px;
             margin-bottom: 25px;
             text-align: left;
+======={% endcomment %}
+        table {
+            width: 916px !important; /* 140px * 5 column + 16px scrollbar width */
+            border-spacing: 0;
+        }
+
+        tbody, thead tr {
+            display: block;
+        }
+
+        tbody {
+            height: 250px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        tbody td, thead th {
+            width: 300px;
+        }
+
+        thead th:last-child {
+            width: 316px; /* 140px + 16px scrollbar width */
         }
 
         #warning {
@@ -58,7 +87,9 @@
         }
 
     </style>
-    <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
+{% comment %}
+<<<<<<< HEAD
+   <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
 
     <div class="container" style="text-align: left">
     <tr class="col-xs-4">
@@ -112,6 +143,56 @@
             <span class="glyphicon glyphicon-chevron-right"></span>
         </button>
     </form>
+======={% endcomment %}
+    <div class="container-clustering">
+        <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
+        <div class="row">
+            <h3>Select Columns to Visualize</h3>
+            <h4>Data Set -> {{ filename }}</h4>
+        </div>
+
+
+        <form method="POST" action="" onsubmit="return validateForm()">
+            {% csrf_token %}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Column ID</th>
+                    <th>Column Type</th>
+                    <th>
+                        <div class="checkbox">
+                            Select <label>
+                            <input type="checkbox" name="select-all" id="select-all" checked/>
+                        </label></div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for col in columns %}
+                    <tr>
+                        <td>{{ col.0 }}</td>
+                        <td>{{ col.1 }}</td>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="column" value="{{ forloop.counter }}" checked></label>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-md-9"></div>
+                <div class="col-md-3">
+                    <button id="submit-button" type="submit" class="btn btn-primary">
+                        Go to visualization
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 
     <script>
         $('#select-all').click(function (event) {
@@ -135,7 +216,6 @@
                 $('#warning').show();
                 return false;
             }
-            return false;
         }
 
     </script>

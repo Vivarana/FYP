@@ -1,4 +1,4 @@
-import os
+from datetime import datetime
 import pandas as pd
 import apachelog
 
@@ -51,11 +51,14 @@ def handle_log(file_in):
 
     original_data_frame = pd.DataFrame(log_list)
 
-    #Convert the size column to integer from string
-    if 'Size(bytes)' in original_data_frame.columns:
-        original_data_frame['Size(bytes)'] = original_data_frame['Size(bytes)'].replace('-', 0)
-        original_data_frame['Size(bytes)'].apply(int)
-        original_data_frame['Size(bytes)'] = original_data_frame['Size(bytes)'].astype(int)
+    #Convert the size column to integer from string todo : Set constants for these
+    if 'Size' in original_data_frame.columns:
+        original_data_frame['Size'] = original_data_frame['Size'].replace('-', 0)
+        original_data_frame['Size'].apply(int)
+        original_data_frame['Size'] = original_data_frame['Size'].astype(int)
+
+    if 'Date' in original_data_frame.columns:
+        original_data_frame['Date'] = original_data_frame['Date'].map(lambda x: datetime.strptime(x.split(' ')[0][1::], "%d/%b/%Y:%H:%M:%S"))
 
     #Splitting the request line. todo : Fix the errors when the format doesnt match
     if 'request' in original_data_frame.columns:
@@ -63,8 +66,13 @@ def handle_log(file_in):
         original_data_frame['Method'] = temp.str[0]
         original_data_frame['URL'] = temp.str[1]
         original_data_frame['Protocol'] = temp.str[-1]
+        original_data_frame = original_data_frame.drop('request', 1)
 
     return {'success': True, 'dataframe': original_data_frame}
+
+
+def parse_date(date):
+    return date.split(' ')[0]
 
 
 def load_data(filename, dataframe):
@@ -75,14 +83,19 @@ def load_data(filename, dataframe):
 
 
 def remove_columns(needed_columns, dataframe):
-    column_list = [dataframe.columns[int(i) - 1] for i in needed_columns]
-    return dataframe[column_list]
+
+    new_dataframe = dataframe.copy(deep=True)
+    column_list = [new_dataframe.columns[int(i)-1] for i in needed_columns]
+    return new_dataframe[column_list]
 
 
 # return the column types in a format compatible with the paracoords library
 def get_compatible_column_types(dataframe):
     columns = list(dataframe.columns)
+
     data_types = list(dataframe.dtypes)
+
+    print columns, data_types
 
     for i, col_type in enumerate(data_types):
         if col_type == 'object':
@@ -90,10 +103,29 @@ def get_compatible_column_types(dataframe):
         elif col_type == 'int64':
             if len(pd.unique(dataframe[columns[i]])) <= CATEGORICAL_COLUMN_THRESHOLD:
                 data_types[i] = 'string'
+                dataframe[columns[i]] = dataframe[columns[i]].astype('object')
             else:
                 data_types[i] = 'number'
         elif col_type == 'float64':
-            data_types[i] = 'number'
+            if len(pd.unique(dataframe[columns[i]])) <= CATEGORICAL_COLUMN_THRESHOLD:
+                data_types[i] = 'string'
+                dataframe[columns[i]] = dataframe[columns[i]].astype('object')
+            else:
+                data_types[i] = 'number'
+        elif col_type == 'int32':
+            if len(pd.unique(dataframe[columns[i]])) <= CATEGORICAL_COLUMN_THRESHOLD:
+                data_types[i] = 'string'
+                dataframe[columns[i]] = dataframe[columns[i]].astype('object')
+            else:
+                data_types[i] = 'number'
+        elif col_type == 'float32':
+            if len(pd.unique(dataframe[columns[i]])) <= CATEGORICAL_COLUMN_THRESHOLD:
+                data_types[i] = 'string'
+                dataframe[columns[i]] = dataframe[columns[i]].astype('object')
+            else:
+                data_types[i] = 'number'
+        else:
+            data_types[i] = 'string'  # todo : change this!
 
     column_data = [(columns[col], data_types[col]) for col in xrange(len(columns))]
     return dict(column_data)

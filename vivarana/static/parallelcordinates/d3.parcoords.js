@@ -21,13 +21,11 @@ d3.parcoords = function (config) {
         rules: []
     };
 
-
     var rule_actives = [];
     var rule_extents = [];
 
-//var dropdown=false;
-
     extend(__, config);
+
     var pc = function (selection) {
         selection = pc.selection = d3.select(selection);
 
@@ -206,7 +204,7 @@ d3.parcoords = function (config) {
         // hack to remove ordinal dimensions with many values
         pc.dimensions(pc.dimensions().filter(function (p, i) {
             var uniques = yscale[p].domain().length;
-            if (__.types[p] == "string" && (uniques > 60 || uniques < 2)) {
+            if (__.types[p] == "string" && (uniques > 60 || uniques < 1)) {
                 return false;
             }
             return true;
@@ -284,9 +282,15 @@ d3.parcoords = function (config) {
         return this;
     };
     pc.detectDimensions = function () {
-//  pc.types(pc.detectDimensionTypes(__.data));
-//  console.log(__.types)
-        pc.dimensions(d3.keys(pc.types()));
+
+        var dimension_list = d3.keys(pc.types())
+        //Moving the clusterID to the end of the list
+        if (dimension_list.indexOf('clusterID') >= 0) {
+            dimension_list[dimension_list.indexOf('clusterID')] = dimension_list[dimension_list.length - 2]
+            dimension_list[dimension_list.length - 2] = 'clusterID'
+        }
+
+        pc.dimensions(dimension_list);
         return this;
     };
 
@@ -559,31 +563,14 @@ d3.parcoords = function (config) {
                 return 'col_' + i;
             })
             .html('<span style="font-size: 15px;" data-dropdown="#dropdown" ><i class="mdi-editor-format-align-justify"></i></span>')
+
             .on("contextmenu", function (d, i) {
-
-                $('#column_dropdown-menu').empty();
-
-                if (__.types[d] == 'number') {
-                    $('#column_dropdown-menu').append('<li><a onclick="sum(\'' + d + '\', ' + i + ',' + 'this' + ')" href="#">Sum</a></li>');
-                    $('#column_dropdown-menu').append('<li><a onclick="average(\'' + d + '\', ' + i + ',' + 'this' + ')" href="#">Average</a></li>');
-                    $('#column_dropdown-menu').append('<li><a onclick="max(\'' + d + '\', ' + i + ',' + 'this' + ')" href="#">Maximum</a></li>');
-                    $('#column_dropdown-menu').append('<li><a onclick="min(\'' + d + '\', ' + i + ',' + 'this' + ')" href="#">Minimum</a></li>');
-                    $('#column_dropdown-menu').append('<li><a onclick="count(\'' + d + '\', ' + i + ',' + 'this' + ')" href="#">Count</a></li>');
-                }
-                else {
-                    $('#column_dropdown-menu').append('<li><a onclick="temp(\'' + d + '\', ' + i + ')" href="#3">Order By</a></li>');
-                }
-
-                $('#column_dropdown-menu').append('<li><a onclick="removeAxis(\'' + d + '\', ' + i + ')" href="#">Remove Axis</a></li>');
-                $('#column_dropdown-menu').append('<li><a onclick="flipAxis(\'' + d + '\', ' + i + ')" href="#">Flip Axis</a></li>');
-                $('#column_dropdown-menu').append('<li><a onclick="resetAxis(\'' + d + '\', ' + i + ')" href="#">Reset Axis</a></li>');
-
-                d3.select('#column_dropdown-menu').style("left", d3.event.pageX - 80 + "px")
+                d3.select('#column_dropdown-menu_' + d).style("left", d3.event.pageX - 80 + "px")
                     .style('position', 'absolute')
                     .style("top", d3.event.pageY - 2 + "px")
                     .style('display', 'block')
                     .on('mouseleave', function () {
-                        d3.select('#column_dropdown-menu').style('display', 'none');
+                        d3.select('#column_dropdown-menu_' + d).style('display', 'none');
                         context = null;
                     });
 
@@ -1008,30 +995,95 @@ d3.parcoords = function (config) {
             return dims;
         }
 
-        function onDragStart() {
-            // First we need to determine between which two axes the sturm was started.
-            // This will determine the freedom of movement, because a strum can
-            // logically only happen between two axes, so no movement outside these axes
-            // should be allowed.
-            return function () {
-                var p = d3.mouse(strumCanvas),
-                    dims = dimensionsForPoint(p),
-                    strum = {
-                        p1: p,
-                        dims: dims,
-                        minX: xscale(dims.left),
-                        maxX: xscale(dims.right)
-                    };
-
-                strums[dims.i] = strum;
-                strums.active = dims.i;
-
-                // Make sure that the point is within the bounds
-                strum.p1[0] = Math.min(Math.max(strum.minX, p[0]), strum.maxX);
-                strum.p1[1] = p[1];
-                strum.p2 = strum.p1.slice();
-            };
+        if (ids.length === 0) {
+            return brushed;
         }
+
+        return brushed.filter(function (d) {
+            switch (brush.predicate) {
+                case "AND":
+                    return ids.every(function (id) {
+                        return crossesStrum(d, id);
+                    });
+                case "OR":
+                    return ids.some(function (id) {
+                        return crossesStrum(d, id);
+                    });
+                default:
+                    throw "Unknown brush predicate " + __.brushPredicate;
+            }
+        });
+    }
+
+    function removeStrum() {
+        var strum = strums[strums.active],
+            svg = pc.selection.select("svg").select("g#strums");
+
+        delete strums[strums.active];
+        strums.active = undefined;
+        svg.selectAll("line#strum-" + strum.dims.i).remove();
+    }
+
+    function onDragEnd() {
+        return function () {
+            var brushed = __.data,
+                strum = strums[strums.active];
+
+            // Okay, somewhat unexpected, but not totally unsurprising, a mousclick is
+            // considered a drag without move. So we have to deal with that case
+            if (strum && strum.p1[0] === strum.p2[0] && strum.p1[1] === strum.p2[1]) {
+                removeStrum(strums);
+            }
+
+            brushed = selected(strums);
+            strums.active = undefined;
+            __.brushed = brushed;
+            pc.render();
+            events.brushend.call(pc, __.brushed);
+        };
+    }
+
+    function brushReset(strums) {
+        return function () {
+            var ids = Object.getOwnPropertyNames(strums).filter(function (d) {
+                return !isNaN(d);
+            });
+
+            ids.forEach(function (d) {
+                strums.active = d;
+                removeStrum(strums);
+            });
+            onDragEnd(strums)();
+        };
+    }
+
+    function install() {
+        var drag = d3.behavior.drag();
+
+        // Add a canvas to catch the mouse events, used to set the strums.
+        strumCanvas = pc.selection.insert("canvas", "svg")
+            .attr("class", "strums")
+            .style("margin-top", __.margin.top + "px")
+            .style("margin-left", __.margin.left + "px")
+            .attr("width", w() + 2)
+            .attr("height", h() + 2)[0][0];
+
+        // Map of current strums. Strums are stored per segment of the PC. A segment,
+        // being the area between two axes. The left most area is indexed at 0.
+        strums.active = undefined;
+        // Returns the width of the PC segment where currently a strum is being
+        // placed. NOTE: even though they are evenly spaced in our current
+        // implementation, we keep for when non-even spaced segments are supported as
+        // well.
+        strums.width = function (id) {
+            var strum = strums[id];
+
+            if (strum === undefined) {
+                return undefined;
+            }
+
+            return strum.maxX - strum.minX;
+        };
 
         function onDrag() {
             return function () {
@@ -1245,7 +1297,11 @@ d3.parcoords = function (config) {
             selected: selected
         };
 
-    }());
+    }
+
+    ()
+    )
+    ;
 
     pc.interactive = function () {
         flags.interactive = true;
