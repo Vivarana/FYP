@@ -16,6 +16,6 @@ CLUSTERING_PAGE = 'vivarana/clustering.html'
 PREPROCESSOR_PAGE = 'vivarana/preprocessor.html'
 
 # URL paths
-UPLOAD_PATH = '/vivarana/upload/'
-VISUALIZE_PATH = '/vivarana/visualize'
-PREPROCESSOR_PATH = '/vivarana/preprocessor/'
+UPLOAD_PATH = '/upload/'
+VISUALIZE_PATH = '/visualize'
+PREPROCESSOR_PATH = '/preprocessor/'

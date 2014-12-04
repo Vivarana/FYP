@@ -23,7 +23,7 @@ def home(request):
 
 def visualize(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
-        return redirect('/vivarana/upload/')
+        return redirect(UPLOAD_PATH)
 
     column_types = file_helper.get_compatible_column_types(current_data_frame)
     json_output = current_data_frame.to_json(orient='records')
@@ -47,7 +47,7 @@ def set_time(request):
 
 def clustering(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
-        return redirect('/vivarana/upload/')
+        return redirect(UPLOAD_PATH)
 
     if request.method == GET:
         context = file_helper.load_data(request.session['filename'], original_data_frame)

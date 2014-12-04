@@ -193,7 +193,7 @@
                     .selectAll(".label");
         } else {
             parcoords.svg.selectAll(".dimension")
-                    .on("click", change_color)
+                    .on("click", change_color())
                     .selectAll(".label");
         }
     });
@@ -233,7 +233,7 @@
     // curve smoothness slider
     $("#curve-slider").on({
         change: function () {
-            var curve_smooth_value = parseInt($("#curve-slider").val());
+            var curve_smooth_value = parseFloat($("#curve-slider").val());
             parcoords.smoothness(curve_smooth_value).render();
             $("#curve-text").text('Curve Smoothness: ' + curve_smooth_value);
         }
@@ -242,7 +242,7 @@
     // bundling strength slider
     $("#bundling-slider").on({
         change: function () {
-            var bundling_value = $("#bundling-slider").val();
+            var bundling_value = parseFloat($("#bundling-slider").val());
             parcoords.bundlingStrength(bundling_value).render();
             $("#bundling-text").text('Bundling Strength: ' + bundling_value);
         }
@@ -259,15 +259,16 @@
                     .bundlingStrength(0.7)
                     .render();
         } else {
-            $("#curve-slider").val(0);
-            $("#bundling-slider").val(0);
+            $('#curve-slider-container').hide();
+            $('#bundling-slider-container').hide();
             parcoords.smoothness(0)
                     .bundlingStrength(0)
                     .render();
-            $("#curve-text").text('Curve Smoothness: 0');
-            $("#bundling-text").text('Bundling Strength: 0');
-            $('#curve-slider-container').hide();
-            $('#bundling-slider-container').hide();
+            $("#curve-text").text('Curve Smoothness: 0.2');
+            $("#bundling-text").text('Bundling Strength: 0.7');
+            $("#curve-slider").val(0.2);
+            $("#bundling-slider").val(0.7);
+
         }
     });
 
@@ -409,31 +410,31 @@
     }
 
     function sum(col_name, col_number, obj) {
-        $.get('/vivarana/aggregator/', {aggregate_func: 0, attribute_name: col_name}, function (data) {
+        $.get('/aggregator/', {aggregate_func: 0, attribute_name: col_name}, function (data) {
             aggregate_func(data, obj);
         });
     }
 
     function average(col_name, col_number, obj) {
-        $.get('/vivarana/aggregator/', {aggregate_func: 1, attribute_name: col_name}, function (data) {
+        $.get('/aggregator/', {aggregate_func: 1, attribute_name: col_name}, function (data) {
             aggregate_func(data, obj);
         });
     }
 
     function min(col_name, col_number, obj) {
-        $.get('/vivarana/aggregator/', {aggregate_func: 2, attribute_name: col_name}, function (data) {
+        $.get('/aggregator/', {aggregate_func: 2, attribute_name: col_name}, function (data) {
             aggregate_func(data, obj);
         });
     }
 
     function max(col_name, col_number, obj) {
-        $.get('/vivarana/aggregator/', {aggregate_func: 3, attribute_name: col_name}, function (data) {
+        $.get('/aggregator/', {aggregate_func: 3, attribute_name: col_name}, function (data) {
             aggregate_func(data, obj);
         });
     }
 
     function count(col_name, col_number, obj) {
-        $.get('/vivarana/aggregator/', {aggregate_func: 4, attribute_name: col_name}, function (data) {
+        $.get('/aggregator/', {aggregate_func: 4, attribute_name: col_name}, function (data) {
             aggregate_func(data, obj);
         });
     }
@@ -476,7 +477,7 @@
         }
 
         $.ajax({
-            url: '/vivarana/rule_gen/',
+            url: '/rule_gen/',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(selected_ids),

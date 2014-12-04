@@ -51,7 +51,7 @@ function setTimeWindow() {
     var timeWindowValue = $("#time-window").val();
 
     if (isInt(timeWindowValue)) {
-        $.get('/vivarana/set_time_window/', {time_granularity: timeGranularity, time_window_val: timeWindowValue}, function (data) {
+        $.get('/set_time_window/', {time_granularity: timeGranularity, time_window_val: timeWindowValue}, function (data) {
             $.snackbar({content: 'Time window has set to ' + timeWindowValue + ' ' + timeGranularity, style: 'toast'});
         });
     } else {
