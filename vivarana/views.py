@@ -59,7 +59,8 @@ def clustering(request):
 
         data_frame = file_helper.remove_columns(columns, original_data_frame)
         global current_data_frame
-        apply_clustering(cluster_method, number_of_clusters, current_data_frame, data_frame)
+        apply_clustering(cluster_method, number_of_clusters, original_data_frame,
+                         data_frame)  # todo should pass current data frmae
 
         return redirect(PREPROCESSOR_PATH)
 
