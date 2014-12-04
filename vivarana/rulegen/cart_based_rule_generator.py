@@ -1,5 +1,6 @@
 from numpy import *
 from pandas.io import json
+import pandas as pd
 import scipy as sp
 from pandas import *
 from rpy2.robjects.packages import importr
@@ -150,27 +151,41 @@ def parse_rule(rule_list):
         else:
             rule_strings.append(rule_key + rule['operation'] + str(int(float(rule['operand'][0]))))
 
+    rule_strings.sort(key=len)
     print "Combining all the rules together."
     print rule_strings
-    final_rule = ' AND '.join(rule_strings)
+    final_rule = ' AND </br>'.join(rule_strings)
     return final_rule
+
+
+# def remove_unique_columns(temporary_dataframe):
+#     row_count = len(temporary_dataframe.index)
+#     for column in temporary_dataframe.columns:
+#         print column, len(pd.unique(temporary_dataframe[column])), row_count*0.25  # todo: fix the ratio
+#         if len(pd.unique(temporary_dataframe[column])) > row_count*0.8:
+#             temporary_dataframe = temporary_dataframe.drop(column, 1)
+#     return temporary_dataframe
 
 
 def generate(selected_ids, dataframe):
     try:
         rules = []
         selected_ids = json.loads(selected_ids)
+
         temporary_dataframe = dataframe.copy(deep=True)
         temporary_dataframe[constants.RULEGEN_COLUMN_NAME] = 0
-        temporary_dataframe[constants.RULEGEN_COLUMN_NAME][temporary_dataframe.index.isin(selected_ids)] = 1
+        temporary_dataframe[constants.RULEGEN_COLUMN_NAME][temporary_dataframe.index.isin(selected_ids['selected_ids'])] = 1
 
         if 'clusterID' in temporary_dataframe.columns:
             temporary_dataframe = temporary_dataframe.drop('clusterID', 1)
 
+        selected_columns = ' + '.join(selected_ids['checked_columns'])
+        print selected_columns
+
         r_dataframe = com.convert_to_r_dataframe(temporary_dataframe)
         ro.r(r_code)
         rpart = importr('rpart')
-        temp = rpart.rpart(constants.RULEGEN_COLUMN_NAME + ' ~ .', method="class", data=r_dataframe)
+        temp = rpart.rpart(constants.RULEGEN_COLUMN_NAME + ' ~ ' + selected_columns, method="class", data=r_dataframe)
 
         ro.r.assign('temp', temp)
         r_get_rules_function = ro.globalenv['rules']
