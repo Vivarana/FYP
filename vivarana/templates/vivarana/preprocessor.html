@@ -5,32 +5,34 @@
 {% block body_block %}
 
     <style>
-
-        .table {
-            position: fixed;
-            width :1000px;
-            top: 220px;
-            left: 215px;
-            text-align:center;
+        .container-clustering {
+            width: 980px;
+            min-width: 980px;
+            margin: 0 auto;
+            padding: 0 50px;
         }
 
-        tbody{
-          overflow: -moz-scrollbars-vertical;
-          overflow-y: scroll;
-          height: 250px;
-          position: absolute;
+        table {
+            width: 916px !important; /* 140px * 5 column + 16px scrollbar width */
+            border-spacing: 0;
         }
 
-        th, td {
-            text-align:center;
-            overflow: hidden;
-            width: 400px;
+        tbody, thead tr {
+            display: block;
         }
 
-        #submit-button {
-            position: fixed;
-            top: 550px;
-            left: 980px;
+        tbody {
+            height: 250px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        tbody td, thead th {
+            width: 300px;
+        }
+
+        thead th:last-child {
+            width: 316px; /* 140px + 16px scrollbar width */
         }
 
         #warning {
@@ -39,62 +41,78 @@
             width: 60%;
             left: 20%;
             text-align: center;
-            display : none;
+            display: none;
             background-color: #DB0A0A;
         }
 
     </style>
-    <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
+    <div class="container-clustering">
+        <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
+        <div class="row">
+            <h3>Select Columns to Visualize</h3>
+            <h4>Data Set -> {{ filename }}</h4>
+        </div>
 
-    <h3 style="position: fixed; left : 215px; top : 115px;">Select Columns to Visualize</h3>
 
-    <h4 style="position: fixed; left : 215px; top : 162px;">Data Set-> {{ filename }}</h4>
-
-    <form method="POST" action="" onsubmit="return validateForm()">
-    {% csrf_token %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Column ID</th>
-                <th>Column Type</th>
-                <th>Select  <input type="checkbox" name="select-all" id="select-all" checked/></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for col in columns %}
-            <tr>
-                    <td>{{ col.0 }}</td>
-                    <td>{{ col.1 }}</td>
-                    <td><input type="checkbox" name="column" value="{{forloop.counter}}" checked></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <button id="submit-button" type="submit" class="btn btn-primary">
-        Go to visualization
-        <span class="glyphicon glyphicon-chevron-right"></span>
-    </button>
-    </form>
+        <form method="POST" action="" onsubmit="return validateForm()">
+            {% csrf_token %}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Column ID</th>
+                    <th>Column Type</th>
+                    <th>
+                        <div class="checkbox">
+                            Select <label>
+                            <input type="checkbox" name="select-all" id="select-all" checked/>
+                        </label></div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for col in columns %}
+                    <tr>
+                        <td>{{ col.0 }}</td>
+                        <td>{{ col.1 }}</td>
+                        <td>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="column" value="{{ forloop.counter }}" checked></label>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-md-9"></div>
+                <div class="col-md-3">
+                    <button id="submit-button" type="submit" class="btn btn-primary">
+                        Go to visualization
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 
     <script>
-        $('#select-all').click(function(event) {
+        $('#select-all').click(function (event) {
             var is_checked = this.checked;
-                // Iterate each checkbox
-                $(':checkbox').each(function() {
-                    this.checked = is_checked;
-                });
+            // Iterate each checkbox
+            $(':checkbox').each(function () {
+                this.checked = is_checked;
+            });
         });
 
-        function validateForm(){
-            if($('input[type=checkbox]:checked').length!=0){
+        function validateForm() {
+            if ($('input[type=checkbox]:checked').length != 0) {
                 return true;
             }
-            else{
+            else {
                 $('#warning').show();
                 return false;
             }
-            return false;
         }
 
     </script>

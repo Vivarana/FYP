@@ -5,13 +5,37 @@
 
     <style>
         .container-clustering {
-            max-width: 980px;
+            width: 980px;
+            min-width: 980px;
             margin: 0 auto;
-            padding: 10px;
+            padding: 0 50px;
         }
 
         #warning {
             display: none;
+        }
+
+        table {
+            width: 916px !important; /* 140px * 5 column + 16px scrollbar width */
+            border-spacing: 0;
+        }
+
+        tbody, thead tr {
+            display: block;
+        }
+
+        tbody {
+            height: 250px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        tbody td, thead th {
+            width: 300px;
+        }
+
+        thead th:last-child {
+            width: 316px; /* 140px + 16px scrollbar width */
         }
 
     </style>
@@ -22,11 +46,11 @@
                     <h2> Clustering Data</h2>
                 </div>
                 <div class="col-md-2">
-                    <a href="/vivarana/preprocessor" class="btn btn-warning btn-raised">Skip Clustering</a>
+                    <a href="/preprocessor/" class="btn btn-warning btn-raised">Skip Clustering</a>
                 </div>
             </div>
             <div class="row">
-                <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
+                <div id="warning" class="alert alert-warning" role="alert"></div>
                 <h3>Please select attributes to cluster</h3>
 
                 <form method="POST" action="" onsubmit="return validateForm()">
@@ -36,7 +60,12 @@
                         <tr>
                             <th>Column ID</th>
                             <th>Column Type</th>
-                            <th>Select <input type="checkbox" name="select-all" id="select-all" checked/></th>
+                            <th>
+                                <div class="checkbox">
+                                    Select <label>
+                                    <input type="checkbox" name="select-all" id="select-all" checked/>
+                                </label></div>
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -44,7 +73,12 @@
                             <tr>
                                 <td>{{ col.0 }}</td>
                                 <td>{{ col.1 }}</td>
-                                <td><input type="checkbox" name="column" value="{{ forloop.counter }}" checked></td>
+                                <td>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="column" value="{{ forloop.counter }}" checked>
+                                        </label></div>
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -58,17 +92,18 @@
                                 <div class="radio radio-primary">
                                     <label>
                                         <input type="radio" name="clustering-algo-radios"
-                                               id="kmeans-radio"
-                                               value="kmeans-cluster">
-                                        K-Means Clustering
+                                               id="hierarchical-radio"
+                                               value="hierarchical-cluster"
+                                               checked="">
+                                        Hierarchical Clustering
                                     </label>
                                 </div>
                                 <div class="radio radio-primary">
                                     <label>
                                         <input type="radio" name="clustering-algo-radios"
-                                               id="hierarchical-radio"
-                                               value="hierarchical-cluster">
-                                        Hierarchical Clustering
+                                               id="kmeans-radio"
+                                               value="kmeans-cluster">
+                                        K-Means Clustering
                                     </label>
                                 </div>
                                 <div class="radio radio-primary">
@@ -80,7 +115,6 @@
                                     </label>
                                 </div>
                             </div>
-
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
@@ -89,7 +123,7 @@
                                 </div>
                                 <div class="col-lg-3">
                                     <input type="number" class="form-control" name="number-of-clusters"
-                                           id="numberofclusters" placeholder="3">
+                                           id="numberofclusters" value="5" >
                                 </div>
                             </div>
                         </div>
@@ -122,14 +156,25 @@
         });
 
         function validateForm() {
-            if ($('input[type=checkbox]:checked').length != 0) {
-                return true;
-            }
-            else {
+            $('#warning').html('');
+            if ($('input[type=checkbox]:checked').length == 0) {
+                $('#warning').append('Please select at least on column');
                 $('#warning').show();
                 return false;
             }
-            return false;
+            var num_of_clusters = $('#numberofclusters').val();
+            if (!isInt(num_of_clusters)) {
+                $('#warning').append('Number of clusters should be a positive integer');
+                $('#warning').show();
+                return false;
+            }
+            return true;
+        }
+
+        function isInt(value) {
+            return !isNaN(value) && (function (x) {
+                return ((x | 0) === x) && x > 0;
+            })(parseFloat(value))
         }
 
     </script>
