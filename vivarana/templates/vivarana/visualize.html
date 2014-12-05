@@ -25,6 +25,34 @@
     {% endautoescape %}
 
 
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">Select columns for rule generation</h4>
+          </div>
+          <div class="modal-body">
+               <form action="" id="column_select_for_rulegen" onsubmit="return false;">
+                {% csrf_token %}
+                   {% for col,type in columns.items %}
+                    <div class="checkbox">
+                        <label>
+                          <input type="checkbox" name="column_for_rulegen" value="{{ col }}" checked> {{ col }}
+                        </label>
+                     </div>
+                   {% endfor %}
+                </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" onclick="generate_rules();" class="btn btn-primary">Generate</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <div id="slickgrid-container">
         <div id="rule-right">
 {#            <div id="rule-right-table-head"></div>#}
@@ -476,28 +504,36 @@
         dataView.endUpdate();
     }
 
-    function generate_rules() {
-        var selected_ids = [];
-        var brushed_data = parcoords.state.brushed;
-        for (var i in brushed_data) {
-            selected_ids.push(brushed_data[i]['id']);
+    function generate_rules(){
+        $('#myModal').modal('toggle');
+        var selected_ids = []
+        var brushed_data = parcoords.state.brushed
+
+        var checked_columns = $("input:checkbox[name=column_for_rulegen]:checked").map(function(){
+          return $(this).val();
+        }).get();
+
+        for(var i in brushed_data){
+            selected_ids.push(brushed_data[i]['id'])
         }
 
         $.ajax({
             url: '/rule_gen/',
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify(selected_ids),
+            data: JSON.stringify({"selected_ids": selected_ids, "checked_columns":checked_columns}),
             dataType: 'json',
             success: function (result) {
                 $("#cep_rule_panel-tab").tab('show')
                 for (var rule in result.rules) {
                     $("#cep_rule_panel").empty();
-                    $("#cep_rule_panel").append('<p>' + result.rules[rule]['rule'] + '</p>')
+                    $("#cep_rule_panel").append('<p style="color: blue">'+ 'FORM EVENT_STREAM_NAME</br>SELECT *</br>Having' +'</p>')
+                    $("#cep_rule_panel").append('<p style="color: black">'+ result.rules[rule]['rule'] +'</p>')
                 }
             }
         });
     }
+
 
     function getCookie(name) {
         var cookieValue = null;
