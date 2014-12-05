@@ -90,6 +90,8 @@ def upload(request):
             if output['success']:
                 global original_data_frame, current_data_frame
                 original_data_frame = output['dataframe']
+
+                original_data_frame.columns = file_helper.get_html_friendly_names(original_data_frame.columns)
                 current_data_frame = original_data_frame.copy(deep=True)
 
                 request.session['filename'] = input_file.name

@@ -1,6 +1,8 @@
 from datetime import datetime
+import re
 import pandas as pd
 import apachelog
+import string
 
 CATEGORICAL_COLUMN_THRESHOLD = 10
 
@@ -23,9 +25,7 @@ def handle_csv(file_in):
 
         with open("media/temp.csv", 'r') as csv_file:
             original_data_frame = pd.read_csv(csv_file)
-
-            print list(original_data_frame.columns)
-            return {'success': True, 'dataframe' : original_data_frame}
+            return {'success': True, 'dataframe': original_data_frame}
     except Exception,e:
         print str(e)
         return {'success': False}
@@ -96,8 +96,6 @@ def get_compatible_column_types(dataframe):
 
     data_types = list(dataframe.dtypes)
 
-    print columns, data_types
-
     for i, col_type in enumerate(data_types):
         if col_type == 'object':
             data_types[i] = 'string'
@@ -130,3 +128,12 @@ def get_compatible_column_types(dataframe):
 
     column_data = [(columns[col], data_types[col]) for col in xrange(len(columns))]
     return dict(column_data)
+
+
+def get_html_friendly_names(columns):
+    return [remove_illegal_characters(column_name) for column_name in columns]
+
+
+def remove_illegal_characters(name):
+    valid_chars = "_.%s%s" % (string.ascii_letters, string.digits)
+    return ''.join([letter for letter in name if letter in valid_chars])
