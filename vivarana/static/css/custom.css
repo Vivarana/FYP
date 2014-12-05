@@ -20,13 +20,14 @@
     padding-right: 10px;
 }
 
-#rule-right-table-head {
-    background-color: #2C3E50;
-    /*-webkit-box-shadow: 0px 5px 40px 0px #000;*/
-    /*box-shadow: 0px 5px 40px 0px #000;*/
-    min-height: 28px;
-}
+/*#rule-right-table-head {*/
+    /*background-color: #2C3E50;*/
+    /*min-height: 28px;*/
+/*}*/
 
+#cep_rule_panel{
+    padding-top: 10px;
+}
 .slick-row:hover {
     font-weight: bold;
     color: #069;
@@ -40,6 +41,7 @@
     height: 550px;
 }
 
-#granularity-select{
+#granularity-select {
     min-height: 28px;
 }
+

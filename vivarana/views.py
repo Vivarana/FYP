@@ -34,7 +34,7 @@ def visualize(request):
 def aggregator(request):
     new_data_frame = aggregate.aggregate_window(int(request.GET['aggregate_func']), properties_map['time_window_value'],
                                                 properties_map['time_granularity'],
-                                                request.GET['attribute_name'], original_data_frame)
+                                                request.GET['attribute_name'], original_data_frame, current_data_frame)
     json = new_data_frame.to_json(orient='records')
     return HttpResponse(json)
 
@@ -122,6 +122,14 @@ def rule_gen(request):
         print request.GET['selected_ids']
         json_responce = "{'message' : done!}"
         return HttpResponse(json_responce)
+
+
+def reset_axis(request):
+    if request.method == GET:
+        attribute_name = request.GET['attribute_name']
+        current_data_frame[attribute_name] = original_data_frame[attribute_name]
+        json = current_data_frame.to_json(orient='records')
+        return HttpResponse(json)
 
 
 

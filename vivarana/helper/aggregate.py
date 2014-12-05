@@ -26,12 +26,13 @@ def count_window(row, df, attribute):
 functions_dict = {0: sum_window, 1: avg_window, 2: min_window, 3: max_window, 4: count_window}
 
 
-def aggregate_window(aggregate_function, time_window_value, time_granularity, attribute_name, current_data_frame):
+def aggregate_window(aggregate_function, time_window_value, time_granularity, attribute_name, original_data_frame,
+                     current_data_frame):
     # todo prevent further sum
     # todo add method to reset axis
     # todo record this action
-    df1 = current_data_frame.copy(deep=True)
-    df = df1[['Date', attribute_name]]
+    # df1 = original_data_frame.copy(deep=True)
+    df = original_data_frame[['Date', attribute_name]]
     df['Date'] = pd.to_datetime(df['Date'])  # todo date column should be parsed earlier
     start_dates = ""
     if time_granularity == 'seconds':
@@ -46,8 +47,9 @@ def aggregate_window(aggregate_function, time_window_value, time_granularity, at
 
     new_row = df.apply(functions_dict[aggregate_function], axis=1, args=(df, attribute_name))
 
-    df1.pop(attribute_name)
-    df1[attribute_name] = new_row
-    return df1
+    # df1.pop(attribute_name)
+    # df1[attribute_name] = new_row
+    current_data_frame[attribute_name] = new_row
+    return current_data_frame
 
 

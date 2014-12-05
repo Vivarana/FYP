@@ -1,5 +1,6 @@
 {% extends 'vivarana/base.html' %}
-{% block title %}Upload Data{% endblock %}
+{% load staticfiles %}
+{% block title %}Clustering Data{% endblock %}
 
 {% block body_block %}
 
@@ -38,7 +39,46 @@
             width: 316px; /* 140px + 16px scrollbar width */
         }
 
+        .loading-model {
+            display: none;
+            width: 300px;
+            height: 200px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            text-align: center;
+            margin-left: -50px;
+            margin-top: -100px;
+            z-index: 1002;
+            overflow: auto;
+            background-color: #ffffff;
+            padding: 20px;
+
+            border-radius: 12px;
+            background-clip: padding-box;
+            -webkit-box-shadow: 0px 0px 4px 0px #ffffff;
+            box-shadow: 0px 0px 4px 0px #ffffff;
+        }
+
+        .cover {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #000000;
+            opacity: 0.8;
+            z-index: 1001;
+            display: none;
+
+        }
     </style>
+    <div class="loading-model">
+
+        <img src="{% static "images/gears.gif" %}" alt="preloader"/>
+        </br>
+        <p>Clustering your Data. Please wait...</p>
+    </div>
     <div class="container-clustering">
         <div class="row">
             <div class="row">
@@ -62,9 +102,10 @@
                             <th>Column Type</th>
                             <th>
                                 <div class="checkbox">
-                                    Select <label>
-                                    <input type="checkbox" name="select-all" id="select-all" checked/>
-                                </label></div>
+                                    <label>
+                                        <input type="checkbox" name="select-all" id="select-all" checked/>
+                                    </label>Select
+                                </div>
                             </th>
                         </tr>
                         </thead>
@@ -123,7 +164,7 @@
                                 </div>
                                 <div class="col-lg-3">
                                     <input type="number" class="form-control" name="number-of-clusters"
-                                           id="numberofclusters" value="5" >
+                                           id="numberofclusters" value="5">
                                 </div>
                             </div>
                         </div>
@@ -168,6 +209,7 @@
                 $('#warning').show();
                 return false;
             }
+            $(".cover, .loading-model").show();
             return true;
         }
 

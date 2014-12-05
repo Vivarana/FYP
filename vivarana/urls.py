@@ -11,4 +11,5 @@ urlpatterns = patterns('',
     url(r'^set_time_window/$', views.set_time, name='set_time'),
     url(r'^aggregator/$', views.aggregator, name='aggregator'),
     url(r'^rule_gen/$', views.rule_gen, name='rule_gen'),
+    url(r'^reset_axis/$', views.reset_axis, name='reset_axis'),
 )

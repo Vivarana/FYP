@@ -1,23 +1,24 @@
 {% extends 'vivarana/visualize-base.html' %}
+{% block title %}Visualization of Data{% endblock %}
 {% block body_block %}
 
     <div id="parcoords-main" class="parcoords"></div>
     {% autoescape off %}
         {% for col,type in columns.items %}
-            <div id="column_dropdown_{{col}}" class="dropdown-tip">
-                <ul id="column_dropdown-menu_{{col}}" class="dropdown dropdown-menu">
+            <div id="column_dropdown_{{ col }}" class="dropdown-tip">
+                <ul id="column_dropdown-menu_{{ col }}" class="dropdown dropdown-menu">
                     {% if type == "string" %}
-                        <li><a onclick="temp('{{ col }}',{{forloop.counter}}), this" href="#">Order By</a></li>
+{#            todo            <li><a onclick="temp('{{ col }}',{{ forloop.counter }},this)" href="#">Order By</a></li>#}
                     {% else %}
-                        <li><a onclick="sum('{{ col }}',{{forloop.counter}},this)" href="#">Sum</a></li>
-                        <li><a onclick="average('{{ col }}',{{forloop.counter}}), this" href="#">Average</a></li>
-                        <li><a onclick="max('{{ col }}',{{forloop.counter}})" href="#">Maximum</a></li>
-                        <li><a onclick="min('{{ col }}',{{forloop.counter}})" href="#">Minimum</a></li>
-                        <li><a onclick="count('{{ col }}',{{forloop.counter}})" href="#">Count</a></li>
+                        <li><a onclick="sum('{{ col }}',{{ forloop.counter }},this)" href="#">Sum</a></li>
+                        <li><a onclick="average('{{ col }}',{{ forloop.counter }}, this)" href="#">Average</a></li>
+                        <li><a onclick="max('{{ col }}',{{ forloop.counter }}, this)" href="#">Maximum</a></li>
+                        <li><a onclick="min('{{ col }}',{{ forloop.counter }}, this)" href="#">Minimum</a></li>
+                        <li><a onclick="count('{{ col }}',{{ forloop.counter }}, this)" href="#">Count</a></li>
                     {% endif %}
-                    <li><a onclick="temp('{{ col }}',{{forloop.counter}})" href="#">Remove Axis</a></li>
-                    <li><a onclick="flipAxis('{{ col }}',{{forloop.counter}})" href="#">Flip Axis</a></li>
-                    <li><a onclick="temp('{{ col }}',{{forloop.counter}})" href="#">Reset Axis</a></li>
+                    <li><a onclick="removeAxis('{{ col }}',{{ forloop.counter }})" href="#">Remove Axis</a></li>
+                    <li><a onclick="flipAxis('{{ col }}',{{ forloop.counter }})" href="#">Flip Axis</a></li>
+                    <li><a onclick="resetAxis('{{ col }}',{{ forloop.counter }}, this)" href="#">Reset Axis</a></li>
                 </ul>
             </div>
         {% endfor %}
@@ -26,30 +27,34 @@
 
     <div id="slickgrid-container">
         <div id="rule-right">
-            <div id="rule-right-table-head"></div>
+{#            <div id="rule-right-table-head"></div>#}
             <ul id="myTab" class="nav nav-tabs" role="tablist">
-              <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="false">Brushes</a></li>
-              <li role="presentation" class=""><a href="#cep_rule_panel" role="tab" id="cep_rule_panel-tab" data-toggle="tab" aria-controls="cep_rule_panel" aria-expanded="true">CEP Rule</a></li>
+                <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab"
+                                                          aria-controls="home" aria-expanded="false">Brushes</a></li>
+                <li role="presentation" class=""><a href="#cep_rule_panel" role="tab" id="cep_rule_panel-tab"
+                                                    data-toggle="tab" aria-controls="cep_rule_panel"
+                                                    aria-expanded="true">CEP Rule</a></li>
             </ul>
             <div id="myTabContent" class="tab-content">
-              <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
-                <div id="rule-table">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Column</th>
-                        <th>Conditions</th>
-                    </tr>
-                    </thead>
-                    <tbody id="rule-table-body">
+                <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
+                    <div id="rule-table">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Conditions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="rule-table-body">
 
-                    </tbody>
-                </table>
-            </div>
-              </div>
-              <div role="tabpanel" class="tab-pane fade" id="cep_rule_panel" aria-labelledby="cep_rule_panel-tab">
-                <p id="rule-paragraph">No rules have been created yet. Please select the events you are interested in and press "Generate Rule" button on the toolbar</p>
-              </div>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="cep_rule_panel" aria-labelledby="cep_rule_panel-tab">
+                    <p id="rule-paragraph">No rules have been created yet. Please select the events you are interested
+                        in and press "Generate Rule" button on the toolbar</p>
+                </div>
             </div>
         </div>
         <div id="slickgrid-container-inner-left">
@@ -384,10 +389,10 @@
         ruleTableUpdate(d);
     });
 
-    parcoords.on("brushend", function(d) {
-     gridUpdate(d);
-     ruleTableUpdate(d);
-   });
+    parcoords.on("brushend", function (d) {
+        gridUpdate(d);
+        ruleTableUpdate(d);
+    });
 
 
     function ruleTableUpdate(d) {
@@ -406,7 +411,7 @@
         });
         drawData(j_data);
         gridUpdate(j_data);
-        $(obj).parent().addClass("disabled");
+        {#        $(obj).parent().addClass("disabled");#}
     }
 
     function sum(col_name, col_number, obj) {
@@ -459,8 +464,10 @@
         parcoords.flip(col_name).updateAxes().brushReset().render(); //TODO update when brushing fixed with flipping
     }
 
-    function temp(input) {
-        alert(input);
+    function resetAxis(col_name, col_number, obj) {
+        $.get('/reset_axis/', {attribute_name: col_name}, function (data) {
+            aggregate_func(data, obj);
+        });
     }
 
     function gridUpdate(data) {
@@ -469,11 +476,11 @@
         dataView.endUpdate();
     }
 
-    function generate_rules(){
-        var selected_ids = []
-        var brushed_data = parcoords.state.brushed
-        for(var i in brushed_data){
-            selected_ids.push(brushed_data[i]['id'])
+    function generate_rules() {
+        var selected_ids = [];
+        var brushed_data = parcoords.state.brushed;
+        for (var i in brushed_data) {
+            selected_ids.push(brushed_data[i]['id']);
         }
 
         $.ajax({
@@ -482,11 +489,11 @@
             contentType: 'application/json',
             data: JSON.stringify(selected_ids),
             dataType: 'json',
-            success: function(result) {
-                 $("#cep_rule_panel-tab").tab('show')
-                for(var rule in result.rules) {
+            success: function (result) {
+                $("#cep_rule_panel-tab").tab('show')
+                for (var rule in result.rules) {
                     $("#cep_rule_panel").empty();
-                    $("#cep_rule_panel").append('<p>'+ result.rules[rule]['rule'] +'</p>')
+                    $("#cep_rule_panel").append('<p>' + result.rules[rule]['rule'] + '</p>')
                 }
             }
         });
@@ -494,33 +501,33 @@
 
     function getCookie(name) {
         var cookieValue = null;
-            if (document.cookie && document.cookie != '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
-        var csrftoken = getCookie('csrftoken');
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
 
-        function csrfSafeMethod(method) {
-            // these HTTP methods do not require CSRF protection
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
 
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
-        });
+        }
+    });
 
     </script>
 

@@ -4861,9 +4861,11 @@ fieldset[disabled] .navbar .btn-link:focus {
   color: #03a9f4;
 }
 .nav-tabs {
-  background: #4285f4;
+  background: #2C3E50;
+  height: 29px;
 }
 .nav-tabs > li > a {
+  top: 0;
   color: #FFFFFF;
   border: 0;
   margin: 0;
