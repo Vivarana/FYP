@@ -36,11 +36,13 @@
                <form action="" id="column_select_for_rulegen" onsubmit="return false;">
                 {% csrf_token %}
                    {% for col,type in columns.items %}
-                    <div class="checkbox">
-                        <label>
-                          <input type="checkbox" name="column_for_rulegen" value="{{ col }}" checked> {{ col }}
-                        </label>
-                     </div>
+                       {% if col != "clusterID" %}
+                            <div class="checkbox">
+                                <label>
+                                  <input type="checkbox" name="column_for_rulegen" value="{{ col }}" checked> {{ col }}
+                                </label>
+                             </div>
+                       {% endif %}
                    {% endfor %}
                 </form>
           </div>
