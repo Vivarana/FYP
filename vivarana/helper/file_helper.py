@@ -14,7 +14,7 @@ def handle_uploaded_file(file_in):
     elif file_extension == 'log':
         return handle_log(file_in)
     else:
-        return {'success': False, 'error': 'Sorry. File type '+file_extension+' is not supported'}
+        return {'success': False, 'error': 'Sorry. File type ' + file_extension + ' is not supported'}
 
 
 def handle_csv(file_in):
@@ -26,19 +26,19 @@ def handle_csv(file_in):
         with open("media/temp.csv", 'r') as csv_file:
             original_data_frame = pd.read_csv(csv_file)
             return {'success': True, 'dataframe': original_data_frame}
-    except Exception,e:
+    except Exception, e:
         print str(e)
         return {'success': False}
 
 
 def handle_log(file_in):
-    #Set the log format to common
+    # Set the log format to common
     log_format = apachelog.formats['common']
     parser = apachelog.parser(log_format)
 
     with open("media/temp.log", 'wb+') as destination:
-            for chunk in file_in.chunks():
-                destination.write(chunk)
+        for chunk in file_in.chunks():
+            destination.write(chunk)
 
     log_list = []
 
@@ -52,16 +52,16 @@ def handle_log(file_in):
 
     original_data_frame = pd.DataFrame(log_list)
 
-    #Convert the size column to integer from string todo : Set constants for these
+    # Convert the size column to integer from string todo : Set constants for these
     if 'Size' in original_data_frame.columns:
         original_data_frame['Size'] = original_data_frame['Size'].replace('-', 0)
         original_data_frame['Size'].apply(int)
         original_data_frame['Size'] = original_data_frame['Size'].astype(int)
 
     if 'Date' in original_data_frame.columns:
-        original_data_frame['Date'] = original_data_frame['Date'].map(lambda x: datetime.strptime(x.split(' ')[0][1::], "%d/%b/%Y:%H:%M:%S"))
+        original_data_frame['Date'] = pd.to_datetime(original_data_frame['Date'], format="[%d/%b/%Y:%H:%M:%S +0530]")
 
-    #Splitting the request line. todo : Fix the errors when the format doesnt match
+    # Splitting the request line. todo : Fix the errors when the format doesnt match
     if 'request' in original_data_frame.columns:
         temp = original_data_frame.request.str.split(' ')
         original_data_frame['Method'] = temp.str[0]
@@ -69,7 +69,8 @@ def handle_log(file_in):
         original_data_frame['Protocol'] = temp.str[-1]
         original_data_frame = original_data_frame.drop('request', 1)
 
-    return {'success': True, 'dataframe' : original_data_frame}
+    original_data_frame.to_csv('media/parsed_log.csv', index=False)
+    return {'success': True, 'dataframe': original_data_frame}
 
 
 def parse_date(date):
@@ -85,13 +86,12 @@ def load_data(filename, dataframe):
 
 def remove_columns(needed_columns, dataframe):
     new_dataframe = dataframe.copy(deep=True)
-    column_list = [new_dataframe.columns[int(i)-1] for i in needed_columns]
+    column_list = [new_dataframe.columns[int(i) - 1] for i in needed_columns]
     return new_dataframe[column_list]
 
 
-#return the column types in a format compatible with the paracoords library
+# return the column types in a format compatible with the paracoords library
 def get_compatible_column_types(dataframe):
-
     columns = list(dataframe.columns)
 
     data_types = list(dataframe.dtypes)
