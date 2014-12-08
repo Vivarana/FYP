@@ -204,7 +204,7 @@
     // color by zscore
     function zscore(col) {
         var n = col.length,
-                mean = _(col).underscore.mean(),
+                mean = _(col).mean(),
                 sigma = _(col).stdDeviation();
         return function (d) {
             return (d - mean) / sigma;
@@ -230,7 +230,7 @@
                     .selectAll(".label");
         } else {
             parcoords.svg.selectAll(".dimension")
-                    .on("click", change_color())
+                    .on("click", change_color)
                     .selectAll(".label");
         }
     });
