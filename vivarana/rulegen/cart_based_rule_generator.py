@@ -173,9 +173,9 @@ def generate(selected_ids, dataframe):
         selected_ids = json.loads(selected_ids)
 
         temporary_dataframe = dataframe.copy(deep=True)
-        temporary_dataframe[constants.RULEGEN_COLUMN_NAME] = 'NO'
+        temporary_dataframe[constants.RULEGEN_COLUMN_NAME] = 0
         temporary_dataframe[constants.RULEGEN_COLUMN_NAME][
-            temporary_dataframe.index.isin(selected_ids['selected_ids'])] = 'YES'
+            temporary_dataframe.index.isin(selected_ids['selected_ids'])] = 1
 
         if 'clusterID' in temporary_dataframe.columns:
             temporary_dataframe = temporary_dataframe.drop('clusterID', 1)
