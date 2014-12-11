@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from helper import file_helper
-from dataformat import categorize
 from helper import aggregate
 from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
@@ -33,10 +32,6 @@ def visualize(request):
     context = {'columns': column_types, 'result': json_output, 'frame_size': len(current_data_frame),
                'enable_time_window': enable_time_window}
     return render(request, 'vivarana/visualize.html', context)
-
-
-def sunburst(request):
-    return render(request, 'vivarana/sunburst.html', {})
 
 
 def aggregator(request):
@@ -78,8 +73,6 @@ def set_window(request):
     return HttpResponse('hello world')
 
 
-
-
 def clustering(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
         return redirect(UPLOAD_PATH)
@@ -99,21 +92,15 @@ def clustering(request):
         current_data_frame['clusterID'] = original_data_frame['clusterID']
         return redirect(PREPROCESSOR_PATH)
 
-# form data from preprocess page comes here
+
 def preprocessor(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
         return redirect(UPLOAD_PATH)
 
     if request.method == 'POST':
         columns = request.POST.getlist('column')
-        vistype = request.POST.get('visualization')
         global current_data_frame
         current_data_frame = file_helper.remove_columns(columns, current_data_frame)
-        if vistype == 'parellel':
-            return redirect(VISUALIZE_PATH)
-        else:
-            if vistype == 'sunburst':
-                return redirect(SUNBURST_PATH)
         return redirect(VISUALIZE_PATH)
     else:
         context = file_helper.load_data(request.session['filename'], current_data_frame)
@@ -125,11 +112,10 @@ def upload(request):
         response_data = {}
         try:
             input_file = request.FILES['fileinput']
-            # print request.path
+
             output = file_helper.handle_uploaded_file(input_file)
 
             if output['success']:
-                categorize.categorize_frame(output)
                 global original_data_frame, current_data_frame
                 original_data_frame = output['dataframe']
 
@@ -151,6 +137,7 @@ def upload(request):
             print str(error)
             response_data['error'] = "Error while setting up file. Please try again."
             response_data['success'] = False
+
         return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
         return render(request, 'vivarana/upload.html', {})

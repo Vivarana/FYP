@@ -35,6 +35,7 @@ def handle_log(file_in):
     # Set the log format to common
     log_format = apachelog.formats['common']
     parser = apachelog.parser(log_format)
+
     with open("media/temp.log", 'wb+') as destination:
         for chunk in file_in.chunks():
             destination.write(chunk)
@@ -84,7 +85,6 @@ def load_data(filename, dataframe):
 
 
 def remove_columns(needed_columns, dataframe):
-
     new_dataframe = dataframe.copy(deep=True)
     column_list = [new_dataframe.columns[int(i) - 1] for i in needed_columns]
     return new_dataframe[column_list]

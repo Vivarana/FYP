@@ -193,7 +193,6 @@ class parser:
         """
         Overriden by Vimuth Fernando. Change as necessary
         """
-
         column_names = {'%b': 'Size',
                         '%h': 'Remote_host',
                         '%l': 'Remote_logname',

@@ -4,10 +4,8 @@ from sklearn.metrics import confusion_matrix
 
 SELECTED_COLUMN = 'selected_for_rulegen'
 
-
 def get_positive_traces(input_data):
     return input_data[input_data[SELECTED_COLUMN] == 1]
-
 
 def identify_constraints(input_traces):
     constraints = []
@@ -15,11 +13,11 @@ def identify_constraints(input_traces):
     for column in input_traces.columns - [SELECTED_COLUMN]:
         unique_values = pd.unique(input_traces[column])
         if len(unique_values) == 1:
-            constraints.append(('EQUAL', column, unique_values[0]))
+            constraints.append(('EQUAL',column, unique_values[0]))
         elif input_traces.dtypes[column] == 'object':
-            constraints.append(('SET', column, unique_values))
+            constraints.append(('SET',column, unique_values))
         else:
-            constraints.append(('MINMAX', column, (input_traces[column].min(axis=1), input_traces[column].max(axis=1))))
+            constraints.append(('MINMAX',column, (input_traces[column].min(axis=1),input_traces[column].max(axis=1))))
 
     return constraints
 
@@ -33,25 +31,22 @@ def identify_equality_constraints(input_traces):
 
     return equality_constraints
 
-
 def apply_constraints(row):
-    for constraint, value in equality_constraints_list:
+    for constraint,value in equality_constraints_list:
         if row[constraint] != value:
             return False
     return True
 
-
 # def get_tree(dataframe):
-# clf = tree.DecisionTreeClassifier()
+#     clf = tree.DecisionTreeClassifier()
 #     clf = clf.fit(dataframe.drop(SELECTED_COLUMN,1), dataframe[SELECTED_COLUMN])
 #     print clf
 
 def get_precision(confusion_matrix):
-    return (confusion_matrix[1][1]) / float(confusion_matrix[0][1] + confusion_matrix[1][1])
-
+    return (confusion_matrix[1][1])/float(confusion_matrix[0][1] + confusion_matrix[1][1])
 
 def get_recall(confusion_matrix):
-    return (confusion_matrix[1][1]) / float(confusion_matrix[1][1] + confusion_matrix[1][0])
+    return (confusion_matrix[1][1])/float( confusion_matrix[1][1]+confusion_matrix[1][0])
 
 
 with open("output.csv", 'r') as csv_file:

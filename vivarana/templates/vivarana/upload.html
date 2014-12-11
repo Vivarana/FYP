@@ -4,8 +4,8 @@
 
 {% block body_block %}
     <style>
-        .fileinput-button {
-            width: 440px;
+        .fileinput-button{
+            width : 440px;
         }
 
         .fileinput-button input.upload {
@@ -26,32 +26,30 @@
             background: green;
         }
 
-        #form-container {
-            position: absolute;
-            top: 30%;
-            left: 35%;
+        #form-container{
+            position:absolute;
+            top:30%;
+            left:35%;
         }
 
-        .alert {
-            position: absolute;
-            top: 54%;
-            left: 35%;
-            width: 440px;
+        .alert{
+           position:absolute;
+           top:54%;
+           left:35%;
+           width : 440px;
             text-align: center;
         }
 
     </style>
-    <div id="form-container">
+    <div id="form-container" >
         <h1 id="topic">Select File</h1>
-
-        <div>Following File Types are supported : .csv, .log( Apache log Files)</div>
+        <div>Following File Types are supported : .csv, .log( Apache log Files) </div>
         <label class="btn btn-success fileinput-button">
             <i class="glyphicon glyphicon-plus"></i>
             <span>Select file</span>
             <input class="upload" id="fileupload" type="file" name="fileinput" multiple>
             {% csrf_token %}
         </label>
-
         <div id="progress">
             <div class="bar"></div>
         </div>
@@ -64,7 +62,7 @@
 
     <script>
         function getCookie(name) {
-            var cookieValue = null;
+        var cookieValue = null;
             if (document.cookie && document.cookie != '') {
                 var cookies = document.cookie.split(';');
                 for (var i = 0; i < cookies.length; i++) {
@@ -86,7 +84,7 @@
         }
 
         $.ajaxSetup({
-            beforeSend: function (xhr, settings) {
+            beforeSend: function(xhr, settings) {
                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
                 }
@@ -99,11 +97,9 @@
                 dataType: 'json',
                 done: function (e, data) {
 
-                    $("#alert").remove();
-
-                    {#                    $( "#form-container" ).css( "transform", "translate(0,-150px)" )#}
-                    {#                                          .css( "transition", "all 1s ease-in-out" );#}
-
+                    $( "#alert").remove()
+{#                    $( "#form-container" ).css( "transform", "translate(0,-150px)" )#}
+{#                                          .css( "transition", "all 1s ease-in-out" );#}
 
                     if(data.result.success==true) {
                         $( "#form-container").after('<div id="alert" class="alert alert-success" role="alert">'+ data.result['file_name'] +' Succefully uploaded.</div>')
@@ -111,20 +107,16 @@
                             window.location.replace("/clustering");
                         }, 1000);
                     }
-                    else {
-                        $("#form-container").after('<div id="alert" class="alert alert-warning" role="alert">' + data.result['error'] + '</div>')
+                    else{
+                        $( "#form-container").after('<div id="alert" class="alert alert-warning" role="alert">'+data.result['error']+'</div>')
                     }
 
-                },
-                error: function (e, data) {
-                    //   console.log("readyState: "+e.readyState+"\nstatus: "+e.status);
-                    // console.log("responseText: "+e.responseText);
                 },
                 progressall: function (e, data) {
                     var progress = parseInt(data.loaded / data.total * 100, 10);
                     $('#progress .bar').css(
-                            'width',
-                                    4.4 * progress
+                        'width',
+                        4.4*progress
                     );
                 }
             });
