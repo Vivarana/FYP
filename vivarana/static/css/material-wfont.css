@@ -6241,13 +6241,15 @@ fieldset[disabled] .navbar .btn-link:focus {
 }
 
 .nav-tabs {
-    background: #4285f4;
+  background: #2C3E50;
+  height: 29px;
 }
 
 .nav-tabs > li > a {
-    color: #FFFFFF;
-    border: 0;
-    margin: 0;
+  top: 0;
+  color: #FFFFFF;
+  border: 0;
+  margin: 0;
 }
 
 .nav-tabs > li > a:hover {

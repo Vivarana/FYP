@@ -1,23 +1,24 @@
 {% extends 'vivarana/visualize-base.html' %}
+{% block title %}Visualization of Data{% endblock %}
 {% block body_block %}
 
     <div id="parcoords-main" class="parcoords"></div>
     {% autoescape off %}
         {% for col,type in columns.items %}
-            <div id="column_dropdown_{{col}}" class="dropdown-tip">
-                <ul id="column_dropdown-menu_{{col}}" class="dropdown dropdown-menu">
+            <div id="column_dropdown_{{ col }}" class="dropdown-tip">
+                <ul id="column_dropdown-menu_{{ col }}" class="dropdown dropdown-menu">
                     {% if type == "string" %}
-                        <li><a onclick="temp('{{ col }}',{{forloop.counter}}), this" href="#">Order By</a></li>
+                        {#            todo            <li><a onclick="temp('{{ col }}',{{ forloop.counter }},this)" href="#">Order By</a></li>#}
                     {% else %}
-                        <li><a onclick="sum('{{ col }}',{{forloop.counter}},this)" href="#">Sum</a></li>
-                        <li><a onclick="average('{{ col }}',{{forloop.counter}}), this" href="#">Average</a></li>
-                        <li><a onclick="max('{{ col }}',{{forloop.counter}})" href="#">Maximum</a></li>
-                        <li><a onclick="min('{{ col }}',{{forloop.counter}})" href="#">Minimum</a></li>
-                        <li><a onclick="count('{{ col }}',{{forloop.counter}})" href="#">Count</a></li>
+                        <li><a onclick="sum('{{ col }}',{{ forloop.counter }},this)" href="#">Sum</a></li>
+                        <li><a onclick="average('{{ col }}',{{ forloop.counter }}, this)" href="#">Average</a></li>
+                        <li><a onclick="max('{{ col }}',{{ forloop.counter }}, this)" href="#">Maximum</a></li>
+                        <li><a onclick="min('{{ col }}',{{ forloop.counter }}, this)" href="#">Minimum</a></li>
+                        <li><a onclick="count('{{ col }}',{{ forloop.counter }}, this)" href="#">Count</a></li>
                     {% endif %}
-                    <li><a onclick="temp('{{ col }}',{{forloop.counter}})" href="#">Remove Axis</a></li>
-                    <li><a onclick="flipAxis('{{ col }}',{{forloop.counter}})" href="#">Flip Axis</a></li>
-                    <li><a onclick="temp('{{ col }}',{{forloop.counter}})" href="#">Reset Axis</a></li>
+                    <li><a onclick="removeAxis('{{ col }}',{{ forloop.counter }})" href="#">Remove Axis</a></li>
+                    <li><a onclick="flipAxis('{{ col }}',{{ forloop.counter }})" href="#">Flip Axis</a></li>
+                    <li><a onclick="resetAxis('{{ col }}',{{ forloop.counter }}, this)" href="#">Reset Axis</a></li>
                 </ul>
             </div>
         {% endfor %}
@@ -25,59 +26,67 @@
 
 
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">Select columns for rule generation</h4>
-          </div>
-          <div class="modal-body">
-               <form action="" id="column_select_for_rulegen" onsubmit="return false;">
-                {% csrf_token %}
-                   {% for col,type in columns.items %}
-                    <div class="checkbox">
-                        <label>
-                          <input type="checkbox" name="column_for_rulegen" value="{{ col }}" checked> {{ col }}
-                        </label>
-                     </div>
-                   {% endfor %}
-                </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" onclick="generate_rules();" class="btn btn-primary">Generate</button>
-          </div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Select columns for rule generation</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="" id="column_select_for_rulegen" onsubmit="return false;">
+                        {% csrf_token %}
+                        {% for col,type in columns.items %}
+                            {% if col != "clusterID" %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="column_for_rulegen" value="{{ col }}"
+                                               checked> {{ col }}
+                                    </label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="generate_rules();" class="btn btn-primary">Generate</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
 
     <div id="slickgrid-container">
         <div id="rule-right">
-            <div id="rule-right-table-head"></div>
+            {#            <div id="rule-right-table-head"></div>#}
             <ul id="myTab" class="nav nav-tabs" role="tablist">
-              <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="false">Brushes</a></li>
-              <li role="presentation" class=""><a href="#cep_rule_panel" role="tab" id="cep_rule_panel-tab" data-toggle="tab" aria-controls="cep_rule_panel" aria-expanded="true">CEP Rule</a></li>
+                <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab"
+                                                          aria-controls="home" aria-expanded="false">Brushes</a></li>
+                <li role="presentation" class=""><a href="#cep_rule_panel" role="tab" id="cep_rule_panel-tab"
+                                                    data-toggle="tab" aria-controls="cep_rule_panel"
+                                                    aria-expanded="true">CEP Rule</a></li>
             </ul>
             <div id="myTabContent" class="tab-content">
-              <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
-                <div id="rule-table">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Column</th>
-                        <th>Conditions</th>
-                    </tr>
-                    </thead>
-                    <tbody id="rule-table-body">
+                <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
+                    <div id="rule-table">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Conditions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="rule-table-body">
 
-                    </tbody>
-                </table>
-            </div>
-              </div>
-              <div role="tabpanel" class="tab-pane fade" id="cep_rule_panel" aria-labelledby="cep_rule_panel-tab">
-                <p id="rule-paragraph">No rules have been created yet. Please select the events you are interested in and press "Generate Rule" button on the toolbar</p>
-              </div>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="cep_rule_panel" aria-labelledby="cep_rule_panel-tab">
+                    <p id="rule-paragraph">No rules have been created yet. Please select the events you are interested
+                        in and press "Generate Rule" button on the toolbar</p>
+                </div>
             </div>
         </div>
         <div id="slickgrid-container-inner-left">
@@ -195,7 +204,7 @@
     // color by zscore
     function zscore(col) {
         var n = col.length,
-                mean = _(col).underscore.mean(),
+                mean = _(col).mean(),
                 sigma = _(col).stdDeviation();
         return function (d) {
             return (d - mean) / sigma;
@@ -221,7 +230,7 @@
                     .selectAll(".label");
         } else {
             parcoords.svg.selectAll(".dimension")
-                    .on("click", change_color())
+                    .on("click", change_color)
                     .selectAll(".label");
         }
     });
@@ -412,10 +421,10 @@
         ruleTableUpdate(d);
     });
 
-    parcoords.on("brushend", function(d) {
-     gridUpdate(d);
-     ruleTableUpdate(d);
-   });
+    parcoords.on("brushend", function (d) {
+        gridUpdate(d);
+        ruleTableUpdate(d);
+    });
 
 
     function ruleTableUpdate(d) {
@@ -427,44 +436,57 @@
         }
     }
 
-    function aggregate_func(data, obj) {
+    function aggregate_func(data, selected_id_lst) {
         var j_data = JSON.parse(data);
-        j_data.forEach(function (d, i) {
-            d.id = d.id || i;
-        });
+
+        for (i = 0; i < selected_id_lst.length; i += 1) {
+            console.log(j_data[i]);
+            j_data[i]['id'] = selected_id_lst[i];
+        }
+
         drawData(j_data);
         gridUpdate(j_data);
-        $(obj).parent().addClass("disabled");
+        {#        $(obj).parent().addClass("disabled");#}
+    }
+
+    function perform_aggregation(aggregate_function, attribute_name) {
+
+        var selected_ids = "";
+        var current_data = parcoords.state.data;
+
+        for (var i in current_data) {
+            selected_ids = selected_ids + String(current_data[i]['id']) + ',';
+        }
+        var selected_id_lst = [];
+        for (var i in current_data) {
+            selected_id_lst.push(current_data[i]['id'])
+        }
+        console.log(selected_ids);
+        $.get('/aggregator/', {selected_ids: selected_ids, aggregate_func: aggregate_function, attribute_name: attribute_name}, function (data) {
+            aggregate_func(data, selected_id_lst);
+        });
+
+
     }
 
     function sum(col_name, col_number, obj) {
-        $.get('/aggregator/', {aggregate_func: 0, attribute_name: col_name}, function (data) {
-            aggregate_func(data, obj);
-        });
+        perform_aggregation(0, col_name);
     }
 
     function average(col_name, col_number, obj) {
-        $.get('/aggregator/', {aggregate_func: 1, attribute_name: col_name}, function (data) {
-            aggregate_func(data, obj);
-        });
+        perform_aggregation(1, col_name);
     }
 
     function min(col_name, col_number, obj) {
-        $.get('/aggregator/', {aggregate_func: 2, attribute_name: col_name}, function (data) {
-            aggregate_func(data, obj);
-        });
+        perform_aggregation(2, col_name);
     }
 
     function max(col_name, col_number, obj) {
-        $.get('/aggregator/', {aggregate_func: 3, attribute_name: col_name}, function (data) {
-            aggregate_func(data, obj);
-        });
+        perform_aggregation(3, col_name);
     }
 
     function count(col_name, col_number, obj) {
-        $.get('/aggregator/', {aggregate_func: 4, attribute_name: col_name}, function (data) {
-            aggregate_func(data, obj);
-        });
+        perform_aggregation(4, col_name);
     }
 
 
@@ -487,8 +509,22 @@
         parcoords.flip(col_name).updateAxes().brushReset().render(); //TODO update when brushing fixed with flipping
     }
 
-    function temp(input) {
-        alert(input);
+    function resetAxis(col_name, col_number, obj) {
+        var selected_ids = "";
+        var current_data = parcoords.state.data;
+
+        console.log(current_data)
+
+        for (var i in current_data) {
+            selected_ids = selected_ids + String(current_data[i]['id']) + ',';
+        }
+        var selected_id_lst = [];
+        for (var i in current_data) {
+            selected_id_lst.push(current_data[i]['id'])
+        }
+        $.get('/reset_axis/', {attribute_name: col_name, selected_ids: selected_ids}, function (data) {
+            aggregate_func(data, selected_id_lst);
+        });
     }
 
     function gridUpdate(data) {
@@ -497,18 +533,16 @@
         dataView.endUpdate();
     }
 
-
-
-    function generate_rules(){
+    function generate_rules() {
         $('#myModal').modal('toggle');
         var selected_ids = []
         var brushed_data = parcoords.state.brushed
 
-        var checked_columns = $("input:checkbox[name=column_for_rulegen]:checked").map(function(){
-          return $(this).val();
+        var checked_columns = $("input:checkbox[name=column_for_rulegen]:checked").map(function () {
+            return $(this).val();
         }).get();
 
-        for(var i in brushed_data){
+        for (var i in brushed_data) {
             selected_ids.push(brushed_data[i]['id'])
         }
 
@@ -516,14 +550,14 @@
             url: '/rule_gen/',
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({"selected_ids": selected_ids, "checked_columns":checked_columns}),
+            data: JSON.stringify({"selected_ids": selected_ids, "checked_columns": checked_columns}),
             dataType: 'json',
-            success: function(result) {
-                 $("#cep_rule_panel-tab").tab('show')
-                for(var rule in result.rules) {
+            success: function (result) {
+                $("#cep_rule_panel-tab").tab('show')
+                for (var rule in result.rules) {
                     $("#cep_rule_panel").empty();
-                    $("#cep_rule_panel").append('<p style="color: blue">'+ 'FORM EVENT_STREAM_NAME</br>SELECT *</br>Having' +'</p>')
-                    $("#cep_rule_panel").append('<p style="color: black">'+ result.rules[rule]['rule'] +'</p>')
+                    $("#cep_rule_panel").append('<p style="color: blue">' + 'FORM EVENT_STREAM_NAME</br>SELECT *</br>Having' + '</p>')
+                    $("#cep_rule_panel").append('<p style="color: black">' + result.rules[rule]['rule'] + '</p>')
                 }
             }
         });
@@ -532,33 +566,33 @@
 
     function getCookie(name) {
         var cookieValue = null;
-            if (document.cookie && document.cookie != '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
-        var csrftoken = getCookie('csrftoken');
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
 
-        function csrfSafeMethod(method) {
-            // these HTTP methods do not require CSRF protection
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
 
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
-        });
+        }
+    });
 
     </script>
 

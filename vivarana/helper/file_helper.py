@@ -1,6 +1,8 @@
 from datetime import datetime
+import re
 import pandas as pd
 import apachelog
+import string
 
 CATEGORICAL_COLUMN_THRESHOLD = 10
 
@@ -23,8 +25,6 @@ def handle_csv(file_in):
 
         with open("media/temp.csv", 'r') as csv_file:
             original_data_frame = pd.read_csv(csv_file)
-
-            print list(original_data_frame.columns)
             return {'success': True, 'dataframe': original_data_frame}
     except Exception, e:
         print str(e)
@@ -51,16 +51,16 @@ def handle_log(file_in):
 
     original_data_frame = pd.DataFrame(log_list)
 
-    #Convert the size column to integer from string todo : Set constants for these
+    # Convert the size column to integer from string todo : Set constants for these
     if 'Size' in original_data_frame.columns:
         original_data_frame['Size'] = original_data_frame['Size'].replace('-', 0)
         original_data_frame['Size'].apply(int)
         original_data_frame['Size'] = original_data_frame['Size'].astype(int)
 
     if 'Date' in original_data_frame.columns:
-        original_data_frame['Date'] = original_data_frame['Date'].map(lambda x: datetime.strptime(x.split(' ')[0][1::], "%d/%b/%Y:%H:%M:%S"))
+        original_data_frame['Date'] = pd.to_datetime(original_data_frame['Date'], format="[%d/%b/%Y:%H:%M:%S +0530]")
 
-    #Splitting the request line. todo : Fix the errors when the format doesnt match
+    # Splitting the request line. todo : Fix the errors when the format doesnt match
     if 'request' in original_data_frame.columns:
         temp = original_data_frame.request.str.split(' ')
         original_data_frame['Method'] = temp.str[0]
@@ -68,6 +68,7 @@ def handle_log(file_in):
         original_data_frame['Protocol'] = temp.str[-1]
         original_data_frame = original_data_frame.drop('request', 1)
 
+    original_data_frame.to_csv('media/parsed_log.csv', index=False)
     return {'success': True, 'dataframe': original_data_frame}
 
 
@@ -85,7 +86,7 @@ def load_data(filename, dataframe):
 def remove_columns(needed_columns, dataframe):
 
     new_dataframe = dataframe.copy(deep=True)
-    column_list = [new_dataframe.columns[int(i)-1] for i in needed_columns]
+    column_list = [new_dataframe.columns[int(i) - 1] for i in needed_columns]
     return new_dataframe[column_list]
 
 
@@ -94,8 +95,6 @@ def get_compatible_column_types(dataframe):
     columns = list(dataframe.columns)
 
     data_types = list(dataframe.dtypes)
-
-    print columns, data_types
 
     for i, col_type in enumerate(data_types):
         if col_type == 'object':
@@ -129,3 +128,12 @@ def get_compatible_column_types(dataframe):
 
     column_data = [(columns[col], data_types[col]) for col in xrange(len(columns))]
     return dict(column_data)
+
+
+def get_html_friendly_names(columns):
+    return [remove_illegal_characters(column_name) for column_name in columns]
+
+
+def remove_illegal_characters(name):
+    valid_chars = "_.%s%s" % (string.ascii_letters, string.digits)
+    return ''.join([letter for letter in name if letter in valid_chars])

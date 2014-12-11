@@ -158,26 +158,43 @@
 
 
                     <div class="yamm-content">
-                        <div class="row">
-                            <div class="col-xs-7">
-                                <input id="time-window" type="number" class="form-control" placeholder="Specify the time window">
-
-                            </div>
-                            <div class="col-xs-5">
-                                <select class="form-control" id="granularity-select">
-                                    <option>seconds</option>
-                                    <option>minutes</option>
-                                    <option>days</option>
-                                </select>
-                            </div>
+                        {% if enable_time_window %}
                             <div class="row">
-                                <div class="col-xs-7">
+                                <div class="col-xs-6">
+                                    <input id="time-window" type="number" class="form-control"
+                                           placeholder="Specify the time window">
                                 </div>
-                                <div class="col-xs-5"><a href="javascript:setTimeWindow()"
-                                                         class="btn btn-primary btn-sm">Apply</a></div>
+                                <div class="col-xs-3">
+                                    <select class="form-control" id="granularity-select">
+                                        <option>seconds</option>
+                                        <option>minutes</option>
+                                        <option>days</option>
+                                    </select>
+                                </div>
+                                <div class="col-xs-1">
+                                    <a href="javascript:setTimeWindow()"
+                                       class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
+                                </div>
+                                <div class="col-xs-2">
+                                    <a href="javascript:clearTimeWindow()"
+                                       class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-xs-9">
+                                <input id="event-window" type="number" class="form-control"
+                                       placeholder="Specify the event window">
+                            </div>
+                            <div class="col-xs-1">
+                                <a href="javascript:setEventWindow()"
+                                   class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
+                            </div>
+                            <div class="col-xs-2">
+                                <a href="javascript:clearEventWindow()"
+                                   class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
                             </div>
                         </div>
-
 
                     </div>
 

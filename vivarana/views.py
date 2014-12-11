@@ -1,6 +1,5 @@
-import json
-import pandas
-
+from pandas import *
+from pandas.io import json
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
@@ -25,11 +24,15 @@ def home(request):
 def visualize(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
         return redirect(UPLOAD_PATH)
-
     column_types = file_helper.get_compatible_column_types(current_data_frame)
-    json_output = current_data_frame.to_json(orient='records')
-    return render(request, 'vivarana/visualize.html',
-                  {'columns': column_types, 'result': json_output, 'frame_size': len(current_data_frame)})
+    json_output = current_data_frame.to_json(orient='records', date_format='iso')
+    if 'Date' not in current_data_frame.columns:
+        enable_time_window = False
+    else:
+        enable_time_window = True
+    context = {'columns': column_types, 'result': json_output, 'frame_size': len(current_data_frame),
+               'enable_time_window': enable_time_window}
+    return render(request, 'vivarana/visualize.html', context)
 
 
 def sunburst(request):
@@ -37,16 +40,41 @@ def sunburst(request):
 
 
 def aggregator(request):
-    new_data_frame = aggregate.aggregate_window(int(request.GET['aggregate_func']), properties_map['time_window_value'],
-                                                properties_map['time_granularity'],
-                                                request.GET['attribute_name'], original_data_frame)
-    json = new_data_frame.to_json(orient='records')
-    return HttpResponse(json)
+    if WINDOW_TYPE not in properties_map:
+        return HttpResponse('error')
+
+    if request.method == GET:
+        ids = request.GET['selected_ids'][:-1]
+        selected_ids = [int(x) for x in ids.split(",")]
+        window_type = properties_map[WINDOW_TYPE]
+
+        if window_type == TIME_WINDOW:
+            new_data_frame = aggregate.aggregate_time_window(int(request.GET['aggregate_func']),
+                                                             properties_map['time_window_value'],
+                                                             properties_map['time_granularity'],
+                                                             request.GET['attribute_name'], original_data_frame,
+                                                             current_data_frame)
+
+        elif window_type == EVENT_WINDOW:
+            new_data_frame = aggregate.aggregate_event_window(int(request.GET['aggregate_func']),
+                                                              request.GET[ATTRIBUTE_NAME],
+                                                              properties_map[EVENT_WINDOW_VALUE], original_data_frame,
+                                                              current_data_frame)
+
+        df = new_data_frame.iloc[selected_ids, :]
+        json_out = df.to_json(orient='records')
+        return HttpResponse(json_out)
 
 
-def set_time(request):
-    properties_map['time_granularity'] = request.GET['time_granularity']
-    properties_map['time_window_value'] = request.GET['time_window_val']
+def set_window(request):
+    window_type = request.GET[WINDOW_TYPE]
+    properties_map[WINDOW_TYPE] = window_type
+    if window_type == TIME_WINDOW:
+        properties_map[TIME_GRANULARITY] = request.GET[TIME_GRANULARITY]
+        properties_map[TIME_WINDOW_VALUE] = int(request.GET[TIME_WINDOW_VALUE])
+    if window_type == EVENT_WINDOW:
+        properties_map[EVENT_WINDOW_VALUE] = int(request.GET[EVENT_WINDOW_VALUE])
+
     return HttpResponse('hello world')
 
 
@@ -104,6 +132,8 @@ def upload(request):
                 categorize.categorize_frame(output)
                 global original_data_frame, current_data_frame
                 original_data_frame = output['dataframe']
+
+                original_data_frame.columns = file_helper.get_html_friendly_names(original_data_frame.columns)
                 current_data_frame = original_data_frame.copy(deep=True)
 
                 request.session['filename'] = input_file.name
@@ -117,8 +147,8 @@ def upload(request):
                     response_data['error'] = output['error']
                     response_data['success'] = False
 
-        except Exception, e:
-            print str(e)
+        except Exception, error:
+            print str(error)
             response_data['error'] = "Error while setting up file. Please try again."
             response_data['success'] = False
         return HttpResponse(json.dumps(response_data), content_type="application/json")
@@ -133,8 +163,19 @@ def rule_gen(request):
         return HttpResponse(json_response)
     else:
         print request.GET['selected_ids']
-        json_responce = "{'message' : done!}"
-        return HttpResponse(json_responce)
+        json_response = "{'message' : done!}"
+        return HttpResponse(json_response)
+
+
+def reset_axis(request):
+    if request.method == GET:
+        ids = request.GET['selected_ids'][:-1]
+        selected_ids = [int(x) for x in ids.split(",")]
+        attribute_name = request.GET['attribute_name']
+        current_data_frame[attribute_name] = original_data_frame[attribute_name]
+        df = original_data_frame.iloc[selected_ids, :]
+        json_out = df.to_json(orient='records')
+        return HttpResponse(json_out)
 
 
 
