@@ -31,6 +31,10 @@
     padding-top: 10px;
 }
 
+#rule-table {
+    clear:both;
+}
+
 .slick-row:hover {
     font-weight: bold;
     color: #069;

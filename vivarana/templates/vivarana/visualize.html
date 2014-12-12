@@ -363,7 +363,8 @@
     var options = {
         enableCellNavigation: true,
         enableColumnReorder: false,
-        multiColumnSort: false
+        multiColumnSort: false,
+		forceFitColumns: true
     };
 
     var dataView = new Slick.Data.DataView();
@@ -414,6 +415,7 @@
 
     // fill grid with data
     gridUpdate(data);
+	
 
     // update grid on brush
     parcoords.on("brush", function (d) {

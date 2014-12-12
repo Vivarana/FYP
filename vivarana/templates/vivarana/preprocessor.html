@@ -48,14 +48,24 @@
     </style>
     <div class="container-clustering">
         <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
+
+        <form method="POST" action="" onsubmit="return validateForm()">
+            {% csrf_token %}
+        <div class="row">
+             <h3 >Select Visualization Method</h3>
+        </div>
+        <tr class="col-xs-12">
+        <td>
+             <input type="radio" name="visualization" value="parellel" checked>Parellel Coordinates
+        </td>
+        <td>
+               <input type="radio" name="visualization" value="sunburst">Sunburst
+        </td>
+    </tr>
         <div class="row">
             <h3>Select Columns to Visualize</h3>
             <h4>Data Set -> {{ filename }}</h4>
         </div>
-
-
-        <form method="POST" action="" onsubmit="return validateForm()">
-            {% csrf_token %}
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -107,6 +117,7 @@
         });
 
         function validateForm() {
+
             if ($('input[type=checkbox]:checked').length != 0) {
                 return true;
             }

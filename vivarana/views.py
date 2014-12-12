@@ -99,8 +99,14 @@ def preprocessor(request):
 
     if request.method == 'POST':
         columns = request.POST.getlist('column')
+        vistype = request.POST.get('visualization')
         global current_data_frame
         current_data_frame = file_helper.remove_columns(columns, current_data_frame)
+        if vistype == 'parellel':
+            return redirect(VISUALIZE_PATH)
+        else:
+            if vistype == 'sunburst':
+                return redirect(SUNBURST_PATH)
         return redirect(VISUALIZE_PATH)
     else:
         context = file_helper.load_data(request.session['filename'], current_data_frame)
@@ -163,6 +169,10 @@ def reset_axis(request):
         df = original_data_frame.iloc[selected_ids, :]
         json_out = df.to_json(orient='records')
         return HttpResponse(json_out)
+
+
+def sunburst(request):
+    return render(request, 'vivarana/sunburst.html', {})
 
 
 

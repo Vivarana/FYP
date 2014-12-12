@@ -18,6 +18,7 @@ PREPROCESSOR_PAGE = 'vivarana/preprocessor.html'
 UPLOAD_PATH = '/upload/'
 VISUALIZE_PATH = '/visualize'
 PREPROCESSOR_PATH = '/preprocessor/'
+SUNBURST_PATH = "/sunburst/"
 
 #Rule generation associated constants
 RULEGEN_COLUMN_NAME = "SELECTED_FOR_RULEGEN"
