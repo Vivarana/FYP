@@ -20,7 +20,7 @@ VISUALIZE_PATH = '/visualize'
 PREPROCESSOR_PATH = '/preprocessor/'
 SUNBURST_PATH = "/sunburst/"
 
-#Rule generation associated constants
+# Rule generation associated constants
 RULEGEN_COLUMN_NAME = "SELECTED_FOR_RULEGEN"
 
 #time/event window constants
@@ -31,3 +31,6 @@ WINDOW_TYPE = 'window_type'
 TIME_GRANULARITY = 'time_granularity'
 TIME_WINDOW_VALUE = 'time_window_value'
 EVENT_WINDOW_VALUE = 'event_window_value'
+
+#error
+ERROR_100 = 'error-100'  #aggregate error where aggregation is performed without setting window value

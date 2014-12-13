@@ -364,7 +364,7 @@
         enableCellNavigation: true,
         enableColumnReorder: false,
         multiColumnSort: false,
-		forceFitColumns: true
+        forceFitColumns: true
     };
 
     var dataView = new Slick.Data.DataView();
@@ -415,7 +415,7 @@
 
     // fill grid with data
     gridUpdate(data);
-	
+
 
     // update grid on brush
     parcoords.on("brush", function (d) {
@@ -442,7 +442,6 @@
         var j_data = JSON.parse(data);
 
         for (i = 0; i < selected_id_lst.length; i += 1) {
-            console.log(j_data[i]);
             j_data[i]['id'] = selected_id_lst[i];
         }
 
@@ -463,8 +462,13 @@
         for (var i in current_data) {
             selected_id_lst.push(current_data[i]['id'])
         }
-        console.log(selected_ids);
         $.get('/aggregator/', {selected_ids: selected_ids, aggregate_func: aggregate_function, attribute_name: attribute_name}, function (data) {
+
+            if (data == 'error-100') {
+                $.snackbar({content: 'Please specify a time or event window value.', style: 'toast'});
+                return false;
+            }
+
             aggregate_func(data, selected_id_lst);
         });
 
@@ -514,8 +518,6 @@
     function resetAxis(col_name, col_number, obj) {
         var selected_ids = "";
         var current_data = parcoords.state.data;
-
-        console.log(current_data)
 
         for (var i in current_data) {
             selected_ids = selected_ids + String(current_data[i]['id']) + ',';

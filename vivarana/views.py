@@ -2,8 +2,10 @@ from pandas import *
 from pandas.io import json
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from addict import Dict
 
 from helper import file_helper
+
 from helper import aggregate
 from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
@@ -12,7 +14,7 @@ from helper.cluster import *
 original_data_frame = None
 current_data_frame = None
 
-properties_map = {}
+properties_map = Dict()
 
 
 def home(request):
@@ -35,25 +37,26 @@ def visualize(request):
 
 
 def aggregator(request):
-    if WINDOW_TYPE not in properties_map:
-        return HttpResponse('error')
+    global properties_map
+    if not properties_map.WINDOW_TYPE or properties_map.TIME_WINDOW_VALUE == -1 or properties_map.EVENT_WINDOW_VALUE == -1:
+        return HttpResponse(ERROR_100)
 
     if request.method == GET:
         ids = request.GET['selected_ids'][:-1]
         selected_ids = [int(x) for x in ids.split(",")]
-        window_type = properties_map[WINDOW_TYPE]
+        window_type = properties_map.WINDOW_TYPE
 
         if window_type == TIME_WINDOW:
             new_data_frame = aggregate.aggregate_time_window(int(request.GET['aggregate_func']),
-                                                             properties_map['time_window_value'],
-                                                             properties_map['time_granularity'],
+                                                             properties_map.TIME_WINDOW_VALUE,
+                                                             properties_map.TIME_GRANULARITY,
                                                              request.GET['attribute_name'], original_data_frame,
                                                              current_data_frame)
 
         elif window_type == EVENT_WINDOW:
             new_data_frame = aggregate.aggregate_event_window(int(request.GET['aggregate_func']),
                                                               request.GET[ATTRIBUTE_NAME],
-                                                              properties_map[EVENT_WINDOW_VALUE], original_data_frame,
+                                                              properties_map.EVENT_WINDOW_VALUE, original_data_frame,
                                                               current_data_frame)
 
         df = new_data_frame.iloc[selected_ids, :]
@@ -62,13 +65,14 @@ def aggregator(request):
 
 
 def set_window(request):
+    global properties_map
     window_type = request.GET[WINDOW_TYPE]
-    properties_map[WINDOW_TYPE] = window_type
+    properties_map.WINDOW_TYPE = window_type
     if window_type == TIME_WINDOW:
-        properties_map[TIME_GRANULARITY] = request.GET[TIME_GRANULARITY]
-        properties_map[TIME_WINDOW_VALUE] = int(request.GET[TIME_WINDOW_VALUE])
+        properties_map.TIME_GRANULARITY = request.GET[TIME_GRANULARITY]
+        properties_map.TIME_WINDOW_VALUE = int(request.GET[TIME_WINDOW_VALUE])
     if window_type == EVENT_WINDOW:
-        properties_map[EVENT_WINDOW_VALUE] = int(request.GET[EVENT_WINDOW_VALUE])
+        properties_map.EVENT_WINDOW_VALUE = int(request.GET[EVENT_WINDOW_VALUE])
 
     return HttpResponse('hello world')
 
