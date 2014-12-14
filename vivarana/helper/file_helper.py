@@ -6,7 +6,7 @@ import string
 
 CATEGORICAL_COLUMN_THRESHOLD = 10
 
-
+#extra parameters specifying header names in * headers
 def handle_uploaded_file(file_in, *headers):
     file_extension = file_in.name.split('.')[-1]
     if file_extension == 'csv':
@@ -16,7 +16,6 @@ def handle_uploaded_file(file_in, *headers):
     else:
         return {'success': False, 'error': 'Sorry. File type ' + file_extension + ' is not supported'}
 
-
 def handle_csv(file_in, *headers):
     try:
         with open("media/temp.csv", 'wb+') as destination:
@@ -24,13 +23,14 @@ def handle_csv(file_in, *headers):
                 destination.write(chunk)
 
         with open("media/temp.csv", 'r') as csv_file:
-            print type(headers)
-            if headers[0][0] == 0:
-                original_data_frame = pd.read_csv(csv_file)
-            elif headers[0][0] == 'none':
-                original_data_frame = pd.read_csv(csv_file,header='None',names = headers [0][1])
+            #check header parameters
+            # print type(headers)
+            # if headers[0][0] == 0:
+            original_data_frame = pd.read_csv(csv_file)
+            # elif headers[0][0] == 'none':
+            #     original_data_frame = pd.read_csv(csv_file,header='None',names = headers [0][1])
 
-            return {'success': True, 'dataframe': original_data_frame}
+        return {'success': True, 'dataframe': original_data_frame}
     except Exception, e:
         print str(e)
         return {'success': False}

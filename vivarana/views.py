@@ -122,7 +122,9 @@ def upload(request):
         response_data = {}
         try:
             input_file = request.FILES['fileinput']
-            output = file_helper.handle_uploaded_file(input_file,0)
+            output = file_helper.handle_uploaded_file(input_file)
+            #output = file_helper.handle_uploaded_file(input_file,0) additional parameter saying if theirs a header
+            #line in csv or not
 
             if output['success']:
                 global original_data_frame, current_data_frame
