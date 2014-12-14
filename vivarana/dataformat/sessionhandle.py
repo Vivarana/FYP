@@ -2,8 +2,6 @@ import pandas as pd
 import numpy as np
 import time
 
-__author__ = 'Mihil'
-
 path = 'C:\Users\Developer\Documents\FYP\FYP\media\logdata.csv'
 frame = pd.read_csv(path, index_col='Time', parse_dates=True, encoding='latin1')
 

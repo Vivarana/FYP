@@ -13,4 +13,5 @@ urlpatterns = patterns('',
     url(r'^rule_gen/$', views.rule_gen, name='rule_gen'),
     url(r'^reset_axis/$', views.reset_axis, name='reset_axis'),
     url(r'^sunburst/$', views.sunburst, name='sunburst'),
+    url(r'^treedata/$', views.get_tree_data, name='tree_data'),
 )

@@ -2,17 +2,22 @@ from pandas import *
 from pandas.io import json
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+import logging
+import json
 
 from helper import file_helper
 from helper import aggregate
 from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
+import vivarana.dataformat.categorize as ct
 
 
 original_data_frame = None
 current_data_frame = None
 
 properties_map = {}
+
+logger = logging.getLogger('root')
 
 
 def home(request):
@@ -104,8 +109,7 @@ def preprocessor(request):
         current_data_frame = file_helper.remove_columns(columns, current_data_frame)
         if vistype == 'parellel':
             return redirect(VISUALIZE_PATH)
-        else:
-            if vistype == 'sunburst':
+        elif vistype == 'sunburst':
                 return redirect(SUNBURST_PATH)
         return redirect(VISUALIZE_PATH)
     else:
@@ -118,8 +122,7 @@ def upload(request):
         response_data = {}
         try:
             input_file = request.FILES['fileinput']
-
-            output = file_helper.handle_uploaded_file(input_file)
+            output = file_helper.handle_uploaded_file(input_file,0)
 
             if output['success']:
                 global original_data_frame, current_data_frame
@@ -140,7 +143,6 @@ def upload(request):
                     response_data['success'] = False
 
         except Exception, error:
-            print str(error)
             response_data['error'] = "Error while setting up file. Please try again."
             response_data['success'] = False
 
@@ -172,7 +174,13 @@ def reset_axis(request):
 
 
 def sunburst(request):
-    return render(request, 'vivarana/sunburst.html', {})
+
+    #logger.debug(request)
+    return render(request, 'vivarana/sunburst.html')
+
+def get_tree_data(request):
+    json_tree = ct.build_json_hierarchy(current_data_frame.values)
+    return HttpResponse(json_tree)
 
 
 
