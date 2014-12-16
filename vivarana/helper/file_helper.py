@@ -80,8 +80,14 @@ def parse_date(date):
 def load_data(filename, dataframe):
     columns = list(dataframe.columns)
     data_types = list(dataframe.dtypes)
-    column_data = [(columns[col], data_types[col]) for col in xrange(len(columns))]
-    return {"filename": filename, "columns": column_data}
+    descriptions = dataframe.describe()
+
+    # todo:  Fix this hackish code
+    column_data = [
+        (columns[col], data_types[col], '</br>'.join(dataframe[columns[col]].describe().to_string().split('\n'))) for col
+        in xrange(len(columns))]
+
+    return {"filename": filename, "columns": column_data, "size": len(dataframe)}
 
 
 def remove_columns(needed_columns, dataframe):
