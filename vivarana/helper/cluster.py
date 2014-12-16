@@ -9,7 +9,8 @@ from vivarana.constants import *
 
 def apply_clustering(cluster_method, number_of_clusters, current_data_frame, data_frame):
     pandas2ri.activate()
-    r_dataframe = com.convert_to_r_dataframe(data_frame)
+    data_frame.to_csv('media\dataframe.csv')
+    r_dataframe = ro.r['read.csv']('media\dataframe.csv')
 
     if cluster_method == K_MEANS_CLUSTERING:
         klaR = importr("klaR")
@@ -17,9 +18,9 @@ def apply_clustering(cluster_method, number_of_clusters, current_data_frame, dat
         current_data_frame['clusterID'] = KMC[0]
 
     elif cluster_method == HIERARCHICAL_CLUSTERING:
-        distances = ro.r.dist(r_dataframe,
-                              method="euclidean")  # specify the distance todo add dropdownbox to get user input
-        cluster_input = ro.r.hclust(distances, method="ward.D")
+        cluster = importr("cluster")
+        distances = cluster.daisy(r_dataframe, metric="gower")
+        cluster_input = ro.r.hclust(distances, method="complete")
         cluster_groups = ro.r.cutree(cluster_input, k=number_of_clusters)  # specify the number of clusters
         current_data_frame['clusterID'] = cluster_groups
 
