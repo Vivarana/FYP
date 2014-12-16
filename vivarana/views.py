@@ -32,9 +32,9 @@ def visualize(request):
         return redirect(UPLOAD_PATH)
     column_types = file_helper.get_compatible_column_types(current_data_frame)
 
-    #minus one to convert zero based to one based
+    # minus one to convert zero based to one based
     page_number = int(request.GET.get('page', 1)) - 1
-    is_last_page = pagination_config["number_pages"]-1 == page_number
+    is_last_page = pagination_config["number_pages"] - 1 == page_number
     data_start = page_number * pagination_config["page_size"]
     data_end = (page_number + 1) * pagination_config["page_size"]
 
@@ -51,9 +51,9 @@ def visualize(request):
         enable_time_window = False
     else:
         enable_time_window = True
-    context = {'columns': column_types, 'result': json_output, 'frame_size': data_end-data_start,
+    context = {'columns': column_types, 'result': json_output, 'frame_size': data_end - data_start,
                'enable_time_window': enable_time_window, 'is_last_page': is_last_page,
-               'pagination_config': pagination_config, "page_number": page_number+1}
+               'pagination_config': pagination_config, "page_number": page_number + 1}
     return render(request, 'vivarana/visualize.html', context)
 
 
@@ -123,11 +123,21 @@ def preprocessor(request):
     if request.method == 'POST':
         columns = request.POST.getlist('column')
         nav_type = request.POST.get('nav-type')
+        sampling_type = request.POST.get('sampling-type')
         vistype = request.POST.get('visualization')
 
         global current_data_frame
-        current_data_frame = file_helper.remove_columns(columns, current_data_frame)
+        current_data_frame = file_helper.remove_columns(columns, original_data_frame)
 
+        #sampling the data
+        if sampling_type != 'none':
+            if sampling_type == 'random':
+                sample_size = int(request.POST.get('sample-size'))
+                print len(current_data_frame.index), sample_size
+                current_data_frame = current_data_frame.loc[
+                    np.random.choice(current_data_frame.index, sample_size, replace=False)]
+
+        # pagination
         if nav_type == 'auto':
             pagination_config["pagination_method"] = 'line'
             pagination_config["page_size"] = min([20000, len(current_data_frame)])
@@ -193,7 +203,7 @@ def rule_gen(request):
         json_response = json.dumps({'rules': rule_list})
         return HttpResponse(json_response)
     else:
-        #print request.GET['selected_ids']
+        # print request.GET['selected_ids']
         json_response = "{'message' : done!}"
         return HttpResponse(json_response)
 
