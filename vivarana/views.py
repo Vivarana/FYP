@@ -10,6 +10,7 @@ from helper import aggregate
 from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
 import vivarana.dataformat.categorize as ct
+import vivarana.dataformat.sessionhandle as sh
 
 
 original_data_frame = None
@@ -181,8 +182,18 @@ def sunburst(request):
     return render(request, 'vivarana/sunburst.html')
 
 def get_tree_data(request):
-    json_tree = ct.build_json_hierarchy(current_data_frame.values)
+    if len(current_data_frame.columns) == 2:
+        json_tree = ct.build_json_hierarchy(current_data_frame.values)
+    else:
+        json_tree = ct.build_json_hierarchy(sh.get_sessions_data(current_data_frame,'info'))
+        print json.dumps(json_tree)
     return HttpResponse(json_tree)
+
+def get_unique_urls(request):
+    return HttpResponse(sh.get_unique_urls(current_data_frame,'uniqueurls'))
+
+def get_session_sequence(request):
+    return HttpResponse(sh.get_session_info(current_data_frame,'info'))
 
 
 
