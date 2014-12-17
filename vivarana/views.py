@@ -230,21 +230,21 @@ def reset_axis(request):
 def sunburst(request):
 
     #logger.debug(request)
-    return render(request, 'vivarana/sunburst.html')
+    return render(request, SUNBURST_PAGE)
 
 def get_tree_data(request):
-    if len(current_data_frame.columns) == 2:
+    if len(current_data_frame.columns) == 2: ## to do get CSV intelligently
         json_tree = ct.build_json_hierarchy(current_data_frame.values)
     else:
-        json_tree = ct.build_json_hierarchy(sh.get_sessions_data(current_data_frame,'info'))
-        print json.dumps(json_tree)
+        json_tree = ct.build_json_hierarchy_log(sh.get_sessions_data(current_data_frame))
+       # print json.dumps(json_tree)
     return HttpResponse(json_tree)
 
 def get_unique_urls(request):
-    return HttpResponse(sh.get_unique_urls(current_data_frame,'uniqueurls'))
+    return HttpResponse(sh.get_unique_urls(current_data_frame))
 
 def get_session_sequence(request):
-    return HttpResponse(sh.get_session_info(current_data_frame,'info'))
+    return HttpResponse(sh.get_session_info(current_data_frame))
 
 
 
