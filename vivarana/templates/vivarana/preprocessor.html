@@ -5,36 +5,36 @@
 {% block body_block %}
 
     <style>
-        .container-clustering {
-            width: 980px;
-            min-width: 980px;
-            margin: 0 auto;
-            padding: 0 50px;
-        }
-
-        table {
-            width: 916px !important; /* 140px * 5 column + 16px scrollbar width */
-            border-spacing: 0;
-        }
-
-        tbody, thead tr {
-            display: block;
-        }
-
-        tbody {
-            height: 250px;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        tbody td, thead th {
-            width: 300px;
-        }
-
-        thead th:last-child {
-            width: 316px; /* 140px + 16px scrollbar width */
-        }
-
+        {#        .container-clustering {#}
+        {#            width: 980px;#}
+        {#            min-width: 980px;#}
+        {#            margin: 0 auto;#}
+        {#            padding: 0 50px;#}
+        {#        }#}
+        {##}
+        {#        table {#}
+        {#            width: 916px !important; /* 140px * 5 column + 16px scrollbar width */#}
+        {#            border-spacing: 0;#}
+        {#        }#}
+        {##}
+        {#        tbody, thead tr {#}
+        {#            display: block;#}
+        {#        }#}
+        {##}
+        {#        tbody {#}
+        {#            height: 250px;#}
+        {#            overflow-y: auto;#}
+        {#            overflow-x: hidden;#}
+        {#        }#}
+        {##}
+        {#        tbody td, thead th {#}
+        {#            width: 300px;#}
+        {#        }#}
+        {##}
+        {#        thead th:last-child {#}
+        {#            width: 316px; /* 140px + 16px scrollbar width */#}
+        {#        }#}
+        {##}
         #warning {
             position: fixed;
             top: 8%;
@@ -46,68 +46,158 @@
         }
 
     </style>
-    <div class="container-clustering">
-        <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
 
+    <div class="row container-clustering">
         <form method="POST" action="" onsubmit="return validateForm()">
-            {% csrf_token %}
-        <div class="row">
-             <h3 >Select Visualization Method</h3>
-        </div>
-        <tr class="col-xs-12">
-        <td>
-             <input type="radio" name="visualization" value="parellel" checked>Parellel Coordinates
-        </td>
-        <td>
-               <input type="radio" name="visualization" value="sunburst">Sunburst
-        </td>
-    </tr>
-        <div class="row">
-            <h3>Select Columns to Visualize</h3>
-            <h4>Data Set -> {{ filename }}</h4>
-        </div>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Column ID</th>
-                    <th>Column Type</th>
-                    <th>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="select-all" id="select-all" checked/>
-                            </label> Select
-                        </div>
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for col in columns %}
+            <div class="col-md-6" style="margin-left: 20px">
+
+
+                {#        <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>#}
+                <h3 style="margin-top: 0;">Data Columns and types :</h3>
+
+
+                {% csrf_token %}
+                <table id="detail-table" class="table table-hover table-bordered">
+                    <col width="65%">
+                    <col width="20%">
+                    <col width="15%">
+                    <thead>
                     <tr>
-                        <td>{{ col.0 }}</td>
-                        <td>{{ col.1 }}</td>
-                        <td>
-                            <div class="checkbox">
+                        <th>Column ID</th>
+                        <th>Column Type</th>
+                        <th>
+                            <div style="margin: 0" class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="column" value="{{ forloop.counter }}" checked></label>
+                                    <input type="checkbox" name="select-all" id="select-all" checked/>
+                                </label> Select
                             </div>
-                        </td>
+                        </th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            <div class="row">
-                <div class="col-md-9"></div>
-                <div class="col-md-3">
-                    <button id="submit-button" type="submit" class="btn btn-primary">
+                    </thead>
+                    <tbody>
+                    {# todo: fix the damned animation #}
+                    {% autoescape off %}
+                        {% for col in columns %}
+
+                            <tr style="width: 500px;"
+                                onclick="event.stopPropagation(); $(this).next('tr').slideToggle(); $(this).closest('tr').next().find('p').slideToggle();">
+                                <td>{{ col.0 }}</td>
+                                <td>{{ col.1 }}</td>
+                                <td>
+                                    <div style="margin: 0" class="checkbox" onclick="event.stopPropagation();">
+                                        <label>
+                                            <input type="checkbox" name="column" value="{{ forloop.counter }}" checked>
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="info" style="width: 500px; display: none">
+                                <td colspan="3"><p style="display: none">{{ col.2 }}</p></td>
+                            </tr>
+                        {% endfor %}
+                    {% endautoescape %}
+                    </tbody>
+                </table>
+
+
+                <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
+
+            </div>
+            <div class="col-md-5">
+                <div class="row">
+                    <button id="submit-button" type="submit" class="btn btn-primary pull-right">
                         Go to visualization
                         <span class="glyphicon glyphicon-chevron-right"></span>
                     </button>
+                </div>
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <p>Dataset : {{ filename }}</p>
+
+                            <p>This dataset contains {{ size }} lines</p>
+
+                            <p style="display: none" id="sample-description">Data size after <span
+                                    id="sample-type-text"></span> sampling : <span id="sample-size-text">1</span></p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">Navigation</div>
+                        <div style="padding-bottom: 0px;" class="panel-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="nav-type" class="col-lg-3">Navigation Type:</label>
+
+                                    <div class="col-lg-9">
+                                        <select class="form-control" onchange="show_additional_form(this.value)"
+                                                name="nav-type"
+                                                id="nav-type">
+                                            <option value="auto">Auto</option>
+                                            <option value="line">By line number</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div style="display: none" id="line-nav-options">
+                                    <div class="form-group">
+                                        <label for="page-size" class="col-lg-3">Page Size:</label>
+                                        <span id="range" class="col-lg-5">1</span>
+                                    </div>
+                                    <input id="page-size-slider" type="range" name="page-size" step="1" value="1"
+                                           min="0" max="{{ size }}"
+                                           data-popup-enabled="true" oninput="$('#range').html(this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">Sampling</div>
+                        <div style="padding-bottom: 0px;" class="panel-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="nav-type" class="col-lg-2">Sampling:</label>
+
+                                    <div class="col-lg-10">
+                                        <select class="form-control" onchange="show_sample_form(this.value)"
+                                                name="sampling-type" id="sampling-type">
+                                            <option value="none">None</option>
+                                            <option value="random">Random</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div style="display: none" id="sample-size-container">
+                                    <div class="form-group">
+                                        <label for="sample-size" class="col-lg-3">Sample Size : </label>
+                                        <span id="sample-size-view" class="col-lg-5">1</span>
+                                    </div>
+{#                                    todo change this to nouislider#}
+                                    <input type="range" name="sample-size" step="1" value="1" min="0"
+                                           max="{{ size }}"
+                                           data-popup-enabled="true"
+                                           oninput="$('#sample-size-view').html(this.value); $('#sample-size-text').html(this.value)"
+                                           onchange="sample_size_changed(this.value)">
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </form>
     </div>
 
     <script>
+        var data_size = {{ size }};
+
         $('#select-all').click(function (event) {
             var is_checked = this.checked;
             // Iterate each checkbox
@@ -125,6 +215,35 @@
                 $('#warning').show();
                 return false;
             }
+        }
+
+        function show_additional_form(value) {
+            if (value == 'auto') {
+                $('#line-nav-options').slideToggle()
+            }
+            else if (value == 'line') {
+                $('#line-nav-options').slideToggle()
+            }
+        }
+
+        function show_sample_form(value) {
+            if (value == 'none') {
+                $('#sample-size-container').slideToggle()
+                $('#sample-description').hide()
+                $('#page-size-slider').attr('max', data_size);
+            }
+            else if (value == 'random') {
+                $('#sample-size-container').slideToggle()
+                $('#sample-type-text').html('random')
+                $('#sample-description').show()
+            }
+        }
+
+        function sample_size_changed(value) {
+            var possible_page_value = Math.min(value, $('#page-size-slider').val())
+            $('#page-size-slider').val(possible_page_value)
+            $('#page-size-slider').attr('max', value);
+            $('#range').html(possible_page_value)
         }
 
     </script>

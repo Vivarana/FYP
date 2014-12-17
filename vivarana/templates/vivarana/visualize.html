@@ -2,7 +2,7 @@
 {% block title %}Visualization of Data{% endblock %}
 {% block body_block %}
 
-    <div id="parcoords-main" class="parcoords"></div>
+    <!-- Divs for the drop down menus -->
     {% autoescape off %}
         {% for col,type in columns.items %}
             <div id="column_dropdown_{{ col }}" class="dropdown-tip">
@@ -24,7 +24,7 @@
         {% endfor %}
     {% endautoescape %}
 
-
+    <!-- Container for the dialog that appear on clicking the rule generation button -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -57,6 +57,50 @@
     </div>
 
 
+        <!-- Container for the dialog that appear on clicking the rule generation button -->
+    <div class="modal fade" id="clusterModel" tabindex="-1" role="dialog" aria-labelledby="clusterModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="clusterModalLabel">Select attributes to cluster</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="" id="column_select_for_cluster" onsubmit="return false;">
+                        {% csrf_token %}
+                        {% for col,type in columns.items %}
+                            {% if col != "clusterID" %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="column_for_cluster" value="{{ col }}"
+                                               checked> {{ col }}
+                                    </label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="continueClustering();" class="btn btn-primary">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container for the main visualization -->
+    <div id="parcoords-main" class="parcoords"></div>
+
+    {% if pagination_config.number_pages != 1 %}
+    <div style="float: none; margin: 0 auto; font-size: 1.8em;" id="navigation-container" class="col-lg-2">
+        <a href="/visualize/?page={{ page_number|add:-1 }}" {% if page_number == 1  %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a>
+        <span style="font-size: 1em;">{{ page_number }} / {{ pagination_config.number_pages }}</span>
+        <a href="/visualize/?page={{ page_number|add:1 }}" {% if page_number == pagination_config.number_pages  %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
+    </div>
+    {% endif %}
+
+    <!-- Container for the slickgrid table-->
     <div id="slickgrid-container">
         <div id="rule-right">
             {#            <div id="rule-right-table-head"></div>#}
@@ -336,8 +380,9 @@
         data[i] = j_data[i]
     }
 
+    var start_id = parseInt({{ start_id }});
     data.forEach(function (d, i) {
-        d.id = d.id || i;
+        d.id = d.id || i + start_id;
     });
 
     new_grid_data = data;
@@ -364,7 +409,7 @@
         enableCellNavigation: true,
         enableColumnReorder: false,
         multiColumnSort: false,
-		forceFitColumns: true
+        forceFitColumns: true
     };
 
     var dataView = new Slick.Data.DataView();
@@ -415,7 +460,7 @@
 
     // fill grid with data
     gridUpdate(data);
-	
+
 
     // update grid on brush
     parcoords.on("brush", function (d) {
@@ -442,7 +487,6 @@
         var j_data = JSON.parse(data);
 
         for (i = 0; i < selected_id_lst.length; i += 1) {
-            console.log(j_data[i]);
             j_data[i]['id'] = selected_id_lst[i];
         }
 
@@ -463,8 +507,13 @@
         for (var i in current_data) {
             selected_id_lst.push(current_data[i]['id'])
         }
-        console.log(selected_ids);
         $.get('/aggregator/', {selected_ids: selected_ids, aggregate_func: aggregate_function, attribute_name: attribute_name}, function (data) {
+
+            if (data == 'error-100') {
+                $.snackbar({content: 'Please specify a time or event window value.', style: 'toast'});
+                return false;
+            }
+
             aggregate_func(data, selected_id_lst);
         });
 
@@ -514,8 +563,6 @@
     function resetAxis(col_name, col_number, obj) {
         var selected_ids = "";
         var current_data = parcoords.state.data;
-
-        console.log(current_data)
 
         for (var i in current_data) {
             selected_ids = selected_ids + String(current_data[i]['id']) + ',';

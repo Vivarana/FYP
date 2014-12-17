@@ -32,7 +32,7 @@
 }
 
 #rule-table {
-    clear:both;
+    clear: both;
 }
 
 .slick-row:hover {
@@ -52,3 +52,8 @@
     min-height: 28px;
 }
 
+.disabled-link {
+    pointer-events: none;
+    cursor: default;
+    color: grey;
+}
