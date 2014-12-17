@@ -2,7 +2,7 @@
 {% block title %}Visualization of Data{% endblock %}
 {% block body_block %}
 
-    <div id="parcoords-main" class="parcoords"></div>
+    <!-- Divs for the drop down menus -->
     {% autoescape off %}
         {% for col,type in columns.items %}
             <div id="column_dropdown_{{ col }}" class="dropdown-tip">
@@ -24,7 +24,7 @@
         {% endfor %}
     {% endautoescape %}
 
-
+    <!-- Container for the dialog that appear on clicking the rule generation button -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -56,7 +56,18 @@
         </div>
     </div>
 
+    <!-- Container for the main visualization -->
+    <div id="parcoords-main" class="parcoords"></div>
 
+    {% if pagination_config.number_pages != 1 %}
+    <div style="float: none; margin: 0 auto; font-size: 1.8em;" id="navigation-container" class="col-lg-2">
+        <a href="http://127.0.0.1:8000/visualize/?page={{ page_number|add:-1 }}" {% if page_number == 1  %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a>
+        <span style="font-size: 1em;">{{ page_number }} / {{ pagination_config.number_pages }}</span>
+        <a href="http://127.0.0.1:8000/visualize/?page={{ page_number|add:1 }}" {% if page_number == pagination_config.number_pages  %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
+    </div>
+    {% endif %}
+
+    <!-- Container for the slickgrid table-->
     <div id="slickgrid-container">
         <div id="rule-right">
             {#            <div id="rule-right-table-head"></div>#}
