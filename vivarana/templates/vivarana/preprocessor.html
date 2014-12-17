@@ -124,20 +124,30 @@
 
                 </div>
                 <div class="row">
-                    <div class="panel panel-info">
+                    <div class="panel panel-primary">
                         <div class="panel-heading">Navigation</div>
                         <div style="padding-bottom: 0px;" class="panel-body">
-                            <div class="form-group form-inline">
-                                <label for="nav-type">Navigation Type : </label>
-                                <select onchange="show_additional_form(this.value)" name="nav-type" id="nav-type">
-                                    <option value="auto">Auto</option>
-                                    <option value="line">By line number</option>
-                                </select>
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="nav-type" class="col-lg-3">Navigation Type:</label>
+
+                                    <div class="col-lg-9">
+                                        <select class="form-control" onchange="show_additional_form(this.value)"
+                                                name="nav-type"
+                                                id="nav-type">
+                                            <option value="auto">Auto</option>
+                                            <option value="line">By line number</option>
+                                        </select>
+                                    </div>
+                                </div>
 
                                 <div style="display: none" id="line-nav-options">
-                                    <label for="page-size">Page-Size : </label>
-                                    <span id="range">1</span>
-                                    <input id="page-size-slider" type="range" name="page-size" step="1" value="1" min="0" max="{{ size }}"
+                                    <div class="form-group">
+                                        <label for="page-size" class="col-lg-3">Page Size:</label>
+                                        <span id="range" class="col-lg-5">1</span>
+                                    </div>
+                                    <input id="page-size-slider" type="range" name="page-size" step="1" value="1"
+                                           min="0" max="{{ size }}"
                                            data-popup-enabled="true" oninput="$('#range').html(this.value)">
                                 </div>
                             </div>
@@ -146,23 +156,34 @@
 
                 </div>
                 <div class="row">
-                    <div class="panel panel-info">
+                    <div class="panel panel-primary">
                         <div class="panel-heading">Sampling</div>
                         <div style="padding-bottom: 0px;" class="panel-body">
-                            <div class="form-group form-inline">
-                                <label for="nav-type">Sampling : </label>
-                                <select onchange="show_sample_form(this.value)" name="sampling-type" id="sampling-type">
-                                    <option value="none">None</option>
-                                    <option value="random">Random</option>
-                                </select>
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="nav-type" class="col-lg-2">Sampling:</label>
+
+                                    <div class="col-lg-10">
+                                        <select class="form-control" onchange="show_sample_form(this.value)"
+                                                name="sampling-type" id="sampling-type">
+                                            <option value="none">None</option>
+                                            <option value="random">Random</option>
+                                        </select>
+                                    </div>
+                                </div>
 
                                 <div style="display: none" id="sample-size-container">
-                                    <label for="sample-size">Sample Size : </label>
-                                    <span id="sample-size-view">1</span>
-                                    <input type="range" name="sample-size" step="1" value="1" min="0" max="{{ size }}"
+                                    <div class="form-group">
+                                        <label for="sample-size" class="col-lg-3">Sample Size : </label>
+                                        <span id="sample-size-view" class="col-lg-5">1</span>
+                                    </div>
+{#                                    todo change this to nouislider#}
+                                    <input type="range" name="sample-size" step="1" value="1" min="0"
+                                           max="{{ size }}"
                                            data-popup-enabled="true"
                                            oninput="$('#sample-size-view').html(this.value); $('#sample-size-text').html(this.value)"
                                            onchange="sample_size_changed(this.value)">
+
                                 </div>
 
                             </div>

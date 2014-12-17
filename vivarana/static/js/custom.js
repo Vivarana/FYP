@@ -110,10 +110,34 @@ function setTimeWindow() {
             $.snackbar({content: 'Time window has set to ' + timeWindowValue + ' ' + timeGranularity, style: 'toast'});
         });
     } else {
-        $.snackbar({content: 'Please specify a positive integer as the time window value', style: 'toast'});
+
     }
     return false;
 
+}
+
+function performClustering() {
+    var num_of_clusters = $('#num-of-clusters').val();
+    if (isInt(num_of_clusters)) {
+        $('#cluster_dropdown').removeClass('open');
+        $('#clusterModel').modal('toggle');
+    } else {
+        $.snackbar({content: 'Please specify a positive integer as the number of clusters', style: 'toast'});
+        return false;
+    }
+}
+
+function continueClustering() {
+    $('#clusterModel').modal('toggle');
+    var checked_columns = $("input:checkbox[name=column_for_cluster]:checked").map(function () {
+        return $(this).val();
+    }).get();
+
+    console.log(checked_columns)
+    var num_of_clusters = parseInt($('#num-of-clusters').val());
+    //todo get clustering method
+    // todo send AJAX call to cluster and show ajax loader
+    // todo record clustering ids in backend
 }
 
 function isInt(value) {

@@ -32,7 +32,7 @@
 }
 
 #rule-table {
-    clear:both;
+    clear: both;
 }
 
 .slick-row:hover {
@@ -53,7 +53,7 @@
 }
 
 .disabled-link {
-   pointer-events: none;
-   cursor: default;
-   color:grey;
+    pointer-events: none;
+    cursor: default;
+    color: grey;
 }

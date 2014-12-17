@@ -28,6 +28,7 @@
     z-index: 9000;
     padding: 20px 30px;
     min-width: 460px;
+    color: rgba(0, 0, 0, 0.84);
 }
 
 .yamm .dropdown.yamm-fw .dropdown-menu {

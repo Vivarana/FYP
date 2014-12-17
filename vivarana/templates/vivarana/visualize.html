@@ -56,14 +56,47 @@
         </div>
     </div>
 
+
+        <!-- Container for the dialog that appear on clicking the rule generation button -->
+    <div class="modal fade" id="clusterModel" tabindex="-1" role="dialog" aria-labelledby="clusterModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="clusterModalLabel">Select attributes to cluster</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="" id="column_select_for_cluster" onsubmit="return false;">
+                        {% csrf_token %}
+                        {% for col,type in columns.items %}
+                            {% if col != "clusterID" %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="column_for_cluster" value="{{ col }}"
+                                               checked> {{ col }}
+                                    </label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" onclick="continueClustering();" class="btn btn-primary">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Container for the main visualization -->
     <div id="parcoords-main" class="parcoords"></div>
 
     {% if pagination_config.number_pages != 1 %}
     <div style="float: none; margin: 0 auto; font-size: 1.8em;" id="navigation-container" class="col-lg-2">
-        <a href="http://127.0.0.1:8000/visualize/?page={{ page_number|add:-1 }}" {% if page_number == 1  %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a>
+        <a href="/visualize/?page={{ page_number|add:-1 }}" {% if page_number == 1  %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a>
         <span style="font-size: 1em;">{{ page_number }} / {{ pagination_config.number_pages }}</span>
-        <a href="http://127.0.0.1:8000/visualize/?page={{ page_number|add:1 }}" {% if page_number == pagination_config.number_pages  %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
+        <a href="/visualize/?page={{ page_number|add:1 }}" {% if page_number == pagination_config.number_pages  %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
     </div>
     {% endif %}
 
@@ -347,8 +380,9 @@
         data[i] = j_data[i]
     }
 
+    var start_id = parseInt({{ start_id }});
     data.forEach(function (d, i) {
-        d.id = d.id || i;
+        d.id = d.id || i + start_id;
     });
 
     new_grid_data = data;
