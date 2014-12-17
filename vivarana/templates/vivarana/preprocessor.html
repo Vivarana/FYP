@@ -121,7 +121,33 @@
                                     id="sample-type-text"></span> sampling : <span id="sample-size-text">1</span></p>
                         </div>
                     </div>
-
+                </div>
+                <div class="row">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">Visualization Type</div>
+                         <div style="padding-bottom: 0px;" class="panel-body">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <div class="col-lg-6">
+                                   <div class="radio radio-success">
+                                        <label>
+                                            <input type="radio" name="visualization" value="parellel" checked="">
+                                            Parellel Coordinates
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="radio radio-success">
+                                        <label>
+                                            <input type="radio" name="visualization" value="sunburst">
+                                            Sun Burst
+                                        </label>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="panel panel-primary">
@@ -177,7 +203,7 @@
                                         <label for="sample-size" class="col-lg-3">Sample Size : </label>
                                         <span id="sample-size-view" class="col-lg-5">1</span>
                                     </div>
-{#                                    todo change this to nouislider#}
+                                    {#                                    todo change this to nouislider#}
                                     <input type="range" name="sample-size" step="1" value="1" min="0"
                                            max="{{ size }}"
                                            data-popup-enabled="true"
