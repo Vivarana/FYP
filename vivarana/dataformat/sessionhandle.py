@@ -14,25 +14,26 @@ def parse_dataframe_date(dataframe):
     return dataframe
 
 def get_session_info(dataframe):
-    paths = dataframe.groupby('Remote host')['URL'].apply(lambda x: "%s" % '-'.join(x)) # .apply(lambda x: x.values)
-    return paths.value_counts().to_json(orient='split')
+    paths = dataframe.groupby('Remote_host')['URL'].apply(lambda x: "%s" % '-'.join(x)) # .apply(lambda x: x.values)
+    return paths.value_counts()
 
 def get_unique_urls(dataframe):
     urls = dataframe['URL']
     uniqueurls = pd.Series(urls.values.ravel()).unique()
     return json.dumps(uniqueurls.tolist())
 
-def get_sessions_data(frame,type):
+def get_sessions_data(frame):
     dataframe = frame.copy(deep=True) #pd.read_csv(path, index_col='Time', parse_dates=True)
     dataframe['URL'] = dataframe['URL'].astype('string_') # need to be done for unicode conversion
-    print dataframe
-    #dataframe = parse_dataframe_date(dataframe)
-    if type=='uniqueurls':
-        return get_unique_urls(dataframe)
-    elif type=='info':
-        return get_session_info(dataframe)
-    else:
-        return "Please give data type you want"
+    paths = dataframe.groupby('Remote_host')['URL'].apply(lambda x: "%s" % '-'.join(x)) # .apply(lambda x: x.values)
+    ## remove sequences longer than 10
+    df = pd.DataFrame(paths)
+    df["seq_len"] = df['URL'].apply(lambda x: len(x.split("-")))
+    sdf = df[df['seq_len'] <10]
+    ## get count of unique sequences
+
+    return sdf['URL'].value_counts().astype(int)
+
 
 def main():
     path = 'C:\Users\Developer\Documents\FYP\FYP\media\logdata.csv'
