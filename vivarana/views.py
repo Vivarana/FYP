@@ -241,7 +241,7 @@ def get_tree_data(request):
     return HttpResponse(json_tree)
 
 def get_unique_urls(request):
-    return HttpResponse(sh.get_unique_urls(current_data_frame))
+    return HttpResponse(json.dumps(sh.get_unique_urls(current_data_frame)))
 
 def get_session_sequence(request):
     return HttpResponse(sh.get_session_info(current_data_frame))

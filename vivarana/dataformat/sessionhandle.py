@@ -18,9 +18,9 @@ def get_session_info(dataframe):
     return paths.value_counts()
 
 def get_unique_urls(dataframe):
-    urls = dataframe['URL']
+    urls = dataframe['URL'].fillna('Null')
     uniqueurls = pd.Series(urls.values.ravel()).unique()
-    return json.dumps(uniqueurls.tolist())
+    return uniqueurls.tolist()
 
 def get_sessions_data(frame):
     dataframe = frame.copy(deep=True) #pd.read_csv(path, index_col='Time', parse_dates=True)
@@ -37,13 +37,13 @@ def get_sessions_data(frame):
 
 def main():
     path = 'C:\Users\Developer\Documents\FYP\FYP\media\logdata.csv'
-    frame = pd.read_csv(path, index_col='Time', parse_dates=True)
+    frame = pd.read_csv(path, index_col='Date', parse_dates=True)
     frame['URL'] = frame['URL'].astype('string_') # need to be done for unicode conversion
-    frame = parse_dataframe_date(frame)
+    #frame = parse_dataframe_date(frame)
     frame1 = copy.copy(frame)
     frame2 = copy.copy(frame)
-    print get_session_info(frame1)
-    print get_unique_urls(frame2)
+    #print get_session_info(frame1)
+    print type(get_unique_urls(frame2))
 
 
 if __name__ == '__main__':
