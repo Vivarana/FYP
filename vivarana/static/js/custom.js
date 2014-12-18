@@ -60,9 +60,11 @@ function setEventWindow() {
 
         $.get('/set_window/', {window_type: 'event', event_window_value: eventWindowValue}, function (data) {
             $.snackbar({content: 'Event window has set to ' + eventWindowValue, style: 'toast'});
+            return true;
         });
     } else {
         $.snackbar({content: 'Please specify a positive integer as the event window value', style: 'toast'});
+        return false;
     }
     return false;
 }

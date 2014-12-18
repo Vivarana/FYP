@@ -54,7 +54,6 @@ def visualize(request):
     else:
         enable_time_window = True
 
-    print json_output
     context = {'columns': column_types, 'result': json_output, 'frame_size': data_end - data_start,
                'enable_time_window': enable_time_window, 'is_last_page': is_last_page,
                'pagination_config': pagination_config, "page_number": page_number + 1, "start_id": data_start}
