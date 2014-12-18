@@ -6,26 +6,31 @@ import string
 
 CATEGORICAL_COLUMN_THRESHOLD = 10
 
-
-def handle_uploaded_file(file_in):
+#extra parameters specifying header names in * headers
+def handle_uploaded_file(file_in, *headers):
     file_extension = file_in.name.split('.')[-1]
     if file_extension == 'csv':
-        return handle_csv(file_in)
+        return handle_csv(file_in,headers)
     elif file_extension == 'log':
         return handle_log(file_in)
     else:
         return {'success': False, 'error': 'Sorry. File type ' + file_extension + ' is not supported'}
 
-
-def handle_csv(file_in):
+def handle_csv(file_in, *headers):
     try:
         with open("media/temp.csv", 'wb+') as destination:
             for chunk in file_in.chunks():
                 destination.write(chunk)
 
         with open("media/temp.csv", 'r') as csv_file:
+            #check header parameters
+            # print type(headers)
+            # if headers[0][0] == 0:
             original_data_frame = pd.read_csv(csv_file)
-            return {'success': True, 'dataframe': original_data_frame}
+            # elif headers[0][0] == 'none':
+            #     original_data_frame = pd.read_csv(csv_file,header='None',names = headers [0][1])
+
+        return {'success': True, 'dataframe': original_data_frame}
     except Exception, e:
         print str(e)
         return {'success': False}

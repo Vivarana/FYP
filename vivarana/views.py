@@ -3,13 +3,15 @@ from pandas import *
 from pandas.io import json
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+import logging
+import json
 from addict import Dict
-
 from helper import file_helper
-
 from helper import aggregate
 from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
+import vivarana.dataformat.categorize as ct
+import vivarana.dataformat.sessionhandle as sh
 
 
 original_data_frame = None
@@ -22,6 +24,8 @@ pagination_config = {
 }
 
 properties_map = Dict()
+
+logger = logging.getLogger('root')
 
 
 def home(request):
@@ -157,8 +161,7 @@ def preprocessor(request):
 
         if vistype == 'parellel':
             return redirect(VISUALIZE_PATH)
-        else:
-            if vistype == 'sunburst':
+        elif vistype == 'sunburst':
                 return redirect(SUNBURST_PATH)
         return redirect(VISUALIZE_PATH)
     else:
@@ -171,8 +174,9 @@ def upload(request):
         response_data = {}
         try:
             input_file = request.FILES['fileinput']
-
             output = file_helper.handle_uploaded_file(input_file)
+            #output = file_helper.handle_uploaded_file(input_file,0) additional parameter saying if theirs a header
+            #line in csv or not
 
             if output['success']:
                 global original_data_frame, current_data_frame
@@ -193,7 +197,6 @@ def upload(request):
                     response_data['success'] = False
 
         except Exception, error:
-            print str(error)
             response_data['error'] = "Error while setting up file. Please try again."
             response_data['success'] = False
 
@@ -224,7 +227,23 @@ def reset_axis(request):
 
 
 def sunburst(request):
-    return render(request, 'vivarana/sunburst.html', {})
+
+    #logger.debug(request)
+    return render(request, SUNBURST_PAGE)
+
+def get_tree_data(request):
+    if len(current_data_frame.columns) == 2: ## to do get CSV intelligently
+        json_tree = ct.build_json_hierarchy(current_data_frame.values)
+    else:
+        json_tree = ct.build_json_hierarchy_log(sh.get_sessions_data(current_data_frame))
+       # print json.dumps(json_tree)
+    return HttpResponse(json_tree)
+
+def get_unique_urls(request):
+    return HttpResponse(sh.get_unique_urls(current_data_frame))
+
+def get_session_sequence(request):
+    return HttpResponse(sh.get_session_info(current_data_frame))
 
 
 

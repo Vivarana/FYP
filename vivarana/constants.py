@@ -13,6 +13,7 @@ FUZZY_CLUSTERING = 'fuzzy-cluster'
 # HTML template paths
 CLUSTERING_PAGE = 'vivarana/clustering.html'
 PREPROCESSOR_PAGE = 'vivarana/preprocessor.html'
+SUNBURST_PAGE = 'vivarana/sunburst.html'
 
 # URL paths
 UPLOAD_PATH = '/upload/'

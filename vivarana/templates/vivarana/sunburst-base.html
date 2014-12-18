@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+
+    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
+    <link href="{% static "css/ripples.min.css" %}" rel="stylesheet">
+    <link href="{% static "css/material-wfont.css" %}" rel="stylesheet">
+    <link href="{% static "css/snackbar.min.css" %}" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static "css/yamm.css" %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static "css/custom.css" %}" type="text/css"/>
+
+    <link rel="stylesheet" type="text/css" href="{% static "sunburst/sequences.css" %}">
+
+
+    <script src="{% static "js/jquery-1.7.min.js" %}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/ripples.js" %}"></script>
+    <script src="{% static "js/material.js" %}"></script>
+    <script src="{% static "js/jquery.nouislider.min.js" %}"></script>
+    <script src="{% static "js/snackbar.min.js" %}"></script>
+
+
+    <script src="{% static "js/d3.js" %}"></script>
+    <script src="{% static "js/underscore.js" %}"></script>
+    <script src="{% static "js/sylvester.js" %}"></script>
+    <script src="{% static "js/divgrid.js" %}"></script>
+    <script src="{% static "js/underscore.math.js" %}"></script>
+    <script src="{% static "js/custom.js" %}"></script>
+
+
+    <title>{% block title %}Vivarana{% endblock %}</title>
+
+
+</head>
+
+<body>
+<div class="navbar yamm navbar-default">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">Vivarana</a>
+    </div>
+    <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b
+                        class="caret"></b></a>
+                <ul class="dropdown-menu">
+
+
+                    <div class="yamm-content">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label class="control-label">Configuration options for parallel coordinates</label></br>
+                                <div class="row">
+                                    <div class="col-xs-6 col-sm-6">
+                                        <form class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="control-label">Brushing:</label>
+
+                                                <div class="radio radio-primary">
+                                                    <label>
+                                                        <input type="radio" name="brushingRadios" id="oneBrushing-radio"
+                                                               value="option1"
+                                                               checked="">
+                                                        1D Brushing
+                                                    </label>
+
+                                                    <div class="radio radio-primary">
+                                                        <label>
+                                                            <input type="radio" name="brushingRadios"
+                                                                   id="twoBrushing-radio"
+                                                                   value="option2">
+                                                            2D Brushing
+                                                        </label>
+                                                    </div>
+
+                                                </div>
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input id="bundling-checkbox" type="checkbox"> Cluster Bundling
+                                                    </label>
+                                                </div>
+                                            </div>
+
+
+                                        </form>
+
+
+                                    </div>
+                                    <div class="col-xs-6 col-sm-6">
+                                        <form class="form-horizontal">
+
+                                            <div class="form-group">
+                                                <label class="control-label">Coloring:</label>
+
+                                                <div class="radio radio-primary">
+                                                    <label>
+                                                        <input type="radio" name="coloringRadios"
+                                                               id="clusterColoring-radio"
+                                                               value="option3">
+                                                        Enable Cluster Coloring
+                                                    </label>
+
+                                                    <div class="radio radio-primary">
+                                                        <label>
+                                                            <input type="radio" name="coloringRadios"
+                                                                   id="zScoreColoring-radio"
+                                                                   value="option4">
+                                                            Enable Z Score Coloring
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input id="alpha-checkbox" type="checkbox" checked=""> Alpha
+                                                        Blending
+                                                    </label>
+                                                </div>
+                                            </div>
+
+
+                                        </form>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </ul>
+            </li>
+
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Options <b
+                        class="caret"></b></a>
+                <ul class="dropdown-menu" id="timewindow_dropdown">
+
+
+                    <div class="yamm-content">
+                        {% if enable_time_window %}
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <input id="time-window" type="number" class="form-control"
+                                           placeholder="Specify the time window">
+                                </div>
+                                <div class="col-xs-3">
+                                    <select class="form-control" id="granularity-select">
+                                        <option>seconds</option>
+                                        <option>minutes</option>
+                                        <option>days</option>
+                                    </select>
+                                </div>
+                                <div class="col-xs-1">
+                                    <a href="javascript:setTimeWindow()"
+                                       class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
+                                </div>
+                                <div class="col-xs-2">
+                                    <a href="javascript:clearTimeWindow()"
+                                       class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-xs-9">
+                                <input id="event-window" type="number" class="form-control"
+                                       placeholder="Specify the event window">
+                            </div>
+                            <div class="col-xs-1">
+                                <a href="javascript:setEventWindow()"
+                                   class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
+                            </div>
+                            <div class="col-xs-2">
+                                <a href="javascript:clearEventWindow()"
+                                   class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </ul>
+            </li>
+
+            <li><a data-toggle="modal" data-target="#myModal" href="#">Generate Rule</a></li>
+        </ul>
+
+
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <div id="bundling-slider-container">
+                    <div id="bundling-text" class="slider-text">Bundling Strength: 0.7</div>
+                    <div id="bundling-slider" class="slider slider-material-lightgrey"></div>
+                </div>
+            </li>
+            <li>
+                <div id="curve-slider-container">
+                    <div id="curve-text" class="slider-text">Curve Smoothness: 0.2</div>
+                    <div id="curve-slider" class="slider slider-material-lightgrey"></div>
+                </div>
+            </li>
+            <li>
+                <div id="alpha-slider-container">
+                    <div id="alpha-opacity-text" class="slider-text">Alpha Opacity: 0.2</div>
+                    <div id="aplha-slider" class="slider slider-material-lightgrey"></div>
+                </div>
+            </li>
+            <li data-toggle="tooltip" data-placement="right" data-original-title="Hide ticks"><a href="#"><span
+                    class="mdi-editor-border-vertical" style="font-weight: bold"></span></a>
+            </li>
+            <li data-toggle="tooltip" data-placement="bottom" data-original-title="Keep selected data"><a
+                    id="btn-keep-data" href="#"><span class="mdi-image-blur-on"
+                                                      style="font-weight: bold"></span></a></li>
+            <li data-toggle="tooltip" data-placement="left" data-original-title="Exclude selected data"><a
+                    id="btn-exclude-data" href="#"><span class="mdi-image-blur-off"
+                                                         style="font-weight: bold"></span></a></li>
+            <li data-toggle="tooltip" data-placement="left" data-original-title="Undo last keep/exclude data"><a
+                    id="btn-undo" href="#"><span class="mdi-content-undo"
+                                                 style="font-weight: bold"></span></a></li>
+            <li data-toggle="tooltip" data-placement="left" data-original-title="Reset all selections"><a id="btn-clear"
+                                                                                                          href="#"><span
+                    class="mdi-content-clear"
+                    style="font-weight: bold"></span></a></li>
+        </ul>
+
+
+    </div>
+</div>
+
+
+{% block body_block %}{% endblock %}
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
