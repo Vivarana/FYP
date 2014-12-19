@@ -5,18 +5,11 @@ var radius = Math.min(width, height) / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
 var b = {
-    w: 75, h: 30, s: 3, t: 10
+    w: 130, h: 30, s: 3, t: 10
 };
 
 // Mapping of step names to colors.
-var colors = {
-    "home": "#5687d1",
-    "product": "#7b615c",
-    "search": "#de783b",
-    "account": "#6ab975",
-    "other": "#a173d1",
-    "end": "#bbbbbb"
-};
+var colors ={ null :"rgb(0,0,0)"};
 
 // Total size of all segments; we set this later, after loading the data.
 var totalSize = 0;
@@ -59,9 +52,14 @@ function createVisualization(json) {
 
     // Basic setup of page elements.
     initializeBreadcrumbTrail();
+    initialzeColors(json);
     drawLegend();
-    d3.select("#togglelegend").on("click", toggleLegend);
+};
 
+// this method is called from inside initialize colors function
+function drawChart(json){
+
+    d3.select("#togglelegend").on("click", toggleLegend);
     // Bounding circle underneath the sunburst, to make it easier to detect
     // when the mouse leaves the parent g.
     vis.append("svg:circle")
@@ -96,7 +94,7 @@ function createVisualization(json) {
 
     // Get total size of the tree = value of root node from partition.
     totalSize = path.node().__data__.value;
-};
+}
 
 // on click generate subchart
 
@@ -297,47 +295,80 @@ function toggleLegend() {
         legend.style("visibility", "hidden");
     }
 }
+var U, V, R, G,B;
+function colorPoints(scalevalue , Y){
+    U = Math.cos(scalevalue);
+    V = Math.sin(scalevalue);
+    //R =Y+V/0.88;
+    //G=Y-0.38*U-0.58*V;
+    //B=Y+U/0.49;
+    R = Math.floor(Math.abs(U*255));
+    G = Math.floor(Math.abs(V*255));
+    B = Math.floor(Math.abs(((U+V)/2)*255));
+    return "rgb("+R+","+G+","+B+")";
+}
+
+function initialzeColors(json) {
+    $.get('/uniqueurls/', function (data) {
+        var urls = JSON.parse(data);
+        console.log(urls.length);
+        var linearScale = d3.scale.linear()
+                                .domain([0,urls.length])
+                                .range([0,360]);
+        //console.log(linearScale(500))
+        urls.map(function(currentvalue,index,array){
+            //console.log(currentvalue,  colorPoints(linearScale(index),0.5));
+            colors[currentvalue] = colorPoints(linearScale(index),0.1);
+        });
+        console.log(colors);
+        drawChart(json);
+
+    });
+}
+
 
 // Take a 2-column CSV and transform it into a hierarchical structure suitable
 // for a partition layout. The first column is a sequence of step names, from
 // root to leaf, separated by hyphens. The second column is a count of how
 // often that sequence occurred.
-function buildHierarchy(csv) {
-    var root = {"name": "root", "children": []};
-    for (var i = 0; i < csv.length; i++) {
-        var sequence = csv[i][0];
-        var size = +csv[i][1];
-        if (isNaN(size)) { // e.g. if this is a header row
-            continue;
-        }
-        var parts = sequence.split("-");
-        var currentNode = root;
-        for (var j = 0; j < parts.length; j++) {
-            var children = currentNode["children"];
-            var nodeName = parts[j];
-            var childNode;
-            if (j + 1 < parts.length) {
-                // Not yet at the end of the sequence; move down the tree.
-                var foundChild = false;
-                for (var k = 0; k < children.length; k++) {
-                    if (children[k]["name"] == nodeName) {
-                        childNode = children[k];
-                        foundChild = true;
-                        break;
-                    }
-                }
-                // If we don't already have a child node for this branch, create it.
-                if (!foundChild) {
-                    childNode = {"name": nodeName, "children": []};
-                    children.push(childNode);
-                }
-                currentNode = childNode;
-            } else {
-                // Reached the end of the sequence; create a leaf node.
-                childNode = {"name": nodeName, "size": size};
-                children.push(childNode);
-            }
-        }
-    }
-    return root;
-};
+/*
+ function buildHierarchy(csv) {
+ var root = {"name": "root", "children": []};
+ for (var i = 0; i < csv.length; i++) {
+ var sequence = csv[i][0];
+ var size = +csv[i][1];
+ if (isNaN(size)) { // e.g. if this is a header row
+ continue;
+ }
+ var parts = sequence.split("-");
+ var currentNode = root;
+ for (var j = 0; j < parts.length; j++) {
+ var children = currentNode["children"];
+ var nodeName = parts[j];
+ var childNode;
+ if (j + 1 < parts.length) {
+ // Not yet at the end of the sequence; move down the tree.
+ var foundChild = false;
+ for (var k = 0; k < children.length; k++) {
+ if (children[k]["name"] == nodeName) {
+ childNode = children[k];
+ foundChild = true;
+ break;
+ }
+ }
+ // If we don't already have a child node for this branch, create it.
+ if (!foundChild) {
+ childNode = {"name": nodeName, "children": []};
+ children.push(childNode);
+ }
+ currentNode = childNode;
+ } else {
+ // Reached the end of the sequence; create a leaf node.
+ childNode = {"name": nodeName, "size": size};
+ children.push(childNode);
+ }
+ }
+ }
+ return root;
+ };
+ */
