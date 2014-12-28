@@ -129,19 +129,6 @@ function performClustering() {
     }
 }
 
-function continueClustering() {
-    $('#clusterModel').modal('toggle');
-    var checked_columns = $("input:checkbox[name=column_for_cluster]:checked").map(function () {
-        return $(this).val();
-    }).get();
-
-    console.log(checked_columns)
-    var num_of_clusters = parseInt($('#num-of-clusters').val());
-    //todo get clustering method
-    // todo send AJAX call to cluster and show ajax loader
-    // todo record clustering ids in backend
-}
-
 function isInt(value) {
     return !isNaN(value) && (function (x) {
         return ((x | 0) === x) && x > 0;

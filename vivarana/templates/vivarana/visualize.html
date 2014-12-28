@@ -57,8 +57,9 @@
     </div>
 
 
-        <!-- Container for the dialog that appear on clicking the rule generation button -->
-    <div class="modal fade" id="clusterModel" tabindex="-1" role="dialog" aria-labelledby="clusterModalLabel" aria-hidden="true">
+    <!-- Container for the dialog that appear on clicking the rule generation button -->
+    <div class="modal fade" id="clusterModel" tabindex="-1" role="dialog" aria-labelledby="clusterModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -93,11 +94,15 @@
     <div id="parcoords-main" class="parcoords"></div>
 
     {% if pagination_config.number_pages != 1 %}
-    <div style="float: none; margin: 0 auto; font-size: 1.8em;" id="navigation-container" class="col-lg-2">
-        <a href="/visualize/?page={{ page_number|add:-1 }}" {% if page_number == 1  %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a>
-        <span style="font-size: 1em;">{{ page_number }} / {{ pagination_config.number_pages }}</span>
-        <a href="/visualize/?page={{ page_number|add:1 }}" {% if page_number == pagination_config.number_pages  %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
-    </div>
+        <div style="float: none; margin: 0 auto; font-size: 1.8em;" id="navigation-container" class="col-lg-2">
+            <a href="/visualize/?page={{ page_number|add:-1 }}"
+               {% if page_number == 1 %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-left"
+                                                                                aria-hidden="true"></span></a>
+            <span style="font-size: 1em;">{{ page_number }} / {{ pagination_config.number_pages }}</span>
+            <a href="/visualize/?page={{ page_number|add:1 }}"
+               {% if page_number == pagination_config.number_pages %}class="disabled-link" {% endif %}><span
+                    class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
+        </div>
     {% endif %}
 
     <!-- Container for the slickgrid table-->
@@ -582,10 +587,53 @@
         dataView.endUpdate();
     }
 
+
+    function continueClustering() {
+        $('#clusterModel').modal('toggle');
+        var checked_columns = $("input:checkbox[name=column_for_cluster]:checked").map(function () {
+            return $(this).val();
+        }).get();
+
+        var selected_ids = [];
+        var cluster_algo = $("input:radio[name=clustering-algo-radios]:checked").val();
+        var num_of_clusters = parseInt($('#num-of-clusters').val());
+
+        var brushed_data = parcoords.state.brushed;
+        if (!brushed_data) {
+            brushed_data = parcoords.state.data;
+        }
+        for (var i in brushed_data) {
+            selected_ids.push(brushed_data[i]['id'])
+        }
+
+        //todo show ajax loader at this point
+        $.ajax({
+            url: '/clustering/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({"selected_ids": selected_ids, "clustering-algo-radios": cluster_algo, "number-of-clusters": num_of_clusters, "column": checked_columns}),
+            dataType: 'json',
+            success: function (result) {
+                var lst = [];
+                for (var k in result) {
+                    lst.push(result[k]);
+                }
+                for (var i in brushed_data) {
+                    brushed_data[i]['clusterID'] = lst[i];
+                }
+                drawData(brushed_data);
+                gridUpdate(brushed_data);
+                //todo hide ajax loader
+                //todo add parcords redraw function
+            }
+        });
+    }
+
+
     function generate_rules() {
         $('#myModal').modal('toggle');
-        var selected_ids = []
-        var brushed_data = parcoords.state.brushed
+        var selected_ids = [];
+        var brushed_data = parcoords.state.brushed;
 
         var checked_columns = $("input:checkbox[name=column_for_rulegen]:checked").map(function () {
             return $(this).val();

@@ -1,25 +1,9 @@
-"""
-Django settings for FYP project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.7/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.7/ref/settings/
-"""
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+SECRET_KEY = '-zv+pqdo96u95uggnw$)62pn-i=ts)_l6vn($_%)552g!^4i@k'
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '-zv+pwso96u95uggnw$)63pn-i=ts)_l6vn($_%)552g!^4i@k'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 TEMPLATE_DEBUG = True
@@ -78,9 +62,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.7/howto/static-files/
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 MEDIA_URL = "media/"
@@ -92,41 +73,37 @@ STATICFILES_DIRS = (
 )
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR,  'templates'),
+    os.path.join(BASE_DIR, 'templates'),
 )
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
-        'standard': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        'verbose': {
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
         },
     },
     'handlers': {
-        'default': {
-            'level':'DEBUG',
-            'class':'logging.StreamHandler',
-            'formatter':'standard',
-        },
-        'request_handler': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/django_request.log',
-            'maxBytes': 1024*1024*5, # 5 MB
-            'backupCount': 5,
-            'formatter':'standard',
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'vivarana.log',
+            'formatter': 'verbose'
         },
     },
     'loggers': {
-        '': {
-            'handlers': ['default'],
+        'django': {
+            'handlers': ['file'],
+            'propagate': True,
             'level': 'DEBUG',
-            'propagate': True
         },
-        'django.request': {
-            'handlers': ['request_handler'],
+        'Vivarana': {
+            'handlers': ['file'],
             'level': 'DEBUG',
-            'propagate': False
         },
     }
 }

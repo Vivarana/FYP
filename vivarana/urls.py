@@ -4,7 +4,6 @@ from vivarana import views
 
 urlpatterns = patterns('',
     url(r'^$', views.home, name='home'),
-    url(r'^upload/$', views.upload , name='upload'),
     url(r'^preprocessor/$', views.preprocessor, name='preprocessor'),
     url(r'^clustering/$', views.clustering, name='clustering'),
     url(r'^visualize/$', views.visualize , name='visualize'),

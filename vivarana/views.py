@@ -1,11 +1,12 @@
 import math
+import json
+import logging
+
 from pandas import *
-from pandas.io import json
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-import logging
-import json
 from addict import Dict
+
 from helper import file_helper
 from helper import aggregate
 from rulegen import cart_based_rule_generator as rule_generator
@@ -13,6 +14,8 @@ from helper.cluster import *
 import vivarana.dataformat.categorize as ct
 import vivarana.dataformat.sessionhandle as sh
 
+
+logger = logging.getLogger(__name__)
 
 original_data_frame = None
 current_data_frame = None
@@ -25,17 +28,39 @@ pagination_config = {
 
 properties_map = Dict()
 
-logger = logging.getLogger('root')
-
 
 def home(request):
-    context = {}
-    return render(request, 'vivarana/home.html', context)
+    if request.method == GET:
+        return render(request, HOME_PAGE)
+
+    if request.method == POST:
+        response_data = {}
+        try:
+            input_file = request.FILES[FILE_INPUT]
+            output = file_helper.handle_uploaded_file(input_file)
+            response_data['success'] = output['success']
+            if output['success']:
+                global original_data_frame, current_data_frame
+                original_data_frame = output['dataframe']
+                original_data_frame.columns = file_helper.get_html_friendly_names(original_data_frame.columns)
+                current_data_frame = original_data_frame.copy(deep=True)
+                request.session['filename'] = input_file.name.encode('UTF8')
+                response_data['file_name'] = input_file.name.encode('UTF8')
+            else:
+                response_data['error'] = output['error']
+
+        except Exception, error:
+            logger.error('Error occurred while setting up file.', error)
+            response_data['error'] = "Error while setting up file. Please try again."
+            response_data['success'] = False
+
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
 def visualize(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
-        return redirect(UPLOAD_PATH)
+        return redirect(HOME_PATH)
+    current_data_frame['clusterID'] = 0
     column_types = file_helper.get_compatible_column_types(current_data_frame)
 
     # minus one to convert zero based to one based
@@ -107,27 +132,23 @@ def set_window(request):
 
 def clustering(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
-        return redirect(UPLOAD_PATH)
+        return redirect(HOME_PATH)
 
-    if request.method == GET:
-        context = file_helper.load_data(request.session['filename'], original_data_frame)
-        return render(request, CLUSTERING_PAGE, context)
     if request.method == POST:
-        columns = request.POST.getlist('column')
-        cluster_method = request.POST[CLUSTERING_METHOD]
-        number_of_clusters = int(request.POST[NUMBER_OF_CLUSTERS])
-
-        data_frame = file_helper.remove_columns(columns, original_data_frame)
-        global current_data_frame
-        apply_clustering(cluster_method, number_of_clusters, original_data_frame,
-                         data_frame)  # todo should pass current data frmae
-        current_data_frame['clusterID'] = original_data_frame['clusterID']
-        return redirect(PREPROCESSOR_PATH)
+        params = json.loads(request.body)
+        columns = params['column']
+        cluster_method = params[CLUSTERING_METHOD]
+        number_of_clusters = int(params[NUMBER_OF_CLUSTERS])
+        selected_ids = params['selected_ids']
+        clustered_dict = apply_clustering(cluster_method, number_of_clusters, original_data_frame, selected_ids,
+                                          columns)
+        json_response = json.dumps(clustered_dict)
+        return HttpResponse(json_response)
 
 
 def preprocessor(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
-        return redirect(UPLOAD_PATH)
+        return redirect(HOME_PATH)
 
     if request.method == 'POST':
         columns = request.POST.getlist('column')
@@ -162,47 +183,12 @@ def preprocessor(request):
         if vistype == 'parellel':
             return redirect(VISUALIZE_PATH)
         elif vistype == 'sunburst':
-                return redirect(SUNBURST_PATH)
+            return redirect(SUNBURST_PATH)
         return redirect(VISUALIZE_PATH)
     else:
-        context = file_helper.load_data(request.session['filename'], original_data_frame)
+        context = file_helper.get_data_summary(original_data_frame)
+        context['filename'] = request.session['filename']
         return render(request, PREPROCESSOR_PAGE, context)
-
-
-def upload(request):
-    if request.method == 'POST':
-        response_data = {}
-        try:
-            input_file = request.FILES['fileinput']
-            output = file_helper.handle_uploaded_file(input_file)
-            #output = file_helper.handle_uploaded_file(input_file,0) additional parameter saying if theirs a header
-            #line in csv or not
-
-            if output['success']:
-                global original_data_frame, current_data_frame
-                original_data_frame = output['dataframe']
-
-                original_data_frame.columns = file_helper.get_html_friendly_names(original_data_frame.columns)
-                current_data_frame = original_data_frame.copy(deep=True)
-
-                request.session['filename'] = input_file.name
-
-                response_data['file_name'] = input_file.name
-                response_data['success'] = True
-            else:
-                if output['error'] == 'PARSE-ERROR':
-                    response_data = output
-                else:
-                    response_data['error'] = output['error']
-                    response_data['success'] = False
-
-        except Exception, error:
-            response_data['error'] = "Error while setting up file. Please try again."
-            response_data['success'] = False
-
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
-    else:
-        return render(request, 'vivarana/upload.html', {})
 
 
 def rule_gen(request):
@@ -227,20 +213,20 @@ def reset_axis(request):
 
 
 def sunburst(request):
-
-    #logger.debug(request)
     return render(request, SUNBURST_PAGE)
 
+
 def get_tree_data(request):
-    if len(current_data_frame.columns) == 2: ## to do get CSV intelligently
+    if len(current_data_frame.columns) == 2:  # todo get CSV intelligently
         json_tree = ct.build_json_hierarchy(current_data_frame.values)
     else:
         json_tree = ct.build_json_hierarchy_log(sh.get_sessions_data(current_data_frame))
-       # print json.dumps(json_tree)
     return HttpResponse(json_tree)
+
 
 def get_unique_urls(request):
     return HttpResponse(json.dumps(sh.get_unique_urls(current_data_frame)))
+
 
 def get_session_sequence(request):
     return HttpResponse(sh.get_session_info(current_data_frame))
