@@ -22,7 +22,7 @@ def handle_uploaded_file(file_in, ):
                 containing the data of the parsed file.
 
     :param file_in: input file uploaded by the user
-    :return: 'success' if the file has been parsed successfully
+    :return: 'success', 'dataframe' if the file has been parsed successfully
             'error' if the file type is not supported
     """
     file_extension = file_in.name.split('.')[-1]

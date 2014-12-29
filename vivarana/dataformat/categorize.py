@@ -1,11 +1,7 @@
-import pandas as pd;
-import numpy as np;
-
-import sys
 import os
 import json
 from django.core.files import File
-import vivarana.helper.apachelog as apachelog
+import vivarana.extensions.log.apachelog as apachelog
 import vivarana.dataformat.sessionhandle as sh
 
 
