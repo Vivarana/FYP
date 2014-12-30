@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 original_data_frame = None
 current_data_frame = None
 
+grouping_column = None
+grouped_column = None
+
 pagination_config = {
     "pagination_method": None,
     "page_size": 1000,
@@ -180,10 +183,17 @@ def preprocessor(request):
             pagination_config["number_pages"] = int(math.ceil(
                 len(current_data_frame) / float(pagination_config["page_size"])))
 
-        if vistype == 'parellel':
+        if vistype == PARACOORDS_VIS_TYPE:
             return redirect(VISUALIZE_PATH)
-        elif vistype == 'sunburst':
-            return redirect(SUNBURST_PATH)
+        elif vistype == SUNBURST_VIS_TYPE:
+            global grouping_column
+            global grouped_column
+            grouping_column = request.POST.get(GROUPING_COL_NAME)
+            grouped_column = request.POST.get(GROUPED_COL_NAME)
+            #delete after testing
+            grouping_column = 'Remote_host';
+            grouped_column = 'URL';
+            return redirect(SUNBURST_PATH+"?"+GROUP_BY+"="+grouping_column+"&"+COALESCE+"="+grouped_column)
         return redirect(VISUALIZE_PATH)
     else:
         context = file_helper.get_data_summary(original_data_frame)
@@ -215,18 +225,16 @@ def reset_axis(request):
 def sunburst(request):
     return render(request, SUNBURST_PAGE)
 
-
 def get_tree_data(request):
     if len(current_data_frame.columns) == 2:  # todo get CSV intelligently
         json_tree = ct.build_json_hierarchy(current_data_frame.values)
     else:
-        json_tree = ct.build_json_hierarchy_log(sh.get_sessions_data(current_data_frame))
+        json_tree = ct.build_json_hierarchy_log(sh.get_sessions_data(current_data_frame,grouping_column,grouped_column))
     return HttpResponse(json_tree)
 
 
 def get_unique_urls(request):
-    return HttpResponse(json.dumps(sh.get_unique_urls(current_data_frame)))
-
+    return HttpResponse(json.dumps(sh.get_unique_urls(current_data_frame,grouped_column)))
 
 def get_session_sequence(request):
     return HttpResponse(sh.get_session_info(current_data_frame))

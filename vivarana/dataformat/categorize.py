@@ -1,52 +1,56 @@
 import os
 import json
 from django.core.files import File
+import logging
 import vivarana.extensions.log.apachelog as apachelog
 import vivarana.dataformat.sessionhandle as sh
+from vivarana.constants import NAME_ATTRIB,SIZE_ATTRIB,ROOT_NAME,CHILDREN_ATTRIB
+logger = logging.getLogger(__name__)
 
+# Commented code is needed for testing purposes
 
-def handle_log(file_in):
-    # Set the log format to common
-    log_format = apachelog.formats['common']
-    parser = apachelog.parser(log_format)
-
-    script_dir = os.path.dirname(__file__)  # <-- absolute dir the script is in
-    rel_path = "../../media/temp.log"
-    abs_temp_log_file_path = os.path.join(script_dir, rel_path)
-    with open(abs_temp_log_file_path, 'wb+') as destination:
-        for chunk in file_in.chunks():
-            destination.write(chunk)
-
-    log_list = []
-
-    try:
-        with open(abs_temp_log_file_path, 'r') as log_file:
-            for line in log_file.readlines():
-                log_list.append(parser.parse(line))
-    except apachelog.ApacheLogParserError, e:
-        print e
-        return {'success': False, 'error': 'PARSE-ERROR'}
-
-    original_data_frame = pd.DataFrame(log_list)
-
-    # Convert the size column to integer from string
-    if 'Size(bytes)' in original_data_frame.columns:
-        original_data_frame['Size(bytes)'] = original_data_frame['Size(bytes)'].replace('-', 0)
-        original_data_frame['Size(bytes)'].apply(int)
-        original_data_frame['Size(bytes)'] = original_data_frame['Size(bytes)'].astype(int)
-
-    # Splitting the request line. todo : Fix the errors when the format doesnt match
-    if 'request' in original_data_frame.columns:
-        temp = original_data_frame.request.str.split(' ')
-        original_data_frame['Method'] = temp.str[0]
-        original_data_frame['URL'] = temp.str[1]
-        original_data_frame['Protocol'] = temp.str[-1]
-
-    return {'success': True, 'dataframe': original_data_frame}
+# def handle_log(file_in):
+#     # Set the log format to common
+#     log_format = apachelog.formats['common']
+#     parser = apachelog.parser(log_format)
+#
+#     script_dir = os.path.dirname(__file__)  # <-- absolute dir the script is in
+#     rel_path = "../../media/temp.log"
+#     abs_temp_log_file_path = os.path.join(script_dir, rel_path)
+#     with open(abs_temp_log_file_path, 'wb+') as destination:
+#         for chunk in file_in.chunks():
+#             destination.write(chunk)
+#
+#     log_list = []
+#
+#     try:
+#         with open(abs_temp_log_file_path, 'r') as log_file:
+#             for line in log_file.readlines():
+#                 log_list.append(parser.parse(line))
+#     except apachelog.ApacheLogParserError, e:
+#         print e
+#         return {'success': False, 'error': 'PARSE-ERROR'}
+#
+#     original_data_frame = pd.DataFrame(log_list)
+#
+#     # Convert the size column to integer from string
+#     if 'Size(bytes)' in original_data_frame.columns:
+#         original_data_frame['Size(bytes)'] = original_data_frame['Size(bytes)'].replace('-', 0)
+#         original_data_frame['Size(bytes)'].apply(int)
+#         original_data_frame['Size(bytes)'] = original_data_frame['Size(bytes)'].astype(int)
+#
+#     # Splitting the request line. todo : Fix the errors when the format doesnt match
+#     if 'request' in original_data_frame.columns:
+#         temp = original_data_frame.request.str.split(' ')
+#         original_data_frame['Method'] = temp.str[0]
+#         original_data_frame['URL'] = temp.str[1]
+#         original_data_frame['Protocol'] = temp.str[-1]
+#
+#     return {'success': True, 'dataframe': original_data_frame}
 
 
 def build_json_hierarchy(ndarray_data):
-    root = {'name': 'Root', 'children': []}
+    root = {NAME_ATTRIB: ROOT_NAME, CHILDREN_ATTRIB: []}
     for x in ndarray_data:
         sequence = x[0]
         if isinstance(x[1], long) == False:
@@ -56,26 +60,26 @@ def build_json_hierarchy(ndarray_data):
         current_node = root
         for index in range(len(parts)):
             # print sequence, size,type(parts)
-            children = current_node["children"]
+            children = current_node[CHILDREN_ATTRIB]
             nodename = parts[index]
             if index + 1 < len(parts):
                 found_child = False
                 for k in range(len(children)):
-                    if children[k]["name"] == nodename:
+                    if children[k][NAME_ATTRIB] == nodename:
                         child_node = children[k]
                         found_child = True
                         break
                 if found_child is False:
-                    child_node = {"name": nodename, "children": []}
+                    child_node = {NAME_ATTRIB: nodename, CHILDREN_ATTRIB: []}
                     children.append(child_node)
                 current_node = child_node
             else:
-                child_node = {"name": nodename, "size": size}
+                child_node = {NAME_ATTRIB: nodename, SIZE_ATTRIB: size}
                 children.append(child_node)
     return json.dumps(root)
 
 def build_json_hierarchy_log(series_data):
-    root = {'name': 'Root', 'children': []}
+    root = {NAME_ATTRIB: ROOT_NAME, CHILDREN_ATTRIB: []}
     for x in range(len(series_data)):
         sequence = series_data.index[x]
         size = series_data[x]
@@ -83,21 +87,21 @@ def build_json_hierarchy_log(series_data):
         current_node = root
         for index in range(len(parts)):
             #print parts,index,len(parts),current_node#sequence, size,type(parts)
-            children = current_node["children"]
+            children = current_node[CHILDREN_ATTRIB]
             nodename = parts[index]
             if index + 1 < len(parts):
                 found_child = False
                 for k in range(len(children)):
-                    if children[k]["name"] == nodename and "children" in children[k]:
+                    if children[k][NAME_ATTRIB] == nodename and CHILDREN_ATTRIB in children[k]:
                         child_node = children[k]
                         found_child = True
                         break
                 if found_child is False:
-                    child_node = {"name": nodename, "children": []}
+                    child_node = {NAME_ATTRIB: nodename, CHILDREN_ATTRIB: []}
                     children.append(child_node)
                 current_node = child_node
             else:
-                child_node = {"name": nodename, "size": size}
+                child_node = {NAME_ATTRIB: nodename, SIZE_ATTRIB: size}
                 children.append(child_node)
     return json.dumps(root)
 

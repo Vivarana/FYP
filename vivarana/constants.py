@@ -49,3 +49,23 @@ EXT_LOG = 'log'
 
 #temp file
 TEMP_FILE_PATH = 'media' + os.path.sep + 'temp'
+
+
+#json hierarchy building sunburst
+
+NAME_ATTRIB = "name"
+CHILDREN_ATTRIB = "children"
+SIZE_ATTRIB = "size"
+ROOT_NAME = "Root"
+
+# Sunburst page
+
+GROUP_BY = "GROUP_BY"
+COALESCE = "COALESCE"
+
+# preprocesser page
+
+PARACOORDS_VIS_TYPE = 'parellel'
+SUNBURST_VIS_TYPE = 'sunburst'
+GROUPING_COL_NAME = 'groupby'
+GROUPED_COL_NAME = 'grouped_column'
