@@ -20,6 +20,7 @@ def apply_clustering(cluster_method, number_of_clusters, original_data_frame, se
         klaR = importr("klaR")
         KMC = klaR.kmodes(r_dataframe, number_of_clusters)
         cluster_id = KMC[0]
+        del r_dataframe
 
     elif cluster_method == HIERARCHICAL_CLUSTERING:
         cluster = importr("cluster")
@@ -27,11 +28,13 @@ def apply_clustering(cluster_method, number_of_clusters, original_data_frame, se
         cluster_input = ro.r.hclust(distances, method="complete")
         cluster_groups = ro.r.cutree(cluster_input, k=number_of_clusters)  # specify the number of clusters
         cluster_id = cluster_groups
+        del r_dataframe
 
     elif cluster_method == FUZZY_CLUSTERING:
         cluster = importr("cluster")
         fuzzy_clustered = cluster.fanny(r_dataframe, number_of_clusters)
         cluster_id = fuzzy_clustered[3]
+        del r_dataframe
 
     clustered_list = {}
 
