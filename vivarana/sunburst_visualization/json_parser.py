@@ -3,8 +3,9 @@ import json
 from django.core.files import File
 import logging
 import vivarana.extensions.log.apachelog as apachelog
-import vivarana.dataformat.sessionhandle as sh
-from vivarana.constants import NAME_ATTRIB,SIZE_ATTRIB,ROOT_NAME,CHILDREN_ATTRIB
+import vivarana.sunburst_visualization.data_processor as sh
+from vivarana.sunburst_visualization.constants import COALESCE_SEPARATOR
+from vivarana.sunburst_visualization.constants import NAME_ATTRIB,SIZE_ATTRIB,ROOT_NAME,CHILDREN_ATTRIB
 logger = logging.getLogger(__name__)
 
 # Commented code is needed for testing purposes
@@ -50,18 +51,24 @@ logger = logging.getLogger(__name__)
 
 
 def build_json_hierarchy(ndarray_data):
+    """
+    Builds json tree from csv: csv format = account-account-product 2009
+    :param ndarray_data:
+    :return:
+    """
     root = {NAME_ATTRIB: ROOT_NAME, CHILDREN_ATTRIB: []}
     for x in ndarray_data:
         sequence = x[0]
         if isinstance(x[1], long) == False:
             continue
         size = x[1]
-        parts = sequence.split("-")
+        parts = sequence.split(COALESCE_SEPARATOR)
         current_node = root
         for index in range(len(parts)):
             # print sequence, size,type(parts)
             children = current_node[CHILDREN_ATTRIB]
             nodename = parts[index]
+            child_node = []
             if index + 1 < len(parts):
                 found_child = False
                 for k in range(len(children)):
@@ -79,20 +86,28 @@ def build_json_hierarchy(ndarray_data):
     return json.dumps(root)
 
 def build_json_hierarchy_log(series_data):
+
+    """
+    Builds the json hierarchy from the dataframe created by log files
+
+    :param series_data: grouped rows with sizes
+    :return:            json structure that is used by d3 partition layout
+    """
     root = {NAME_ATTRIB: ROOT_NAME, CHILDREN_ATTRIB: []}
     for x in range(len(series_data)):
         sequence = series_data.index[x]
         size = series_data[x]
-        parts = sequence.split("-")
+        parts = sequence.split(COALESCE_SEPARATOR)
         current_node = root
         for index in range(len(parts)):
             #print parts,index,len(parts),current_node#sequence, size,type(parts)
             children = current_node[CHILDREN_ATTRIB]
             nodename = parts[index]
-            if index + 1 < len(parts):
+            child_node = []
+            if index + 1 < len(parts): #Not yet at the end of the sequence; move down the tree.
                 found_child = False
                 for k in range(len(children)):
-                    if children[k][NAME_ATTRIB] == nodename and CHILDREN_ATTRIB in children[k]:
+                    if children[k][NAME_ATTRIB] == nodename:
                         child_node = children[k]
                         found_child = True
                         break

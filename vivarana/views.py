@@ -11,9 +11,9 @@ from helper import file_helper
 from helper import aggregate
 from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
-import vivarana.dataformat.categorize as ct
-import vivarana.dataformat.sessionhandle as sh
-
+import vivarana.sunburst_visualization.json_parser as ct
+import vivarana.sunburst_visualization.data_processor as sh
+from vivarana.sunburst_visualization.constants import GROUP_BY,COALESCE
 
 logger = logging.getLogger(__name__)
 
@@ -223,7 +223,9 @@ def reset_axis(request):
 
 
 def sunburst(request):
-    return render(request, SUNBURST_PAGE)
+    context = {"grouping":grouping_column,"grouped":grouped_column}
+
+    return render(request, SUNBURST_PAGE,context)
 
 def get_tree_data(request):
     if len(current_data_frame.columns) == 2:  # todo get CSV intelligently
