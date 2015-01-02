@@ -52,6 +52,7 @@ body {
     text-align: center;
     color: #666;
     z-index: -1;
+    transform: None;
 }
 
 #percentage {

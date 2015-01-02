@@ -34,6 +34,7 @@ def apply_clustering(cluster_method, number_of_clusters, original_data_frame, se
         cluster = importr("cluster")
         fuzzy_clustered = cluster.fanny(r_dataframe, number_of_clusters)
         cluster_id = fuzzy_clustered[3]
+        del r_dataframe
 
     clustered_list = {}
 

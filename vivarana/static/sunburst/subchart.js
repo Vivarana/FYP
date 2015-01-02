@@ -75,7 +75,16 @@ function subchartmouseover() {
 
     subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")");
     vis.attr("transform", "translate(" + 375 + "," + 300 + ")scale(" + 1 / 2 + ")");
+    d3.select("#explanation").style("transform", "translate(475px)");
 };
 function subchartmouseleave() {
-    // subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")scale("+1/2+")");
+    d3.selectAll("path")
+        .transition()
+        .duration(1000)
+        .style("opacity", 1)
+        .each("end", function () {
+            d3.select(this).on("mouseover", mouseover);
+        });
+     d3.select("#explanation")
+        .style("visibility", "hidden");
 };

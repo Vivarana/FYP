@@ -37,7 +37,7 @@ TIME_GRANULARITY = 'time_granularity'
 TIME_WINDOW_VALUE = 'time_window_value'
 EVENT_WINDOW_VALUE = 'event_window_value'
 
-#error
+# error
 ERROR_100 = 'error-100'  # aggregate error where aggregation is performed without setting window value
 
 #file upload constant
@@ -49,7 +49,6 @@ EXT_LOG = 'log'
 
 #temp file
 TEMP_FILE_PATH = 'media' + os.path.sep + 'temp'
-
 
 # state map properties
 DATA_LST = "data_lst"
@@ -82,7 +81,6 @@ ALPHA_OPACITY = 'alpha_opacity'
 
 TIME_WINDOW_ENABLED = 'time_window_enabled'
 
-
 PROPERTY_NAME = 'property_name'
 PROPERTY_VALUE = 'property_value'
 
@@ -94,3 +92,10 @@ AVG = 'average'
 MIN = 'min'
 MAX = 'max'
 COUNT = 'count'
+
+# preprocesser page
+PARACOORDS_VIS_TYPE = 'parellel'
+SUNBURST_VIS_TYPE = 'sunburst'
+GROUPING_COL_NAME = 'groupby'
+GROUPED_COL_NAME = 'grouped_column'
+

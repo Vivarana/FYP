@@ -9,7 +9,23 @@ var b = {
 };
 
 // Mapping of step names to colors.
-var colors ={ null :"rgb(0,0,0)"};
+var colors ={ null :"#000000"};
+var colorList = ["#000080","#00008B","#0000CD","#0000FF","#006400","#008000","#008080","#008B8B","#00BFFF","#00CED1",
+                "#00FA9A","#00FF00","#00FF7F","#00FFFF","#191970","#1E90FF","#20B2AA","#228B22","#2E8B57","#2F4F4F",
+                "#32CD32","#3CB371","#40E0D0","#4169E1","#4682B4","#483D8B","#48D1CC","#4B0082","#556B2F","#5F9EA0",
+                "#6495ED","#66CDAA","#696969","#6A5ACD","#6B8E23","#708090","#778899","#7B68EE","#7CFC00","#7FFF00",
+                "#7FFFD4","#800000","#800080","#808000","#808080","#87CEEB","#87CEFA","#8A2BE2","#8B0000","#8B008B",
+                "#8B4513","#8FBC8F","#90EE90","#9370DB","#9400D3","#98FB98","#9932CC","#9ACD32","#A0522D","#A52A2A",
+                "#A9A9A9","#ADD8E6","#ADFF2F","#AFEEEE","#B0C4DE","#B0E0E6","#B22222","#B8860B","#BA55D3","#BC8F8F",
+                "#BDB76B","#C0C0C0","#C71585","#CD5C5C","#CD853F","#D2691E","#D2B48C","#D3D3D3","#D8BFD8","#DA70D6",
+                "#DAA520","#DB7093","#DC143C","#DCDCDC","#DDA0DD","#DEB887","#E6E6FA","#E9967A","#EE82EE","#EEE8AA",
+                "#F08080","#F0E68C","#F4A460","#F5DEB3","#FA8072","#FAEBD7","#FAF0E6","#FAFAD2","#FDF5E6","#FF0000",
+                "#FF00FF","#FF00FF","#FF1493","#FF4500","#FF6347","#FF69B4","#FF7F50","#FF8C00","#FFA07A","#FFA500",
+                "#FFB6C1","#FFC0CB","#FFD700","#FFDAB9","#FFDEAD","#FFE4B5","#FFE4C4","#FFE4E1","#FFEBCD","#FFEFD5",
+                "#FFFF00"];
+
+var redColorList = ["#000000","#000080","#0000FF","#008000","#008080","#00FF00","#00FFFF","#800000","#800080","#808000",
+                "#808080","#C0C0C0","#FF0000","#FF00FF","#FFA500","#FFFF00"];
 
 // Total size of all segments; we set this later, after loading the data.
 var totalSize = 0;
@@ -137,6 +153,8 @@ function mouseover(d) {
             return (sequenceArray.indexOf(node) >= 0);
         })
         .style("opacity", 1);
+
+    d3.select("#explanation").style("transform", "None");
 }
 
 // Restore everything to full opacity when moving off the visualization.
@@ -295,7 +313,20 @@ function toggleLegend() {
         legend.style("visibility", "hidden");
     }
 }
-var U, V, R, G,B;
+
+function colorPoints(index,length){
+   /* var fvalue = Math.floor(0xFFF*(index+1)/length).toString(16);
+    if(fvalue.length == 1){
+        fvalue = "00"+fvalue;
+    }else if(fvalue.length == 2){
+        fvalue = "0"+fvalue;
+    }
+    var color = "#"+fvalue;
+    return color;*/
+    var color = colorList[Math.floor((colorList.length*index)/length)];
+    return color;
+}
+/*var U, V, R, G,B;
 function colorPoints(scalevalue , Y){
     U = Math.cos(scalevalue);
     V = Math.sin(scalevalue);
@@ -306,19 +337,81 @@ function colorPoints(scalevalue , Y){
     G = Math.floor(Math.abs(V*255));
     B = Math.floor(Math.abs(((U+V)/2)*255));
     return "rgb("+R+","+G+","+B+")";
+}*/
+/*
+function colorPoints(fullscale,quadrantscale){
+    var U = Math.cos(quadrantscale);
+    var V = Math.sin(quadrantscale);
+    var h = fullscale/60;			// sector 0 to 5
+	var i = Math.floor( h );
+    window.alert(fullscale+" , "+quadrantscale+" , "+U +" , "+V+" , "+h+" , "+i);
+	var f = h - i;			// factorial part of h
+	var p = V * ( 1 - U );
+	var q = V * ( 1 - U * f );
+	var t = V * ( 1 - U * ( 1 - f ) );
+    var R,G,B;
+    if( U == 0 ) {
+		// achromatic (grey)
+		R = G = B = V;
+        return "rgb("+Math.floor(R*255)+","+Math.floor(G*255)+" ,"+Math.floor(B*255)+")";
+	}
+    else {
+        switch (i) {
+            case 0:
+                R = V;
+                G = t;
+                B = p;
+                break;
+            case 1:
+                R = q;
+                G = V;
+                B = p;
+                break;
+            case 2:
+                R = p;
+                G = V;
+                B = t;
+                break;
+            case 3:
+                R = p;
+                G = q;
+                B = V;
+                break;
+            case 4:
+                R = t;
+                G = p;
+                B = V;
+                break;
+            default:		// case 5:
+                R = V;
+                G = p;
+                B = q;
+                break;
+        }
+    }
+    return "rgb("+Math.floor(R*255)+","+Math.floor(G*255)+" ,"+Math.floor(B*255)+")";
 }
+*/
 
 function initialzeColors(json) {
     $.get('/uniqueurls/', function (data) {
         var urls = JSON.parse(data);
         console.log(urls.length);
-        var linearScale = d3.scale.linear()
+        /*var linearScale = d3.scale.linear()
+                                .domain([0,urls.length])
+                                .range([0,Math.PI/2]);
+        var fullLinearScale = d3.scale.linear()
                                 .domain([0,urls.length])
                                 .range([0,360]);
+        var quadrantLinearScale = d3.scale.linear()
+                                .domain([0,urls.length])
+                                .range([0,Math.PI*2]);*/
         //console.log(linearScale(500))
         urls.map(function(currentvalue,index,array){
             //console.log(currentvalue,  colorPoints(linearScale(index),0.5));
-            colors[currentvalue] = colorPoints(linearScale(index),0.1);
+             //colors[currentvalue] = colorPoints(linearScale(index),0.1);
+            //colors[currentvalue] = colorPoints(fullLinearScale(index),quadrantLinearScale(index));
+            colors[currentvalue] = colorPoints(index,urls.length);
         });
         console.log(colors);
         drawChart(json);
