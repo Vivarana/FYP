@@ -3,36 +3,42 @@
 {% block title %}SunBurst{% endblock %}
 
 {% block body_block %}
-    <div id="main">
-        <div id="sequence"></div>
-        <div id="chart">
-            <div id="explanation" style="visibility: hidden;">
-                <span id="percentage"></span><br/>
-                of all sequences of {{grouped}} this sequence amounts to
+        <div id="main">
+            <div id="sequence"></div>
+            <div id="chart">
+                <div id="explanation" style="visibility: hidden;">
+                    <span id="percentage"></span><br/>
+                    of all sequences of {{ grouped }} this sequence amounts to
+                </div>
             </div>
         </div>
-    </div>
-    <!--div id="subchart">
-        <div id="subexplanation" style="visibility: hidden;">
-            <span id="subpercentage"></span><br/>
-            of visits begin with this sequence of pages
-        </div>
-    </div-->
-    <div id="sidebar">
-        <input type="checkbox" id="togglelegend"> Legend<br/>
+        <!--div id="subchart">
+            <div id="subexplanation" style="visibility: hidden;">
+                <span id="subpercentage"></span><br/>
+                of visits begin with this sequence of pages
+            </div>
+        </div-->
+        <div id="sidebar">
+            <input type="checkbox" id="togglelegend"> Legend<br/>
 
-        <div id="legend" style="visibility: hidden;"></div>
-    </div>
+            <div id="legend" style="visibility: hidden;"></div>
+        </div>
+
     <script src="{% static "sunburst/sequences.js" %}"></script>
     <script src="{% static "sunburst/subchart.js" %}"></script>
     <script type="text/javascript">
+    var percentageSliderValue = 0.005;
+    seq_height = $("#sequence").css("height");
+    $("#chart").css("top",seq_height);
         // Hack to make this example display correctly in an iframe on bl.ocks.org
-        d3.select(self.frameElement).style("height", "700px");
-        $.get('/treedata/', function(data){
-            var json =  JSON.parse(data);
-            createVisualization(json);
-        });
+        //d3.select(self.frameElement).style("height", "700px");
+    showSunburst();
+    $("#percentage-slider").on({'slide':function(){
+        percentageSliderValue = $(this).val();
+        $("#percentage-opacity-text").text("Minimum Percentage: "+percentageSliderValue+" %");
 
+    },'set':function(){
+        updateData();
+    }});
     </script>
-
 {% endblock %}
