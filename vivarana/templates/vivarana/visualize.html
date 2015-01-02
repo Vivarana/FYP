@@ -93,15 +93,14 @@
     <!-- Container for the main visualization -->
     <div id="parcoords-main" class="parcoords"></div>
 
-    {% if pagination_config.number_pages != 1 %}
+    {% if state_map.number_pages != 1 %}
         <div style="float: none; margin: 0 auto; font-size: 1.8em;" id="navigation-container" class="col-lg-2">
-            <a href="/visualize/?page={{ page_number|add:-1 }}"
-               {% if page_number == 1 %}class="disabled-link" {% endif %}><span class="glyphicon glyphicon-arrow-left"
-                                                                                aria-hidden="true"></span></a>
-            <span style="font-size: 1em;">{{ page_number }} / {{ pagination_config.number_pages }}</span>
-            <a href="/visualize/?page={{ page_number|add:1 }}"
-               {% if page_number == pagination_config.number_pages %}class="disabled-link" {% endif %}><span
-                    class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
+            <a onclick="paginate_next('backward')" href="#" id="pagination_back_link" class="disabled-link">
+                <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a>
+            <span style="font-size: 1em;"> <p id = "pagination_current_page_num">{{ page_number }}</p> / {{ state_map.number_pages }}</span>
+            <a onclick="paginate_next('forward')" href="#" id="pagination_next_link">
+                <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
+
         </div>
     {% endif %}
 
@@ -221,7 +220,7 @@
         var colorgen = d3.scale.category20();
         var colors = {};
         _(data).chain()
-                .pluck('clusterID') // todo change this to cluster axis name
+                .pluck('clusterID')
                 .uniq()
                 .each(function (d, i) {
                     colors[d] = colorgen(i);
@@ -229,7 +228,7 @@
 
 
         var color = function (d) {
-            return colors[d.clusterID]; // todo change this to cluster axis name
+            return colors[d.clusterID];
         };
         parcoords.color(color).render();
     }
@@ -277,10 +276,14 @@
             parcoords.svg.selectAll(".dimension")
                     .on("click", enable_cluster_coloring())
                     .selectAll(".label");
+            $.post("/change_state/", JSON.stringify({property_name:"cluster_coloring_enabled",property_value:true}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name:"zscore_coloring_enabled",property_value:false}), function(data) { });
         } else {
             parcoords.svg.selectAll(".dimension")
                     .on("click", change_color)
                     .selectAll(".label");
+            $.post("/change_state/", JSON.stringify({property_name:"cluster_coloring_enabled",property_value:false}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name:"zscore_coloring_enabled",property_value:true}), function(data) { });
         }
     });
 
@@ -288,9 +291,11 @@
     $("input[type=radio][name=brushingRadios]").change(function () {
         if ($('[id="oneBrushing-radio"]').is(':checked')) {
             parcoords.brushMode("1D-axes");
+            $.post("/change_state/", JSON.stringify({property_name:"brush_mode",property_value:'1D-axes'}), function(data) { });
         }
         if ($('[id="twoBrushing-radio"]').is(':checked')) {
             parcoords.brushMode("2D-strums");
+            $.post("/change_state/", JSON.stringify({property_name:"brush_mode",property_value:'2D-strums'}), function(data) { });
         }
     });
 
@@ -301,6 +306,8 @@
             var new_alpha_opacity_value = Math.round(alpha_opacity_value * 100) / 100;
             parcoords.alpha(new_alpha_opacity_value).render();
             $("#alpha-opacity-text").text('Alpha Opacity: ' + alpha_opacity_value);
+            $.post("/change_state/", JSON.stringify({property_name:"alpha_opacity",property_value:alpha_opacity_value}), function(data) { });
+
         }
     });
 
@@ -308,11 +315,15 @@
     $("#alpha-checkbox").change(function () {
         if (this.checked) {
             $('#alpha-slider-container').show();
+            $.post("/change_state/", JSON.stringify({property_name:"alpha_blending_enabled",property_value:true}), function(data) { });
         } else {
-            $("#aplha-slider").val(0.3);
-            parcoords.alpha(0.3).render();
+            $("#aplha-slider").val(0.2);
+            parcoords.alpha(0.2).render();
             $("#alpha-opacity-text").text('Alpha Opacity: 0.2');
             $('#alpha-slider-container').hide();
+            $.post("/change_state/", JSON.stringify({property_name:"alpha_opacity",property_value:0.2}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name:"alpha_blending_enabled",property_value:false}), function(data) { });
+
         }
     });
 
@@ -322,6 +333,7 @@
             var curve_smooth_value = parseFloat($("#curve-slider").val());
             parcoords.smoothness(curve_smooth_value).render();
             $("#curve-text").text('Curve Smoothness: ' + curve_smooth_value);
+            $.post("/change_state/", JSON.stringify({property_name:"curve_smoothness",property_value:curve_smooth_value}), function(data) { });
         }
     });
 
@@ -331,6 +343,7 @@
             var bundling_value = parseFloat($("#bundling-slider").val());
             parcoords.bundlingStrength(bundling_value).render();
             $("#bundling-text").text('Bundling Strength: ' + bundling_value);
+            $.post("/change_state/", JSON.stringify({property_name:"bundling_strength",property_value:bundling_value}), function(data) { });
         }
     });
 
@@ -340,10 +353,11 @@
             $('#curve-slider-container').show();
             $('#bundling-slider-container').show();
             parcoords
-                    .bundleDimension("clusterID")  //todo change this accordingly
-                    .smoothness(0.2)
-                    .bundlingStrength(0.7)
+                    .bundleDimension("clusterID")
+                    .smoothness({{ state_map.curve_smoothness }})
+                    .bundlingStrength({{ state_map.bundling_strength }})
                     .render();
+            $.post("/change_state/", JSON.stringify({property_name:"bundling_enabled",property_value:true}), function(data) { });
         } else {
             $('#curve-slider-container').hide();
             $('#bundling-slider-container').hide();
@@ -354,6 +368,9 @@
             $("#bundling-text").text('Bundling Strength: 0.7');
             $("#curve-slider").val(0.2);
             $("#bundling-slider").val(0.7);
+            $.post("/change_state/", JSON.stringify({property_name:"curve_smoothness",property_value:0.2}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name:"bundling_strength",property_value:0.7}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name:"bundling_enabled",property_value:false}), function(data) { });
 
         }
     });
@@ -365,7 +382,7 @@
         data_types['id'] = 'number';
 
         var parcoords = d3.parcoords()("#parcoords-main")
-                .alpha(0.3)
+                .alpha({{ state_map.alpha_opacity }})
                 .mode("queue") // progressive rendering
                 .height(550)
                 .types(data_types)
@@ -397,7 +414,7 @@
             .smoothness(0)
             .render()
             .reorderable()
-            .brushMode("1D-axes");
+            .brushMode('{{ state_map.brush_mode }}');
 
     // setting up grid
     var column_keys = d3.keys(data[0]);
@@ -486,6 +503,44 @@
             $('#rule-table-body').append('<tr><td>' + rule + '</td><td>' + rules[rule][0] + '</td></tr>')
 
         }
+    }
+
+    function paginate_next(direction) {
+
+        $.ajax({
+            url: '/visualize_next/',
+            type: 'GET',
+            contentType: 'application/json',
+            data: {'direction': direction},
+            dataType: 'json',
+            success: function (result) {
+                var j_data = JSON.parse(result.json_result);
+                console.log(result.start_id);
+
+                var start_id = parseInt(result.start_id);
+                j_data.forEach(function (d, i) {
+                    d.id = d.id || i + start_id;
+                });
+
+                $('#pagination_current_page_num').html(result.page_number);
+                if(result.is_last_page){
+                    $("#pagination_next_link").addClass("disabled-link");
+
+                }else{
+                    $("#pagination_next_link").removeClass("disabled-link");
+                }
+                if(result.page_number == 1){
+                    $("#pagination_back_link").addClass("disabled-link");
+
+                } else{
+                    $("#pagination_back_link").removeClass("disabled-link");
+                }
+
+                drawData(j_data);
+                gridUpdate(j_data);
+            }
+        });
+
     }
 
     function aggregate_func(data, selected_id_lst) {

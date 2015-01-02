@@ -47,6 +47,45 @@
 </head>
 
 <body>
+<script>
+    $(document).ready(function () {
+    $("#aplha-slider").noUiSlider({
+        start: {{ state_map.alpha_opacity }},
+        connect: "lower",
+        range: {
+            'min': [0 ],
+            '20%': [0.05],
+            '50%': [0.1],
+            '70%': [0.25],
+            '80%': [0.4],
+            'max': [0.5]
+        }
+    });
+
+    $("#curve-slider").noUiSlider({
+        start: {{ state_map.curve_smoothness }},
+        connect: "lower",
+        step: 0.01,
+        range: {
+            min: 0,
+            max: 0.25
+        }
+    });
+
+    $("#bundling-slider").noUiSlider({
+        start: {{ state_map.bundling_strength }},
+        connect: "lower",
+        step: 0.05,
+        range: {
+            min: 0,
+            max: 1
+        }
+    });
+
+        });
+</script>
+
+
 <div class="navbar yamm navbar-default">
 <div class="navbar-header">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -256,19 +295,19 @@
 <ul class="nav navbar-nav navbar-right">
     <li>
         <div id="bundling-slider-container">
-            <div id="bundling-text" class="slider-text">Bundling Strength: 0.7</div>
+            <div id="bundling-text" class="slider-text">Bundling Strength: {{ state_map.bundling_strength }}</div>
             <div id="bundling-slider" class="slider slider-material-lightgrey"></div>
         </div>
     </li>
     <li>
         <div id="curve-slider-container">
-            <div id="curve-text" class="slider-text">Curve Smoothness: 0.2</div>
+            <div id="curve-text" class="slider-text">Curve Smoothness: {{ state_map.curve_smoothness }}</div>
             <div id="curve-slider" class="slider slider-material-lightgrey"></div>
         </div>
     </li>
     <li>
         <div id="alpha-slider-container">
-            <div id="alpha-opacity-text" class="slider-text">Alpha Opacity: 0.2</div>
+            <div id="alpha-opacity-text" class="slider-text">Alpha Opacity: {{ state_map.aplha_opacity }}</div>
             <div id="aplha-slider" class="slider slider-material-lightgrey"></div>
         </div>
     </li>
