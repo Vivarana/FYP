@@ -194,7 +194,8 @@ def preprocessor(request):
 def rule_gen(request):
     if request.method == 'POST':
         rule_list = rule_generator.generate(request.body, current_data_frame)
-        json_response = json.dumps({'rules': rule_list})
+        json_response = json.dumps({'success': rule_list[0], 'rules': rule_list[1], 'count_selected': rule_list[2],
+                                    'count_covered': rule_list[3], 'precision': rule_list[4], 'recall': rule_list[5]})
         return HttpResponse(json_response)
     else:
         json_response = "{'message' : done!}"
