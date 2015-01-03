@@ -333,7 +333,7 @@ def get_unique_urls(request):
 
 
 def get_session_sequence(request):
-    return HttpResponse(sh.get_session_info(current_data_frame))
+    return HttpResponse(sh.get_session_info(current_data_frame, grouping_column, grouped_column))
 
 
 
