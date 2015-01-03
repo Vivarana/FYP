@@ -37,7 +37,7 @@ TIME_GRANULARITY = 'time_granularity'
 TIME_WINDOW_VALUE = 'time_window_value'
 EVENT_WINDOW_VALUE = 'event_window_value'
 
-#error
+# error
 ERROR_100 = 'error-100'  # aggregate error where aggregation is performed without setting window value
 
 #file upload constant
@@ -49,3 +49,53 @@ EXT_LOG = 'log'
 
 #temp file
 TEMP_FILE_PATH = 'media' + os.path.sep + 'temp'
+
+# state map properties
+DATA_LST = "data_lst"
+CURRENT_ROW_IDS_LST = 'current_row_ids_lst'
+CURRENT_COLUMNS_LST = 'current_columns_lst'
+CLUSTER_IDS_LST = 'cluster_ids_lst'
+CURRENT_PAGE_NUMBER = 'current_page_number'
+
+PAGINATION_METHOD = 'pagination_method'
+PAGE_SIZE = 'page_size'
+NUMBER_PAGES = 'number_pages'
+
+CLUSTER_COLUMNS_LST = 'cluster_columns_lst'
+
+AGGREGATE_FUNCTION_ON_ATTR = 'aggregate_function_on_attribute'
+REMOVED_ATTRIBUTES = 'removed_attributes'
+
+BRUSH_MODE = 'brush_mode'
+ONE_BRUSH = '1D-axes'
+TWO_BRUSH = '2D-strums'
+
+BUNDLING_ENABLED = 'bundling_enabled'
+CLUSTER_COLORING_ENABLED = 'cluster_coloring_enabled'
+ZSCORE_COLORING_ENABLED = 'zscore_coloring_enabled'
+ALPHA_BLENDING_ENABLED = 'alpha_blending_enabled'
+
+BUNDLING_STRENGTH = 'bundling_strength'
+CURVE_SMOOTHNESS = 'curve_smoothness'
+ALPHA_OPACITY = 'alpha_opacity'
+
+TIME_WINDOW_ENABLED = 'time_window_enabled'
+
+PROPERTY_NAME = 'property_name'
+PROPERTY_VALUE = 'property_value'
+
+
+#aggregate functions
+
+SUM = 'sum'
+AVG = 'average'
+MIN = 'min'
+MAX = 'max'
+COUNT = 'count'
+
+# preprocesser page
+PARACOORDS_VIS_TYPE = 'parellel'
+SUNBURST_VIS_TYPE = 'sunburst'
+GROUPING_COL_NAME = 'groupby'
+GROUPED_COL_NAME = 'grouped_column'
+

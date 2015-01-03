@@ -7,9 +7,6 @@ body {
 
 #main {
     float: left;
-    min-width: 750px;
-    overflow: hidden;
-    /* width: 750px;*/
 }
 
 #subchart {
@@ -25,6 +22,7 @@ body {
 #sequence {
     /*width: 600px;*/
     height: 70px;
+    position: fixed;
 }
 
 #legend {
@@ -51,7 +49,8 @@ body {
     width: 140px;
     text-align: center;
     color: #666;
-    z-index: -1;
+    z-index: 250;
+    transform: None;
 }
 
 #percentage {

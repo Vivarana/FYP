@@ -1,32 +1,91 @@
 import math
 import json
 import logging
+import simplejson
 
 from pandas import *
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from addict import Dict
 
 from helper import file_helper
 from helper import aggregate
 from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
-import vivarana.dataformat.categorize as ct
-import vivarana.dataformat.sessionhandle as sh
-
+import vivarana.sunburst_visualization.json_parser as ct
+import vivarana.sunburst_visualization.data_processor as sh
+from vivarana.sunburst_visualization.constants import GROUP_BY, COALESCE
+from vivarana.helper.state_info import *
 
 logger = logging.getLogger(__name__)
 
 original_data_frame = None
 current_data_frame = None
 
+grouping_column = None
+grouped_column = None
+
 pagination_config = {
     "pagination_method": None,
     "page_size": 1000,
     "number_pages": None,
+    "current_page_number": 1
 }
 
-properties_map = Dict()
+state_map = {
+    WINDOW_TYPE: None,
+    TIME_GRANULARITY: None,
+    TIME_WINDOW_VALUE: None,
+    TIME_WINDOW_ENABLED: False,
+    EVENT_WINDOW_VALUE: None,
+
+    DATA_LST: [
+        # {
+        # CURRENT_ROW_IDS_LST: [],
+        # CURRENT_COLUMNS_LST: [],
+        # CLUSTER_IDS_LST: [],
+        # CURRENT_PAGE_NUMBER: None
+        # }
+    ],
+
+    PAGINATION_METHOD: None,
+    PAGE_SIZE: 1000,
+    NUMBER_PAGES: None,
+
+    CLUSTER_COLUMNS_LST: [],
+    CLUSTERING_METHOD: None,
+    NUMBER_OF_CLUSTERS: None,
+
+    # stores attribute name as key and (aggregate func, window type, granularity, window size)
+    AGGREGATE_FUNCTION_ON_ATTR: {},  # p
+    REMOVED_ATTRIBUTES: [],
+
+    BRUSH_MODE: ONE_BRUSH,  # p
+    BUNDLING_ENABLED: False,  # p
+    CLUSTER_COLORING_ENABLED: False,  # p
+    ZSCORE_COLORING_ENABLED: False,  # p
+    ALPHA_BLENDING_ENABLED: True,  # p
+
+    BUNDLING_STRENGTH: 0.7,  # p
+    CURVE_SMOOTHNESS: 0.2,  # P
+    ALPHA_OPACITY: 0.2,  # p
+
+}
+
+aggregate_functions = {
+    0: SUM,
+    1: AVG,
+    2: MIN,
+    3: MAX,
+    4: COUNT
+}
+
+
+def change_state(request):
+    if request.method == POST:
+        params = simplejson.loads(request.body, "utf-8")
+        state_map[params[PROPERTY_NAME]] = params[PROPERTY_VALUE]
+        print params[PROPERTY_NAME], state_map[params[PROPERTY_NAME]]
+        return HttpResponse('success')
 
 
 def home(request):
@@ -64,17 +123,15 @@ def visualize(request):
     column_types = file_helper.get_compatible_column_types(current_data_frame)
 
     # minus one to convert zero based to one based
-    page_number = int(request.GET.get('page', 1)) - 1
-    is_last_page = pagination_config["number_pages"] - 1 == page_number
-    data_start = page_number * pagination_config["page_size"]
-    data_end = (page_number + 1) * pagination_config["page_size"]
+    set_current_page_no(state_map, 0)
+    # todo set current row_ids, try to set whole DATA_LST at once
+    page_number = get_current_page_no(state_map)
+    is_last_page = state_map[NUMBER_PAGES] - 1 == page_number
+    data_start = page_number * state_map[PAGE_SIZE]
+    data_end = (page_number + 1) * state_map[PAGE_SIZE]
 
-    if pagination_config["number_pages"] > 1:
-        if is_last_page:
-            data_end = len(current_data_frame)
-            json_output = (current_data_frame[data_start:]).to_json(orient='records', date_format='iso')
-        else:
-            json_output = (current_data_frame[data_start:data_end]).to_json(orient='records', date_format='iso')
+    if state_map[NUMBER_PAGES] > 1:
+        json_output = (current_data_frame[data_start:data_end]).to_json(orient='records', date_format='iso')
     else:
         json_output = current_data_frame.to_json(orient='records', date_format='iso')
 
@@ -85,31 +142,66 @@ def visualize(request):
 
     context = {'columns': column_types, 'result': json_output, 'frame_size': data_end - data_start,
                'enable_time_window': enable_time_window, 'is_last_page': is_last_page,
-               'pagination_config': pagination_config, "page_number": page_number + 1, "start_id": data_start}
+               "page_number": page_number + 1, "start_id": data_start,
+               'state_map': state_map}
     return render(request, 'vivarana/visualize.html', context)
 
 
+def visualize_next(request):
+    if get_current_page_no(state_map) == state_map[NUMBER_PAGES]:
+        return
+    direction = request.GET['direction']
+    if direction == 'forward':
+        increment_current_page_no(state_map)
+    else:
+        decrement_current_page_no(state_map)
+
+    page_number = get_current_page_no(state_map)
+    print page_number
+    is_last_page = state_map[NUMBER_PAGES] - 1 == page_number
+    data_start = page_number * state_map[PAGE_SIZE]
+    data_end = (page_number + 1) * state_map[PAGE_SIZE]
+
+    if state_map[NUMBER_PAGES] > 1:
+        if is_last_page:
+            json_output = (current_data_frame[data_start:]).to_json(orient='records', date_format='iso')
+        else:
+            json_output = (current_data_frame[data_start:data_end]).to_json(orient='records', date_format='iso')
+    else:
+        json_output = current_data_frame.to_json(orient='records', date_format='iso')
+
+    context = {'json_result': json_output, 'is_last_page': is_last_page,
+               "page_number": page_number + 1, "start_id": data_start}
+    json_out = json.dumps(context)
+    return HttpResponse(json_out)
+
+
 def aggregator(request):
-    global properties_map
-    if not properties_map.WINDOW_TYPE or properties_map.TIME_WINDOW_VALUE == -1 or properties_map.EVENT_WINDOW_VALUE == -1:
+    global state_map
+    if not state_map[WINDOW_TYPE] or state_map[TIME_WINDOW_VALUE] == -1 \
+            or state_map[EVENT_WINDOW_VALUE] == -1:
         return HttpResponse(ERROR_100)
 
     if request.method == GET:
         ids = request.GET['selected_ids'][:-1]
         selected_ids = [int(x) for x in ids.split(",")]
-        window_type = properties_map.WINDOW_TYPE
+        window_type = state_map[WINDOW_TYPE]
+
+        aggregate_func = int(request.GET['aggregate_func'])
+        attribute_name = request.GET[ATTRIBUTE_NAME]
+        set_aggregate_state(state_map, aggregate_functions[aggregate_func], attribute_name)
 
         if window_type == TIME_WINDOW:
-            new_data_frame = aggregate.aggregate_time_window(int(request.GET['aggregate_func']),
-                                                             properties_map.TIME_WINDOW_VALUE,
-                                                             properties_map.TIME_GRANULARITY,
-                                                             request.GET['attribute_name'], original_data_frame,
+            new_data_frame = aggregate.aggregate_time_window(aggregate_func,
+                                                             state_map[TIME_WINDOW_VALUE],
+                                                             state_map[TIME_GRANULARITY],
+                                                             attribute_name, original_data_frame,
                                                              current_data_frame)
 
         elif window_type == EVENT_WINDOW:
-            new_data_frame = aggregate.aggregate_event_window(int(request.GET['aggregate_func']),
-                                                              request.GET[ATTRIBUTE_NAME],
-                                                              properties_map.EVENT_WINDOW_VALUE, original_data_frame,
+            new_data_frame = aggregate.aggregate_event_window(aggregate_func,
+                                                              attribute_name,
+                                                              state_map[EVENT_WINDOW_VALUE], original_data_frame,
                                                               current_data_frame)
 
         df = new_data_frame.iloc[selected_ids, :]
@@ -118,14 +210,14 @@ def aggregator(request):
 
 
 def set_window(request):
-    global properties_map
+    global state_map
     window_type = request.GET[WINDOW_TYPE]
-    properties_map.WINDOW_TYPE = window_type
+    state_map[WINDOW_TYPE] = window_type
     if window_type == TIME_WINDOW:
-        properties_map.TIME_GRANULARITY = request.GET[TIME_GRANULARITY]
-        properties_map.TIME_WINDOW_VALUE = int(request.GET[TIME_WINDOW_VALUE])
+        state_map[TIME_GRANULARITY] = request.GET[TIME_GRANULARITY]
+        state_map[TIME_WINDOW_VALUE] = int(request.GET[TIME_WINDOW_VALUE])
     if window_type == EVENT_WINDOW:
-        properties_map.EVENT_WINDOW_VALUE = int(request.GET[EVENT_WINDOW_VALUE])
+        state_map[EVENT_WINDOW_VALUE] = int(request.GET[EVENT_WINDOW_VALUE])
 
     return HttpResponse('hello world')
 
@@ -169,21 +261,29 @@ def preprocessor(request):
 
         # pagination
         if nav_type == 'auto':
-            pagination_config["pagination_method"] = 'line'
-            pagination_config["page_size"] = min([20000, len(current_data_frame)])
-            pagination_config["number_pages"] = int(math.ceil(
-                len(current_data_frame) / float(pagination_config["page_size"])))
+            state_map[PAGINATION_METHOD] = 'line'
+            state_map[PAGE_SIZE] = min([20000, len(current_data_frame)])
+            state_map[NUMBER_PAGES] = int(math.ceil(
+                len(current_data_frame) / float(state_map[PAGE_SIZE])))
         elif nav_type == 'line':
             page_size = request.POST.get('page-size')
-            pagination_config["pagination_method"] = 'line'
-            pagination_config["page_size"] = max([1, int(page_size)])
-            pagination_config["number_pages"] = int(math.ceil(
-                len(current_data_frame) / float(pagination_config["page_size"])))
+            state_map[PAGE_SIZE] = 'line'
+            state_map[PAGE_SIZE] = max([1, int(page_size)])
+            state_map[NUMBER_PAGES] = int(math.ceil(
+                len(current_data_frame) / float(state_map[PAGE_SIZE])))
 
-        if vistype == 'parellel':
+        if vistype == PARACOORDS_VIS_TYPE:
             return redirect(VISUALIZE_PATH)
-        elif vistype == 'sunburst':
-            return redirect(SUNBURST_PATH)
+        elif vistype == SUNBURST_VIS_TYPE:
+            global grouping_column
+            global grouped_column
+            grouping_column = request.POST.get(GROUPING_COL_NAME)
+            grouped_column = request.POST.get(GROUPED_COL_NAME)
+            # delete after testing
+            grouping_column = 'Remote_host'
+            grouped_column = 'URL'
+            return redirect(
+                SUNBURST_PATH + "?" + GROUP_BY + "=" + grouping_column + "&" + COALESCE + "=" + grouped_column)
         return redirect(VISUALIZE_PATH)
     else:
         context = file_helper.get_data_summary(original_data_frame)
@@ -207,6 +307,7 @@ def reset_axis(request):
         ids = request.GET['selected_ids'][:-1]
         selected_ids = [int(x) for x in ids.split(",")]
         attribute_name = request.GET['attribute_name']
+        clear_aggregate_state(state_map, attribute_name)
         current_data_frame[attribute_name] = original_data_frame[attribute_name]
         df = original_data_frame.iloc[selected_ids, :]
         json_out = df.to_json(orient='records')
@@ -214,23 +315,26 @@ def reset_axis(request):
 
 
 def sunburst(request):
-    return render(request, SUNBURST_PAGE)
+    context = {"grouping": grouping_column, "grouped": grouped_column}
+
+    return render(request, SUNBURST_PAGE, context)
 
 
 def get_tree_data(request):
     if len(current_data_frame.columns) == 2:  # todo get CSV intelligently
         json_tree = ct.build_json_hierarchy(current_data_frame.values)
     else:
-        json_tree = ct.build_json_hierarchy_log(sh.get_sessions_data(current_data_frame))
+        json_tree = ct.build_json_hierarchy_log(
+            sh.get_sessions_data(current_data_frame, grouping_column, grouped_column))
     return HttpResponse(json_tree)
 
 
 def get_unique_urls(request):
-    return HttpResponse(json.dumps(sh.get_unique_urls(current_data_frame)))
+    return HttpResponse(json.dumps(sh.get_unique_urls(current_data_frame, grouped_column)))
 
 
 def get_session_sequence(request):
-    return HttpResponse(sh.get_session_info(current_data_frame))
+    return HttpResponse(sh.get_session_info(current_data_frame, grouping_column, grouped_column))
 
 
 
