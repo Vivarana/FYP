@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 {% load staticfiles %}
-<html xmlns="http://www.w3.org/1999/html">
+<html lang="en">
 <head>
-
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
     <link href="{% static "css/ripples.min.css" %}" rel="stylesheet">
     <link href="{% static "css/material-wfont.css" %}" rel="stylesheet">
@@ -21,13 +22,14 @@
     <script src="{% static "js/jquery.nouislider.min.js" %}"></script>
     <script src="{% static "js/snackbar.min.js" %}"></script>
 
-
     <script src="{% static "js/d3.js" %}"></script>
     <script src="{% static "js/underscore.js" %}"></script>
     <script src="{% static "js/sylvester.js" %}"></script>
     <script src="{% static "js/divgrid.js" %}"></script>
     <script src="{% static "js/underscore.math.js" %}"></script>
-    <script src="{% static "js/custom.js" %}"></script>
+
+    <!--script src="{% static "js/custom.js" %}"></script-->
+    <script src="{% static "sunburst/base_custom.js" %}"></script>
 
 
     <title>{% block title %}Vivarana{% endblock %}</title>
@@ -51,8 +53,6 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b
                         class="caret"></b></a>
                 <ul class="dropdown-menu">
-
-
                     <div class="yamm-content">
                         <div class="row">
                             <div class="col-sm-12">
@@ -87,8 +87,6 @@
                                                     </label>
                                                 </div>
                                             </div>
-
-
                                         </form>
 
 
@@ -134,8 +132,6 @@
 
 
                     </div>
-
-
                 </ul>
             </li>
 
@@ -144,8 +140,6 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Options <b
                         class="caret"></b></a>
                 <ul class="dropdown-menu" id="timewindow_dropdown">
-
-
                     <div class="yamm-content">
                         {% if enable_time_window %}
                             <div class="row">
@@ -209,9 +203,9 @@
                 </div>
             </li>
             <li>
-                <div id="alpha-slider-container">
-                    <div id="alpha-opacity-text" class="slider-text">Alpha Opacity: 0.2</div>
-                    <div id="aplha-slider" class="slider slider-material-lightgrey"></div>
+                <div id="percentage-slider-container">
+                    <div id="percentage-opacity-text" class="slider-text">Minimum Percentage: 0.01%</div>
+                    <div id="percentage-slider" class="slider slider-material-lightgrey"></div>
                 </div>
             </li>
             <li data-toggle="tooltip" data-placement="right" data-original-title="Hide ticks"><a href="#"><span

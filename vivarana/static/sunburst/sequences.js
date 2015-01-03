@@ -1,8 +1,11 @@
+var json;
+var uniqueValues;
 // Dimensions of sunburst.
-var width = 1300;
-var height = 600;
-var radius = Math.min(width, height) / 2;
-
+var width = $(window).width();
+var height = $(window).height();
+//window.alert(width+","+height);
+var seq_height = 70;
+var radius = Math.min(width, height-seq_height) / 2;
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
 var b = {
     w: 130, h: 30, s: 3, t: 10
@@ -37,6 +40,7 @@ var vis = d3.select("#chart").append("svg:svg")
     .attr("id", "container")
     .attr("transform", "translate(" + 375 + "," + 300 + ")");
 
+
 var partition = d3.layout.partition()
     .size([2 * Math.PI, radius * radius])
     .value(function (d) {
@@ -60,27 +64,40 @@ var arc = d3.svg.arc()
         return Math.sqrt(d.y + d.dy);
     });
 
-// Use d3.text and d3.csv.parseRows so that we do not need to have a header
-// row, and can receive the csv as an array of arrays.
+function showSunburst(){
+    var colorsSet = false;
+    initializeBreadcrumbTrail();
+    drawLegend();
+    $.get('/uniqueurls/', function (data) {
+        uniqueValues = data;
+        colorsSet = initialzeColors(data);
+    });
 
-// Main function to draw and set up the visualization, once we have the data.
+    $.get('/treedata/', function (data) {
+            json = JSON.parse(data);
+        if(colorsSet){
+         createVisualization(json);
+        }
+        else{
+            showSunburst();
+        }
+     });
+
+}
 function createVisualization(json) {
 
     // Basic setup of page elements.
-    initializeBreadcrumbTrail();
-    initialzeColors(json);
-    drawLegend();
-};
-
-// this method is called from inside initialize colors function
-function drawChart(json){
-
     d3.select("#togglelegend").on("click", toggleLegend);
+
     // Bounding circle underneath the sunburst, to make it easier to detect
-    // when the mouse leaves the parent g.
-    vis.append("svg:circle")
+   vis.append("svg:circle")
         .attr("r", radius)
-        .style("opacity", 0);
+        .style("opacity", 0)
+        .on("mouseenter",function(){
+            vis.attr("transform", "translate(" + 375 + "," + 300 + ")");
+            subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")scale(" + 1 / 2 + ")");
+        d3.select("#explanation").style("transform", "None");})
+        .on("mouseleave",mouseleave());
 
     // For efficiency, filter nodes to keep only those large enough to see.
     var nodes = partition.nodes(json)
@@ -110,7 +127,7 @@ function drawChart(json){
 
     // Get total size of the tree = value of root node from partition.
     totalSize = path.node().__data__.value;
-}
+};
 
 // on click generate subchart
 
@@ -121,8 +138,6 @@ function mouseclick(d) {
 
 // Fade all but the current sequence, and show it in the breadcrumb trail.
 function mouseover(d) {
-    vis.attr("transform", "translate(" + 375 + "," + 300 + ")");
-    subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")scale(" + 1 / 2 + ")");
     var percentage = (100 * d.value / totalSize).toPrecision(3);
     var percentageString = percentage + "%";
     if (percentage < 0.1) {
@@ -153,13 +168,10 @@ function mouseover(d) {
             return (sequenceArray.indexOf(node) >= 0);
         })
         .style("opacity", 1);
-
-    d3.select("#explanation").style("transform", "None");
 }
 
 // Restore everything to full opacity when moving off the visualization.
 function mouseleave(d) {
-
     // Hide the breadcrumb trail
     d3.select("#trail")
         .style("visibility", "hidden");
@@ -225,12 +237,13 @@ function updateBreadcrumbs(nodeArray, percentageString) {
     var g = d3.select("#trail")
         .selectAll("g")
         .data(nodeArray, function (d) {
+            //console.log(d.name+ d.depth);
             return d.name + d.depth;
         });
 
     // Add breadcrumb and label for entering nodes.
+    //console.log(g.enter());
     var entering = g.enter().append("svg:g");
-
     entering.append("svg:polygon")
         .attr("points", breadcrumbPoints)
         .style("fill", function (d) {
@@ -393,10 +406,10 @@ function colorPoints(fullscale,quadrantscale){
 }
 */
 
-function initialzeColors(json) {
-    $.get('/uniqueurls/', function (data) {
+function initialzeColors(data) {
+
         var urls = JSON.parse(data);
-        console.log(urls.length);
+        //console.log(urls.length);
         /*var linearScale = d3.scale.linear()
                                 .domain([0,urls.length])
                                 .range([0,Math.PI/2]);
@@ -413,55 +426,35 @@ function initialzeColors(json) {
             //colors[currentvalue] = colorPoints(fullLinearScale(index),quadrantLinearScale(index));
             colors[currentvalue] = colorPoints(index,urls.length);
         });
-        console.log(colors);
-        drawChart(json);
-
-    });
+    return true;
 }
+function updateData() {
+
+    // Select the section we want to apply our changes to
+    var svg = d3.select("#container").transition();
+
+    // For efficiency, filter nodes to keep only those large enough to see.
+    var nodes = partition.nodes(json)
+        .filter(function (d) {
+            return (d.dx > 2*Math.PI*percentageSliderValue/100); // 0.005 radians = 0.29 degrees
+        });
+
+    // Make the changes
+        svg.selectAll("path").remove();
+        d3.select("#container").selectAll("path")
+            .data(nodes)
+        .enter().append("svg:path")
+        .attr("display", function (d) {
+            return d.depth ? null : "none";
+        })
+        .attr("d", arc)
+        .attr("fill-rule", "evenodd")
+        .style("fill", function (d) {
+            return colors[d.name];
+        })
+        .style("opacity", 1)
+        .on("mouseover", mouseover)
+        .on("click", mouseclick);
 
 
-// Take a 2-column CSV and transform it into a hierarchical structure suitable
-// for a partition layout. The first column is a sequence of step names, from
-// root to leaf, separated by hyphens. The second column is a count of how
-// often that sequence occurred.
-/*
- function buildHierarchy(csv) {
- var root = {"name": "root", "children": []};
- for (var i = 0; i < csv.length; i++) {
- var sequence = csv[i][0];
- var size = +csv[i][1];
- if (isNaN(size)) { // e.g. if this is a header row
- continue;
- }
- var parts = sequence.split("-");
- var currentNode = root;
- for (var j = 0; j < parts.length; j++) {
- var children = currentNode["children"];
- var nodeName = parts[j];
- var childNode;
- if (j + 1 < parts.length) {
- // Not yet at the end of the sequence; move down the tree.
- var foundChild = false;
- for (var k = 0; k < children.length; k++) {
- if (children[k]["name"] == nodeName) {
- childNode = children[k];
- foundChild = true;
- break;
- }
- }
- // If we don't already have a child node for this branch, create it.
- if (!foundChild) {
- childNode = {"name": nodeName, "children": []};
- children.push(childNode);
- }
- currentNode = childNode;
- } else {
- // Reached the end of the sequence; create a leaf node.
- childNode = {"name": nodeName, "size": size};
- children.push(childNode);
- }
- }
- }
- return root;
- };
- */
+    };

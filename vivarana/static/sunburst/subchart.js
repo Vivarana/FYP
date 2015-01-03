@@ -1,17 +1,16 @@
 /**
  * Created by Developer on 11/15/2014.
  */
-var subwidth = 450;
-var subheight = 600;
+var subwidth =  width - 2*radius;
+var subheight = height;
 var subradius = Math.min(subwidth, subheight) / 2;
 
 var subvis = d3.select("svg")
     .append("sub:g")
     .attr("id", "subcontainer")
     .attr("transform", "translate(" + 850 + "," + subheight / 2 + ")scale(" + 1 / 2 + ")")
-    .on("mouseover", subchartmouseover);
-
-
+    .on("mouseover", subchartmouseover)
+    .on("mouseleave",mouseleave);
 var subpartition = d3.layout.partition()
     .size([2 * Math.PI, subradius * subradius])
     .value(function (d) {
@@ -62,13 +61,6 @@ function createSubchart(node) {
         .style("opacity", 1)
         .on("mouseover", mouseover);
 
-    // Add the mouseleave handler to the bounding circle.
-    d3.select("#container").on("mouseleave", mouseleave);
-    d3.select("#subcontainer").on("mouseleave", subchartmouseleave);
-
-    // Get total size of the tree = value of root node from partition.
-    //totalSize = subpath.node().__data__.value;
-
 };
 
 function subchartmouseover() {
@@ -76,15 +68,4 @@ function subchartmouseover() {
     subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")");
     vis.attr("transform", "translate(" + 375 + "," + 300 + ")scale(" + 1 / 2 + ")");
     d3.select("#explanation").style("transform", "translate(475px)");
-};
-function subchartmouseleave() {
-    d3.selectAll("path")
-        .transition()
-        .duration(1000)
-        .style("opacity", 1)
-        .each("end", function () {
-            d3.select(this).on("mouseover", mouseover);
-        });
-     d3.select("#explanation")
-        .style("visibility", "hidden");
 };
