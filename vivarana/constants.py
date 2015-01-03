@@ -96,8 +96,8 @@ MAX = 'max'
 COUNT = 'count'
 
 # preprocesser page
-PARACOORDS_VIS_TYPE = 'parellel'
-SUNBURST_VIS_TYPE = 'sunburst'
-GROUPING_COL_NAME = 'groupby'
-GROUPED_COL_NAME = 'grouped_column'
+PARACOORDS_VIS_TYPE = 'Parallel Coordinates'
+SUNBURST_VIS_TYPE = 'Sunburst'
+GROUPING_COL_NAME = 'grouping_col_name'
+GROUPED_COL_NAME = 'grouped_col_name'
 

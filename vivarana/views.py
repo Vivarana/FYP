@@ -270,14 +270,14 @@ def preprocessor(request):
         elif vistype == SUNBURST_VIS_TYPE:
             global grouping_column
             global grouped_column
-            grouping_column = request.POST.get(GROUPING_COL_NAME)
-            grouped_column = request.POST.get(GROUPED_COL_NAME)
+            grouping_column = request.POST.get(GROUPING_COL_NAME).encode('UTF8')
+            grouped_column = request.POST.get(GROUPED_COL_NAME).encode('UTF8')
             # delete after testing
-            grouping_column = 'Remote_host'
-            grouped_column = 'URL'
+            # grouping_column = 'Remote_host'
+            # grouped_column = 'URL'
             return redirect(
                 SUNBURST_PATH + "?" + GROUP_BY + "=" + grouping_column + "&" + COALESCE + "=" + grouped_column)
-        return redirect(VISUALIZE_PATH)
+        # return redirect(VISUALIZE_PATH)
     else:
         context = file_helper.get_data_summary(original_data_frame)
         context['filename'] = request.session['filename']
