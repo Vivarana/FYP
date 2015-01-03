@@ -51,7 +51,6 @@ event_func_dict = {0: r_sum_window, 1: r_avg_window, 2: r_min_window, 3: r_max_w
 
 def aggregate_time_window(aggregate_function, time_window_value, time_granularity, attribute_name, original_data_frame,
                           current_data_frame):
-    # todo record this action
     df = original_data_frame.loc[:, ['Date', attribute_name]]
     start_dates = ""
     if time_granularity == 'seconds':

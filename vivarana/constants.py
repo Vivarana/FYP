@@ -53,9 +53,10 @@ TEMP_FILE_PATH = 'media' + os.path.sep + 'temp'
 # state map properties
 DATA_LST = "data_lst"
 CURRENT_ROW_IDS_LST = 'current_row_ids_lst'
-CURRENT_COLUMNS_LST = 'current_columns_lst'
-CLUSTER_IDS_LST = 'cluster_ids_lst'
+CLUSTER_IDS_DICT = 'cluster_ids_dict'
 CURRENT_PAGE_NUMBER = 'current_page_number'
+
+ACTIVE_PAGE_NUMBER = 'active_page_number'
 
 PAGINATION_METHOD = 'pagination_method'
 PAGE_SIZE = 'page_size'
@@ -64,7 +65,8 @@ NUMBER_PAGES = 'number_pages'
 CLUSTER_COLUMNS_LST = 'cluster_columns_lst'
 
 AGGREGATE_FUNCTION_ON_ATTR = 'aggregate_function_on_attribute'
-REMOVED_ATTRIBUTES = 'removed_attributes'
+ALL_ATTRIBUTE_LST = 'all_attribute_lst'
+REMOVED_ATTRIBUTE_LST = 'removed_attribute_lst'
 
 BRUSH_MODE = 'brush_mode'
 ONE_BRUSH = '1D-axes'

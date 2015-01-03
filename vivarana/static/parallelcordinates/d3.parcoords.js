@@ -869,15 +869,14 @@ pc.brushMode = function(mode) {
 
 (function() {
   var strums = {},
-      strumRect;
+      strumCanvas;
 
   function drawStrum(strum) {
     var svg = pc.selection.select("svg").select("g#strums"),
-        id = strum.dims.i,
-        points = [strum.p1, strum.p2],
-        line = svg.selectAll("line#strum-" + id).data([strum]),
-        circles = svg.selectAll("circle#strum-" + id).data(points),
-        drag = d3.behavior.drag();
+        id = strum.dims.i;
+
+    var line = svg.selectAll("line#strum-" + id)
+      .data([strum]);
 
     line.enter()
       .append("line")
@@ -891,35 +890,6 @@ pc.brushMode = function(mode) {
       .attr("y2", function(d) { return d.p2[1]; })
       .attr("stroke", "black")
       .attr("stroke-width", 2);
-
-    drag
-      .on("drag", function(d, i) {
-        var ev = d3.event;
-        i = i + 1;
-        console.log(i);
-        strum["p" + i][0] = Math.min(Math.max(strum.minX + 1, ev.x), strum.maxX);
-        strum["p" + i][1] = ev.y;
-        drawStrum(strum);
-      })
-      .on("dragend", onDragEnd());
-
-    circles.enter()
-      .append("circle")
-      .attr("id", "strum-" + id)
-      .attr("class", "strum");
-
-    circles
-      .attr("cx", function(d) { return d[0]; })
-      .attr("cy", function(d) { return d[1]; })
-      .attr("r", 5)
-      .style("opacity", 0)
-      .on("mouseover", function() {
-        d3.select(this).style("opacity", 0.8);
-      })
-      .on("mouseout", function() {
-        d3.select(this).style("opacity", 0);
-      })
-      .call(drag);
   }
 
   function dimensionsForPoint(p) {
@@ -956,7 +926,7 @@ pc.brushMode = function(mode) {
     // logically only happen between two axes, so no movement outside these axes
     // should be allowed.
     return function() {
-      var p = d3.mouse(strumRect[0][0]),
+      var p = d3.mouse(strumCanvas),
           dims = dimensionsForPoint(p),
           strum = {
             p1: p,
@@ -970,7 +940,7 @@ pc.brushMode = function(mode) {
 
       // Make sure that the point is within the bounds
       strum.p1[0] = Math.min(Math.max(strum.minX, p[0]), strum.maxX);
-      strum.p1[1] = p[1] - __.margin.top;
+      strum.p1[1] = p[1];
       strum.p2 = strum.p1.slice();
     };
   }
@@ -1051,7 +1021,6 @@ pc.brushMode = function(mode) {
     delete strums[strums.active];
     strums.active = undefined;
     svg.selectAll("line#strum-" + strum.dims.i).remove();
-    svg.selectAll("circle#strum-" + strum.dims.i).remove();
   }
 
   function onDragEnd() {
@@ -1067,9 +1036,9 @@ pc.brushMode = function(mode) {
 
       brushed = selected(strums);
       strums.active = undefined;
-      __.brushed = brushed.length === __.data.length ? false : brushed;
-      events.brushend.call(pc, __.brushed);
+      __.brushed = brushed;
       pc.render();
+      events.brushend.call(pc, __.brushed);
     };
   }
 
@@ -1089,6 +1058,14 @@ pc.brushMode = function(mode) {
 
   function install() {
     var drag = d3.behavior.drag();
+
+    // Add a canvas to catch the mouse events, used to set the strums.
+    strumCanvas = pc.selection.insert("canvas", "svg")
+      .attr("class", "strums")
+      .style("margin-top", __.margin.top + "px")
+      .style("margin-left", __.margin.left + "px")
+      .attr("width", w()+2)
+      .attr("height", h()+2)[0][0];
 
     // Map of current strums. Strums are stored per segment of the PC. A segment,
     // being the area between two axes. The left most area is indexed at 0.
@@ -1152,12 +1129,12 @@ pc.brushMode = function(mode) {
     // NOTE: The styling needs to be done here and not in the css. This is because
     //       for 1D brushing, the canvas layers should not listen to
     //       pointer-events.
-    strumRect = pc.selection.select("svg").insert("rect", "g#strums")
-      .attr("x", __.margin.left)
-      .attr("y", __.margin.top)
-      .attr("width", w())
-      .attr("height", h() + 2)
-      .style("opacity", 0)
+    // FIXME: Like brushable, strumming can only be enabled and not disabled at
+    //        this point. So, if we want to be able to switch between the two (or
+    //        possibly more in the future) methods.
+    d3.select(strumCanvas)
+      .style("pointer-events", "auto")
+      .style("z-index", 1000)
       .call(drag);
   }
 
@@ -1169,7 +1146,7 @@ pc.brushMode = function(mode) {
       pc.on("axesreorder.strums", undefined);
       delete pc.brushReset;
 
-      strumRect = undefined;
+      strumCanvas = undefined;
     },
     selected: selected
   };

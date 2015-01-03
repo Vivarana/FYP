@@ -89,7 +89,25 @@ function performClustering() {
     var num_of_clusters = $('#num-of-clusters').val();
     if (isInt(num_of_clusters)) {
         $('#cluster_dropdown').removeClass('open');
-        $('#clusterModel').modal('toggle');
+        var html_string = "<form action='' id='column_select_for_cluster' onsubmit='return false;'>";
+        $.getJSON('/current_column_lst/', {}, function (data) {
+            var col_list = data.attribute_list;
+
+            for (var i=0;i<col_list.length;i++) {
+                html_string += "<div class='checkbox'><label><input type='checkbox' name='column_for_cluster' value='" +
+                    col_list[i] + "' checked> " +
+                    "<span class='ripple'></span>"+
+                    "<span class='check'>" +
+                    "</span>"
+                    + col_list[i] + "</label></div>"
+
+            }
+            html_string += "</form>";
+            $("#cluster_model_body").html(html_string);
+            $('#clusterModel').modal('toggle');
+            return true;
+        });
+
     } else {
         $.snackbar({content: 'Please specify a positive integer as the number of clusters', style: 'toast'});
         return false;

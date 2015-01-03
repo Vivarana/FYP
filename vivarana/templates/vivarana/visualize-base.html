@@ -85,7 +85,7 @@
         });
 </script>
 
-
+<div class="cover"></div>
 <div class="navbar yamm navbar-default">
 <div class="navbar-header">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -184,7 +184,7 @@
                 class="caret"></b></a>
         <ul class="dropdown-menu" id="timewindow_dropdown">
             <div class="yamm-content">
-                {% if enable_time_window %}
+                {% if state_map.time_window_enabled %}
                     <label class="control-label">Specify the time window:</label>
                     <div class="row">
                         <div class="col-xs-6">
