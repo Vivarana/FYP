@@ -233,7 +233,7 @@ def preprocessor(request):
         return redirect(HOME_PATH)
 
     if request.method == 'POST':
-        vistype = request.POST.get('visualization')
+        vistype = request.POST.get('visualization').encode('UTF8')
         if vistype == PARACOORDS_VIS_TYPE:
             columns = request.POST.getlist('column')
             nav_type = request.POST.get('nav-type')
@@ -266,7 +266,7 @@ def preprocessor(request):
                 state_map[NUMBER_PAGES] = int(math.ceil(
                     len(current_data_frame) / float(state_map[PAGE_SIZE])))
 
-                return redirect(VISUALIZE_PATH)
+            return redirect(VISUALIZE_PATH)
         elif vistype == SUNBURST_VIS_TYPE:
             global grouping_column
             global grouped_column
