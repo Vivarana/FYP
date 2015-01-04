@@ -132,8 +132,7 @@ function createVisualization(json) {
         .attr("data-placement","top")
         .attr("title",function(d){return d.name})
         .on("mouseover", mouseover)
-        .on("click", mouseclick)
-        .on('mouseleave', function(){tip.hide();});
+        .on("click", mouseclick);
 
     // Add the mouseleave handler to the bounding circle.
     d3.select("#container").on("mouseleave", mouseleave);
@@ -190,6 +189,8 @@ function mouseover(d) {
 
 // Restore everything to full opacity when moving off the visualization.
 function mouseleave(d) {
+
+    tip.hide();
     // Hide the breadcrumb trail
     d3.select("#trail")
         .style("visibility", "hidden");
