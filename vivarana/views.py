@@ -233,51 +233,47 @@ def preprocessor(request):
         return redirect(HOME_PATH)
 
     if request.method == 'POST':
-        columns = request.POST.getlist('column')
-        nav_type = request.POST.get('nav-type')
-        sampling_type = request.POST.get('sampling-type')
         vistype = request.POST.get('visualization')
-
-        global current_data_frame
-        cols = [original_data_frame.columns[int(i) - 1] for i in columns]
-        update_kept_attribute(state_map, cols)
-        current_data_frame = file_helper.remove_columns(columns, original_data_frame)
-
-        # sampling the data
-        if sampling_type != 'none':
-            if sampling_type == 'random':
-                sample_size = int(request.POST.get('sample-size'))
-                print len(current_data_frame.index), sample_size
-                current_data_frame = current_data_frame.loc[
-                    np.random.choice(current_data_frame.index, sample_size, replace=False)]
-
-        # pagination
-        if nav_type == 'auto':
-            state_map[PAGINATION_METHOD] = 'auto'
-            state_map[PAGE_SIZE] = min([20000, len(current_data_frame)])
-            state_map[NUMBER_PAGES] = int(math.ceil(
-                len(current_data_frame) / float(state_map[PAGE_SIZE])))
-        elif nav_type == 'line':
-            state_map[PAGINATION_METHOD] = 'line'
-            page_size = request.POST.get('page-size')
-            state_map[PAGE_SIZE] = 'line'
-            state_map[PAGE_SIZE] = max([1, int(page_size)])
-            state_map[NUMBER_PAGES] = int(math.ceil(
-                len(current_data_frame) / float(state_map[PAGE_SIZE])))
-
         if vistype == PARACOORDS_VIS_TYPE:
-            return redirect(VISUALIZE_PATH)
+            columns = request.POST.getlist('column')
+            nav_type = request.POST.get('nav-type')
+            sampling_type = request.POST.get('sampling-type')
+
+            global current_data_frame
+            cols = [original_data_frame.columns[int(i) - 1] for i in columns]
+            update_kept_attribute(state_map, cols)
+            current_data_frame = file_helper.remove_columns(columns, original_data_frame)
+
+            # sampling the data
+            if sampling_type != 'none':
+                if sampling_type == 'random':
+                    sample_size = int(request.POST.get('sample-size'))
+                    print len(current_data_frame.index), sample_size
+                    current_data_frame = current_data_frame.loc[
+                        np.random.choice(current_data_frame.index, sample_size, replace=False)]
+
+            # pagination
+            if nav_type == 'auto':
+                state_map[PAGINATION_METHOD] = 'auto'
+                state_map[PAGE_SIZE] = min([20000, len(current_data_frame)])
+                state_map[NUMBER_PAGES] = int(math.ceil(
+                    len(current_data_frame) / float(state_map[PAGE_SIZE])))
+            elif nav_type == 'line':
+                state_map[PAGINATION_METHOD] = 'line'
+                page_size = request.POST.get('page-size')
+                state_map[PAGE_SIZE] = 'line'
+                state_map[PAGE_SIZE] = max([1, int(page_size)])
+                state_map[NUMBER_PAGES] = int(math.ceil(
+                    len(current_data_frame) / float(state_map[PAGE_SIZE])))
+
+                return redirect(VISUALIZE_PATH)
         elif vistype == SUNBURST_VIS_TYPE:
             global grouping_column
             global grouped_column
             grouping_column = request.POST.get(GROUPING_COL_NAME).encode('UTF8')
             grouped_column = request.POST.get(GROUPED_COL_NAME).encode('UTF8')
-            # delete after testing
-            # grouping_column = 'Remote_host'
-            # grouped_column = 'URL'
             return redirect(
                 SUNBURST_PATH + "?" + GROUP_BY + "=" + grouping_column + "&" + COALESCE + "=" + grouped_column)
-        # return redirect(VISUALIZE_PATH)
     else:
         context = file_helper.get_data_summary(original_data_frame)
         context['filename'] = request.session['filename']
