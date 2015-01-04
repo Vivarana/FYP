@@ -3,6 +3,22 @@
 {% block title %}Visualization of Data{% endblock %}
 {% block body_block %}
 
+    <style>
+         .nav-head:link {
+            color: #FF0000;
+        }
+
+        /* visited link */
+        .nav-head:visited {
+            color: #00FF00;
+        }
+
+        /* mouse over link */
+        .nav-head:hover {
+            color: #FF00FF;
+        }
+    </style>
+
     <!-- Divs for the drop down menus -->
     {% autoescape off %}
         {% for col,type in columns.items %}
@@ -24,6 +40,7 @@
             </div>
         {% endfor %}
     {% endautoescape %}
+    <!-- end of Divs for the drop down menus -->
 
     <div class="loading-model">
         <img src="{% static "images/gears.gif" %}" alt="preloader"/>
@@ -56,7 +73,6 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" onclick="generate_rules();" class="btn btn-primary">Generate</button>
                 </div>
             </div>
@@ -91,7 +107,6 @@
 {#                    </form>#}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" onclick="continueClustering();" class="btn btn-primary">Continue</button>
                 </div>
             </div>
@@ -117,14 +132,17 @@
     <div id="slickgrid-container">
         <div id="rule-right">
             {#            <div id="rule-right-table-head"></div>#}
-            <ul id="myTab" class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab"
-                                                          aria-controls="home" aria-expanded="false">Brushes</a></li>
-                <li role="presentation" class=""><a href="#cep_rule_panel" role="tab" id="cep_rule_panel-tab"
+            <ul id="myTab" style="height:29px; background: #2C3E50" class="nav nav-tabs" role="tablist">
+                <li role="presentation" style="border-left: 2px solid #FFF;" class="active nav-head"><a
+                        style="padding-top: 4px; height: 29px;" href="#home" id="home-tab"
+                        role="tab" data-toggle="tab"
+                        aria-controls="home" aria-expanded="false">Brushes</a></li>
+                <li role="presentation" class="nav-head"><a style="padding-top: 4px; height: 29px;" href="#cep_rule_panel"
+                                                    role="tab" id="cep_rule_panel-tab"
                                                     data-toggle="tab" aria-controls="cep_rule_panel"
                                                     aria-expanded="true">CEP Rule</a></li>
             </ul>
-            <div id="myTabContent" class="tab-content">
+            <div style="border-left: 2px solid #2C3E50; height: 200px" id="myTabContent" class="tab-content">
                 <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
                     <div id="rule-table">
                         <table class="table table-striped">
@@ -140,9 +158,15 @@
                         </table>
                     </div>
                 </div>
-                <div role="tabpanel" class="tab-pane fade" id="cep_rule_panel" aria-labelledby="cep_rule_panel-tab">
+                <div style="padding-left: 5px" role="tabpanel" class="tab-pane fade" id="cep_rule_panel" aria-labelledby="cep_rule_panel-tab">
                     <p id="rule-paragraph">No rules have been created yet. Please select the events you are interested
                         in and press "Generate Rule" button on the toolbar</p>
+
+                    <div style="padding-left: 80px; display: none" id="loading-gif" class="rule-loading-model">
+                        <img src="{% static "images/ajax-rule-loader.gif" %}" alt="preloader"/>
+                        </br>
+                        <p style="margin-left: 13px">Generating Rule. Please wait...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -716,6 +740,10 @@
 
     function generate_rules() {
         $('#myModal').modal('toggle');
+        $("#cep_rule_panel-tab").tab('show')
+        $("#rule-paragraph").empty();
+        $('#loading-gif').show()
+
         var selected_ids = [];
         var brushed_data = parcoords.state.brushed;
 
@@ -734,11 +762,10 @@
             data: JSON.stringify({"selected_ids": selected_ids, "checked_columns": checked_columns}),
             dataType: 'json',
             success: function (result) {
-                $("#cep_rule_panel-tab").tab('show')
+                $('#loading-gif').hide()
                 for (var rule in result.rules) {
-                    $("#cep_rule_panel").empty();
-                    $("#cep_rule_panel").append('<p style="color: blue">' + 'FORM EVENT_STREAM_NAME</br>SELECT *</br>Having' + '</p>')
-                    $("#cep_rule_panel").append('<p style="color: black">' + result.rules[rule]['rule'] + '</p>')
+                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FORM EVENT_STREAM_NAME</br>SELECT *</br>Having</p>')
+                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules[rule]['rule'] + '</p>')
                 }
             }
         });
