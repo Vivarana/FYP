@@ -64,6 +64,15 @@ var arc = d3.svg.arc()
         return Math.sqrt(d.y + d.dy);
     });
 
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<span style='color:black'>" + d + "</span>";
+  })
+
+vis.call(tip);
+
 function showSunburst(){
     var colorsSet = false;
     initializeBreadcrumbTrail();
@@ -119,11 +128,16 @@ function createVisualization(json) {
             return colors[d.name];
         })
         .style("opacity", 1)
+        .attr("data-toggle","tooltip")
+        .attr("data-placement","top")
+        .attr("title",function(d){return d.name})
         .on("mouseover", mouseover)
-        .on("click", mouseclick);
+        .on("click", mouseclick)
+        .on('mouseleave', function(){tip.hide();});
 
     // Add the mouseleave handler to the bounding circle.
     d3.select("#container").on("mouseleave", mouseleave);
+
 
     // Get total size of the tree = value of root node from partition.
     totalSize = path.node().__data__.value;
@@ -138,6 +152,10 @@ function mouseclick(d) {
 
 // Fade all but the current sequence, and show it in the breadcrumb trail.
 function mouseover(d) {
+    var html = d.name;
+
+        tip.html(html);
+        tip.show();
     var percentage = (100 * d.value / totalSize).toPrecision(3);
     var percentageString = percentage + "%";
     if (percentage < 0.1) {
@@ -472,3 +490,4 @@ function updateData() {
 
 
     };
+
