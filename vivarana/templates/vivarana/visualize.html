@@ -1,4 +1,5 @@
 {% extends 'vivarana/visualize-base.html' %}
+{% load staticfiles %}
 {% block title %}Visualization of Data{% endblock %}
 {% block body_block %}
 
@@ -23,6 +24,12 @@
             </div>
         {% endfor %}
     {% endautoescape %}
+
+    <div class="loading-model">
+        <img src="{% static "images/gears.gif" %}" alt="preloader"/>
+        </br>
+        <p>Clustering Data. Please wait...</p>
+    </div>
 
     <!-- Container for the dialog that appear on clicking the rule generation button -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -57,7 +64,7 @@
     </div>
 
 
-    <!-- Container for the dialog that appear on clicking the rule generation button -->
+    <!-- Container for the dialog that appear on clicking the cluster button -->
     <div class="modal fade" id="clusterModel" tabindex="-1" role="dialog" aria-labelledby="clusterModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
@@ -67,20 +74,21 @@
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <h4 class="modal-title" id="clusterModalLabel">Select attributes to cluster</h4>
                 </div>
-                <div class="modal-body">
-                    <form action="" id="column_select_for_cluster" onsubmit="return false;">
-                        {% csrf_token %}
-                        {% for col,type in columns.items %}
-                            {% if col != "clusterID" %}
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="column_for_cluster" value="{{ col }}"
-                                               checked> {{ col }}
-                                    </label>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </form>
+                <div class="modal-body" id="cluster_model_body">
+{#                    <form action="" id="column_select_for_cluster" onsubmit="return false;">#}
+{#                        <div id="cluster_model_body"></div>#}
+{#                        {% csrf_token %}#}
+{#                        {% for col,type in columns.items %}#}
+{#                            {% if col != "clusterID" %}#}
+{#                                <div class="checkbox">#}
+{#                                    <label>#}
+{#                                        <input type="checkbox" name="column_for_cluster" value="{{ col }}"#}
+{#                                               checked> {{ col }}#}
+{#                                    </label>#}
+{#                                </div>#}
+{#                            {% endif %}#}
+{#                        {% endfor %}#}
+{#                    </form>#}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -95,9 +103,10 @@
 
     {% if state_map.number_pages != 1 %}
         <div style="float: none; margin: 0 auto; font-size: 1.8em;" id="navigation-container" class="col-lg-2">
-            <a onclick="paginate_next('backward')" href="#" id="pagination_back_link" class="disabled-link">
+            <a onclick="paginate_next('backward')" href="#" id="pagination_back_link">
                 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a>
-            <span style="font-size: 1em;"> <p id = "pagination_current_page_num">{{ page_number }}</p> / {{ state_map.number_pages }}</span>
+            <span style="font-size: 1em;"> <p
+                    id="pagination_current_page_num">{{ state_map.active_page_number | add:1 }}</p> / {{ state_map.number_pages }}</span>
             <a onclick="paginate_next('forward')" href="#" id="pagination_next_link">
                 <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
 
@@ -276,14 +285,18 @@
             parcoords.svg.selectAll(".dimension")
                     .on("click", enable_cluster_coloring())
                     .selectAll(".label");
-            $.post("/change_state/", JSON.stringify({property_name:"cluster_coloring_enabled",property_value:true}), function(data) { });
-            $.post("/change_state/", JSON.stringify({property_name:"zscore_coloring_enabled",property_value:false}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "cluster_coloring_enabled", property_value: true}), function (data) {
+            });
+            $.post("/change_state/", JSON.stringify({property_name: "zscore_coloring_enabled", property_value: false}), function (data) {
+            });
         } else {
             parcoords.svg.selectAll(".dimension")
                     .on("click", change_color)
                     .selectAll(".label");
-            $.post("/change_state/", JSON.stringify({property_name:"cluster_coloring_enabled",property_value:false}), function(data) { });
-            $.post("/change_state/", JSON.stringify({property_name:"zscore_coloring_enabled",property_value:true}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "cluster_coloring_enabled", property_value: false}), function (data) {
+            });
+            $.post("/change_state/", JSON.stringify({property_name: "zscore_coloring_enabled", property_value: true}), function (data) {
+            });
         }
     });
 
@@ -291,11 +304,13 @@
     $("input[type=radio][name=brushingRadios]").change(function () {
         if ($('[id="oneBrushing-radio"]').is(':checked')) {
             parcoords.brushMode("1D-axes");
-            $.post("/change_state/", JSON.stringify({property_name:"brush_mode",property_value:'1D-axes'}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "brush_mode", property_value: '1D-axes'}), function (data) {
+            });
         }
         if ($('[id="twoBrushing-radio"]').is(':checked')) {
             parcoords.brushMode("2D-strums");
-            $.post("/change_state/", JSON.stringify({property_name:"brush_mode",property_value:'2D-strums'}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "brush_mode", property_value: '2D-strums'}), function (data) {
+            });
         }
     });
 
@@ -306,7 +321,8 @@
             var new_alpha_opacity_value = Math.round(alpha_opacity_value * 100) / 100;
             parcoords.alpha(new_alpha_opacity_value).render();
             $("#alpha-opacity-text").text('Alpha Opacity: ' + alpha_opacity_value);
-            $.post("/change_state/", JSON.stringify({property_name:"alpha_opacity",property_value:alpha_opacity_value}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "alpha_opacity", property_value: alpha_opacity_value}), function (data) {
+            });
 
         }
     });
@@ -315,14 +331,17 @@
     $("#alpha-checkbox").change(function () {
         if (this.checked) {
             $('#alpha-slider-container').show();
-            $.post("/change_state/", JSON.stringify({property_name:"alpha_blending_enabled",property_value:true}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "alpha_blending_enabled", property_value: true}), function (data) {
+            });
         } else {
             $("#aplha-slider").val(0.2);
             parcoords.alpha(0.2).render();
             $("#alpha-opacity-text").text('Alpha Opacity: 0.2');
             $('#alpha-slider-container').hide();
-            $.post("/change_state/", JSON.stringify({property_name:"alpha_opacity",property_value:0.2}), function(data) { });
-            $.post("/change_state/", JSON.stringify({property_name:"alpha_blending_enabled",property_value:false}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "alpha_opacity", property_value: 0.2}), function (data) {
+            });
+            $.post("/change_state/", JSON.stringify({property_name: "alpha_blending_enabled", property_value: false}), function (data) {
+            });
 
         }
     });
@@ -333,7 +352,8 @@
             var curve_smooth_value = parseFloat($("#curve-slider").val());
             parcoords.smoothness(curve_smooth_value).render();
             $("#curve-text").text('Curve Smoothness: ' + curve_smooth_value);
-            $.post("/change_state/", JSON.stringify({property_name:"curve_smoothness",property_value:curve_smooth_value}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "curve_smoothness", property_value: curve_smooth_value}), function (data) {
+            });
         }
     });
 
@@ -343,7 +363,8 @@
             var bundling_value = parseFloat($("#bundling-slider").val());
             parcoords.bundlingStrength(bundling_value).render();
             $("#bundling-text").text('Bundling Strength: ' + bundling_value);
-            $.post("/change_state/", JSON.stringify({property_name:"bundling_strength",property_value:bundling_value}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "bundling_strength", property_value: bundling_value}), function (data) {
+            });
         }
     });
 
@@ -357,7 +378,8 @@
                     .smoothness({{ state_map.curve_smoothness }})
                     .bundlingStrength({{ state_map.bundling_strength }})
                     .render();
-            $.post("/change_state/", JSON.stringify({property_name:"bundling_enabled",property_value:true}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "bundling_enabled", property_value: true}), function (data) {
+            });
         } else {
             $('#curve-slider-container').hide();
             $('#bundling-slider-container').hide();
@@ -368,9 +390,12 @@
             $("#bundling-text").text('Bundling Strength: 0.7');
             $("#curve-slider").val(0.2);
             $("#bundling-slider").val(0.7);
-            $.post("/change_state/", JSON.stringify({property_name:"curve_smoothness",property_value:0.2}), function(data) { });
-            $.post("/change_state/", JSON.stringify({property_name:"bundling_strength",property_value:0.7}), function(data) { });
-            $.post("/change_state/", JSON.stringify({property_name:"bundling_enabled",property_value:false}), function(data) { });
+            $.post("/change_state/", JSON.stringify({property_name: "curve_smoothness", property_value: 0.2}), function (data) {
+            });
+            $.post("/change_state/", JSON.stringify({property_name: "bundling_strength", property_value: 0.7}), function (data) {
+            });
+            $.post("/change_state/", JSON.stringify({property_name: "bundling_enabled", property_value: false}), function (data) {
+            });
 
         }
     });
@@ -398,9 +423,9 @@
     {% endautoescape %}
 
 
-    for (var i = 0; i <{{ frame_size }}; i++) {
-        data[i] = j_data[i]
-    }
+    j_data.forEach(function (d, i) {
+        data[i] = d;
+    });
 
     var start_id = parseInt({{ start_id }});
     data.forEach(function (d, i) {
@@ -522,17 +547,18 @@
                     d.id = d.id || i + start_id;
                 });
 
-                $('#pagination_current_page_num').html(result.page_number);
-                if(result.is_last_page){
+                var page_num = parseInt(result.state_map.active_page_number) + 1;
+                $('#pagination_current_page_num').html(page_num);
+                if (result.is_last_page) {
                     $("#pagination_next_link").addClass("disabled-link");
 
-                }else{
+                } else {
                     $("#pagination_next_link").removeClass("disabled-link");
                 }
-                if(result.page_number == 1){
+                if (page_num == 1) {
                     $("#pagination_back_link").addClass("disabled-link");
 
-                } else{
+                } else {
                     $("#pagination_back_link").removeClass("disabled-link");
                 }
 
@@ -602,13 +628,15 @@
 
 
     function removeAxis(col_name, col_number) {
-        //todo send AJAX call to backend
         parcoords.svg.selectAll(".dimension")
                 .filter(function (d) {
                     return d == col_name;
                 });
 
         parcoords.hideAxis([col_name]).updateAxes().render();
+        $.post("/remove_axis/", JSON.stringify({attribute_name: col_name}), function (data) {
+        });
+
     }
 
     function flipAxis(col_name, col_number) {
@@ -644,6 +672,7 @@
 
 
     function continueClustering() {
+
         $('#clusterModel').modal('toggle');
         var checked_columns = $("input:checkbox[name=column_for_cluster]:checked").map(function () {
             return $(this).val();
@@ -661,7 +690,7 @@
             selected_ids.push(brushed_data[i]['id'])
         }
 
-        //todo show ajax loader at this point
+        $(".cover, .loading-model").show();
         $.ajax({
             url: '/clustering/',
             type: 'POST',
@@ -678,7 +707,7 @@
                 }
                 drawData(brushed_data);
                 gridUpdate(brushed_data);
-                //todo hide ajax loader
+                $(".cover, .loading-model").hide();
                 //todo add parcords redraw function
             }
         });

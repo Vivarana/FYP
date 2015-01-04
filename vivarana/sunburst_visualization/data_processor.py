@@ -14,9 +14,9 @@ def parse_dataframe_date(dataframe):
     dataframe.index = pd.to_datetime(pd.Series([reformatdate(convertdate(date)) for date in dataframe.index]))
     return dataframe
 
-def get_session_info(dataframe):
-    paths = dataframe.groupby('Remote_host')['URL'].apply(lambda x: "%s" % COALESCE_SEPARATOR.join(x)) # .apply(lambda x: x.values)
-    return paths.value_counts()
+def get_session_info(dataframe, group_by, coalesce):
+   paths = dataframe.groupby(group_by)[coalesce].apply(lambda x: "%s" % COALESCE_SEPARATOR.join(x)) # .apply(lambda x: x.values)
+   return paths.value_counts()
 
 def get_unique_urls(dataframe,coalesce):
     urls = dataframe[coalesce].fillna('Null')
@@ -41,7 +41,7 @@ def get_sessions_data(frame,group_by,coalesce):
     df[coalesce] = df.apply(lambda x: x[0]+COALESCE_SEPARATOR+SEQ_END_TAG if x[1]<SEQ_LIMIT else COALESCE_SEPARATOR.join(x[0].split(COALESCE_SEPARATOR)[:SEQ_LIMIT]), axis=1)
     #get count of unique sequences
     #print df
-    pd.DataFrame(df[coalesce].value_counts().astype(int)).to_csv("D:\out.csv")
+    #pd.DataFrame(df[coalesce].value_counts().astype(int)).to_csv("D:\out.csv")
     return df[coalesce].value_counts().astype(int)
 
 def main():

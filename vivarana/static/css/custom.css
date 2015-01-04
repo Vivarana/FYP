@@ -32,7 +32,7 @@
 }
 
 /*#rule-table {*/
-    /*clear: both;*/
+/*clear: both;*/
 /*}*/
 
 .slick-row:hover {
@@ -56,4 +56,38 @@
     pointer-events: none;
     cursor: default;
     color: grey;
+}
+
+.loading-model {
+    display: none;
+    width: 300px;
+    height: 200px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    margin-left: -50px;
+    margin-top: -100px;
+    z-index: 10011;
+    overflow: auto;
+    background-color: #ffffff;
+    padding: 20px;
+
+    border-radius: 12px;
+    background-clip: padding-box;
+    -webkit-box-shadow: 0px 0px 4px 0px #ffffff;
+    box-shadow: 0px 0px 4px 0px #ffffff;
+}
+
+.cover {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #000000;
+    opacity: 0.8;
+    z-index: 10001;
+    display: none;
+
 }

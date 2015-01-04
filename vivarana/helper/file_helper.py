@@ -92,7 +92,13 @@ def get_html_friendly_names(columns):
     """
     Removes illegal characters in the column names (HTML escaping)
     """
-    return [remove_illegal_characters(column_name) for column_name in columns]
+
+    without_illegal_chars = [remove_illegal_characters(column_name) for column_name in columns]
+    for i in xrange(0, len(without_illegal_chars)):
+        if without_illegal_chars[i][0].isdigit():
+            without_illegal_chars[i] = "COL_" + without_illegal_chars[i]
+
+    return without_illegal_chars
 
 
 def remove_illegal_characters(name):
