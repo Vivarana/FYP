@@ -764,7 +764,7 @@
             success: function (result) {
                 $('#loading-gif').hide()
                 for (var rule in result.rules) {
-                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FORM EVENT_STREAM_NAME</br>SELECT *</br>Having</p>')
+                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FORM EVENT_STREAM_NAME'+ result['window_string'] +'</br>SELECT ' + result['select_string'] + '</br>Having</p>')
                     $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules[rule]['rule'] + '</p>')
                 }
             }

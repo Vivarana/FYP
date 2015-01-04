@@ -1,14 +1,25 @@
 class Rule:
     filters = []
-    groupby = []
+    group_by = []
     window = None
 
     # Only filers in disjunctive normal form are accepted
-    def __init__(self, filters):
+    def __init__(self, stream_name, filters, groupby, window):
+        self.stream_name = stream_name
         self.filters = filters
+        self.group_by = groupby
+        self.window = window
 
-    def apply_rule(dataframe):
-        print dataframe
+    def apply_rule(self, dataframe):
+        print self.filters.apply_contraint(dataframe)
+
+    def to_string(self):
+        window_string = ''
+        if self.window!=None:
+            window_string = '#window.' + self.window[0] + '(' + self.window[1] + ')'
+
+        return 'FROM ' + self.stream_name + window_string
+
 
 
 class ConstraintSet:
@@ -31,116 +42,90 @@ class ConstraintSet:
         return "( " + (" "+self.operand+" ").join([constraint.to_string() for constraint in self.constraints]) + " )"
 
 
-class EqualConstraint:
-    def __init__(self, column, value):
+class Constraint:
+    def __init__(self, column, value, aggregate):
         self.column = column
         self.value = value
+        if aggregate != '':
+            aggregate = aggregate + '_'
+        self.aggregate = aggregate
 
+
+class EqualConstraint(Constraint):
     def apply_constraint(self, dataframe):
         return dataframe[dataframe[self.column] == self.value]
 
     def to_string(self):
-        return self.column + "=" + str(self.value)
+        return self.aggregate + self.column + "=" + str(self.value)
 
     @staticmethod
     def from_list(column, value_list):
         return ConstraintSet('OR', [EqualConstraint(column, value) for value in value_list])
 
 
-class LessConstraint:
-    def __init__(self, column, value):
-        self.column = column
-        self.value = value
+class LessConstraint(Constraint):
 
     def apply_constraint(self, dataframe):
         return dataframe[dataframe[self.column] < self.value]
 
     def to_string(self):
-        return self.column + "<" + str(self.value)
+        return self.aggregate + self.column + "<" + str(self.value)
 
 
-class LessEqualConstraint:
-    def __init__(self, column, value):
-        self.column = column
-        self.value = value
-
+class LessEqualConstraint(Constraint):
     def apply_constraint(self, dataframe):
         return dataframe[dataframe[self.column] <= self.value]
 
     def to_string(self):
-        return self.column + "<=" + str(self.value)
+        return self.aggregate + self.column + "<=" + str(self.value)
 
 
-class MoreConstraint:
-    def __init__(self, column, value):
-        self.column = column
-        self.value = value
-
+class MoreConstraint(Constraint):
     def apply_constraint(self, dataframe):
         return dataframe[dataframe[self.column] > self.value]
 
     def to_string(self):
-        return self.column + ">" + str(self.value)
+        return self.aggregate + self.column + ">" + str(self.value)
 
 
-class MoreEqualConstraint:
-    def __init__(self, column, value):
-        self.column = column
-        self.value = value
-
+class MoreEqualConstraint(Constraint):
     def apply_constraint(self, dataframe):
         return dataframe[dataframe[self.column] >= self.value]
 
     def to_string(self):
-        return self.column + ">=" + str(self.value)
+        return self.aggregate + self.column + ">=" + str(self.value)
 
 
-class MoreLessBetweenConstraint:
-    def __init__(self, column, value):
-        self.column = column
-        self.value = value
-
+class MoreLessBetweenConstraint(Constraint):
     def apply_constraint(self, dataframe):
         return dataframe[(dataframe[self.column] > self.value[0]) & (dataframe[self.column] < self.value[1])]
 
     def to_string(self):
-        return "(" + self.column + ">" + str(self.value[0]) + " AND " + self.column + "<" + str(self.value[1]) + ")"
+        return "(" + self.aggregate + self.column + ">" + str(self.value[0]) + " AND " + self.aggregate + self.column + "<" + str(self.value[1]) + ")"
 
 
-class MoreEqualLessBetweenConstraint:
-    def __init__(self, column, value):
-        self.column = column
-        self.value = value
-
+class MoreEqualLessBetweenConstraint(Constraint):
     def apply_constraint(self, dataframe):
         return dataframe[(dataframe[self.column] > self.value[0]) & (dataframe[self.column] <= self.value[1])]
 
     def to_string(self):
-        return "(" + self.column + ">=" + str(self.value[0]) + " AND " + self.column + "<" + str(self.value[1]) + ")"
+        return "(" + self.aggregate + self.column + ">=" + str(self.value[0]) + " AND " + self.aggregate + self.column + "<" + str(self.value[1]) + ")"
 
 
-class MoreLessEqualBetweenConstraint:
-    def __init__(self, column, value):
-        self.column = column
-        self.value = value
-
+class MoreLessEqualBetweenConstraint(Constraint):
     def apply_constraint(self, dataframe):
         return dataframe[(dataframe[self.column] >= self.value[0]) & (dataframe[self.column] < self.value[1])]
 
     def to_string(self):
-        return "(" + self.column + ">" + str(self.value[0]) + " AND " + self.column + "<=" + str(self.value[1]) + ")"
+        return "(" + self.aggregate + self.column + ">" + str(self.value[0]) + " AND " + self.aggregate + self.column + "<=" + str(self.value[1]) + ")"
 
 
-class MoreEqualLessEqualBetweenConstraint:
-    def __init__(self, column, value):
-        self.column = column
-        self.value = value
-
+class MoreEqualLessEqualBetweenConstraint(Constraint):
     def apply_constraint(self, dataframe):
         return dataframe[(dataframe[self.column] >= self.value[0]) & (dataframe[self.column] <= self.value[1])]
 
     def to_string(self):
-        return "(" + self.column + ">=" + str(self.value[0]) + " AND " + self.column + "<=" + str(self.value[1]) + ")"
+        return "(" + self.aggregate + self.column + ">=" + str(self.value[0]) + " AND " + self.aggregate + self.column + "<=" + str(self.value[1]) + ")"
 
 
 rules = {'=': EqualConstraint.from_list, '<': LessConstraint, '>': MoreConstraint, '<=': LessEqualConstraint,
