@@ -764,8 +764,13 @@
             success: function (result) {
                 $('#loading-gif').hide()
                 for (var rule in result.rules) {
-                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FORM EVENT_STREAM_NAME</br>SELECT *</br>Having</p>')
+                    var count_line = 'You selected ' + result['count_selected'] + ' events. This rule covers ' +  result['count_covered'] + ' events.'
+                    var recall_line = 'Rule recall - ' + parseFloat(result['recall']).toFixed(2)
+                    var precision_line = 'Rule precision - ' + parseFloat(result['precision']).toFixed(2)
+
+                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FORM EVENT_STREAM_NAME'+ result['window_string'] +'</br>SELECT ' + result['select_string'] + '</br>Having</p>')
                     $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules[rule]['rule'] + '</p>')
+                    $("#rule-paragraph").append('<div style="text-align:center" class="panel panel-info"><div class="panel-body">'+ precision_line + '</br>' + recall_line + '</br>' + count_line +'</div> </div>')
                 }
             }
         });

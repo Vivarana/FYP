@@ -147,7 +147,7 @@ def merge_rules(rule1, rule2):
         return {'operation': '<=>=', 'operand': [min(operands)]}
 
 
-def parse_rule(rule_list):
+def parse_rule(rule_list, aggregate_functions):
     rules = rule_list.split('_AND_')
 
     rule_dict = {}
@@ -206,17 +206,19 @@ def parse_rule(rule_list):
 
     for rule_key in rule_dict:
         rule = rule_dict[rule_key]
-        rule_set.append(rule_classes.rules[rule['operation']](rule_key, rule['operand']))
+        rule_set.append(rule_classes.rules[rule['operation']](rule_key, rule['operand'],
+                                                              get_aggregate_function(aggregate_functions, rule_key)))
 
     return rule_classes.ConstraintSet('AND', rule_set)
 
 
-def generate(selected_ids, dataframe):
+def generate(selected_ids, dataframe, state):
     try:
         success = True
         rules = []
         global data_types
         data_types = dataframe.dtypes
+        columns = dataframe.columns
         selected_ids = json.loads(selected_ids)
 
         temporary_dataframe = dataframe.copy(deep=True)
@@ -247,16 +249,11 @@ def generate(selected_ids, dataframe):
             print temp
 
         for index, row in rule_set.iterrows():
-            temp_rule = parse_rule(row['rulelist'])
+            temp_rule = parse_rule(row['rulelist'], state[constants.AGGREGATE_FUNCTION_ON_ATTR])
             temp_rule_set.append(temp_rule)
             rules.append({'rule': temp_rule.to_string(), 'coverage': row['coverage']})
 
         constraint_set = rule_classes.ConstraintSet('OR', temp_rule_set)
-
-        if debug:
-            print constraint_set.to_string()
-            # print constraint_set.apply_constraint(temporary_dataframe).index
-
         rule_applied_index = constraint_set.apply_constraint(temporary_dataframe).index
 
         temporary_dataframe['FILTERED_BY_RULE'] = 0
@@ -264,19 +261,23 @@ def generate(selected_ids, dataframe):
             temporary_dataframe.index.isin(rule_applied_index)] = 1
 
         confusion_mat = confusion_matrix(temporary_dataframe['FILTERED_BY_RULE'], temporary_dataframe[constants.RULEGEN_COLUMN_NAME])
-
-        print "========================================================"
-        print len(dataframe), len(temporary_dataframe), len(constraint_set.apply_constraint(temporary_dataframe).index)
         precision = get_precision(confusion_mat)
         recall = get_recall(confusion_mat)
-        print precision, recall
 
-        print confusion_mat
-        return success, rules, len(selected_ids['selected_ids']), len(rule_applied_index), precision, recall
+        select_string = get_aggregate_string(state[constants.AGGREGATE_FUNCTION_ON_ATTR], columns)
+        window_string = get_window_string(state)
+
+        if debug:
+            print constraint_set.to_string()
+            print len(dataframe), len(temporary_dataframe), len(constraint_set.apply_constraint(temporary_dataframe).index)
+            print precision, recall
+            print confusion_mat
+
+        return success, rules, len(selected_ids['selected_ids']), len(rule_applied_index), precision, recall, select_string, window_string
 
     except Exception, e:
         print e
-        return "error!"
+        return False, None, None, None, None, None, None
 
 
 def get_precision(conf_matrix):
@@ -295,3 +296,36 @@ def num(s, column):
         return int(s)
     except ValueError:
         return float(s)
+
+
+def get_aggregate_function(state, column):
+    try:
+        return state[column][0]
+    except Exception, e:
+        return ''
+
+
+def get_aggregate_string(state, columns):
+    temp_col = []
+    for i in xrange(len(columns)):
+        aggregate = get_aggregate_function(state, columns[i])
+        if aggregate != '':
+            temp_col.append(aggregate + '(' + columns[i] + ') AS ' + aggregate + '_' + columns[i])
+        else:
+            temp_col.append(columns[i])
+
+    return ', '.join(temp_col)
+
+
+def get_window_string(state_map):
+    if not (state_map[constants.WINDOW_TYPE] is None):
+        window_string = '#window.' + state_map[constants.WINDOW_TYPE]
+        if state_map[constants.WINDOW_TYPE] == constants.TIME_WINDOW:
+            window_string = window_string + '(' + str(state_map[constants.TIME_WINDOW_VALUE]) + ' ' + str(
+                state_map[constants.TIME_GRANULARITY]) + ')'
+        else:
+            window_string = window_string + '(' + str(state_map[constants.EVENT_WINDOW_VALUE]) + ')'
+
+        return window_string
+    else:
+        return ''
