@@ -47,7 +47,7 @@ class Constraint:
         self.column = column
         self.value = value
         if aggregate != '':
-            aggregate = aggregate + '_'
+            aggregate += + '_'
         self.aggregate = aggregate
 
 
@@ -59,8 +59,8 @@ class EqualConstraint(Constraint):
         return self.aggregate + self.column + "=" + str(self.value)
 
     @staticmethod
-    def from_list(column, value_list):
-        return ConstraintSet('OR', [EqualConstraint(column, value) for value in value_list])
+    def from_list(column, value_list, aggregate):
+        return ConstraintSet('OR', [EqualConstraint(column, value, aggregate) for value in value_list])
 
 
 class LessConstraint(Constraint):
