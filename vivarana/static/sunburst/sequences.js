@@ -210,10 +210,22 @@ function initializeBreadcrumbTrail() {
         .attr("width", width)
         .attr("height", 50)
         .attr("id", "trail");
+    // defs to clip path of the text within trail polygon
+
+    var defs = trail.append("svg:defs")
     // Add the label at the end, for the percentage.
     trail.append("svg:text")
         .attr("id", "endlabel")
         .style("fill", "#000");
+
+    defs.append("svg:clipPath")
+        .attr("id", "textclip")
+        .append("svg:rect")
+        .attr("width", b.w)
+        .attr("height", b.h)
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("clipPathUnits", "objectBoundingBox");
 }
 
 // Generate a string that describes the points of a breadcrumb polygon.
@@ -251,13 +263,15 @@ function updateBreadcrumbs(nodeArray, percentageString) {
         });
 
     entering.append("svg:text")
-        .attr("x", (b.w + b.t) / 2)
+        .attr("x", (b.t) * 2)
         .attr("y", b.h / 2)
         .attr("dy", "0.35em")
-        .attr("text-anchor", "middle")
+        .attr("text-anchor", "left")
+        .style("clip-path", "url(#textclip)")
         .text(function (d) {
             return d.name;
         });
+
 
     // Set position for entering and updating nodes.
     g.attr("transform", function (d, i) {
