@@ -318,6 +318,8 @@ def current_column_lst(request):
 
 
 def sunburst(request):
+    if not type(original_data_frame) is pandas.core.frame.DataFrame:
+        return redirect(HOME_PATH)
     context = {"grouping": grouping_column, "grouped": grouped_column}
 
     return render(request, SUNBURST_PAGE, context)

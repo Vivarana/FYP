@@ -3,22 +3,6 @@
 {% block title %}Visualization of Data{% endblock %}
 {% block body_block %}
 
-    <style>
-         .nav-head:link {
-            color: #FF0000;
-        }
-
-        /* visited link */
-        .nav-head:visited {
-            color: #00FF00;
-        }
-
-        /* mouse over link */
-        .nav-head:hover {
-            color: #FF00FF;
-        }
-    </style>
-
     <!-- Divs for the drop down menus -->
     {% autoescape off %}
         {% for col,type in columns.items %}
@@ -181,6 +165,7 @@
     var new_grid_data;
     var datastack = [];         // stores data history (for undo operation)
     var data = [];
+    var aggregates = new Array();
 
     function drawData(new_data) {
         data = new_data;
@@ -434,6 +419,7 @@
                 .alpha({{ state_map.alpha_opacity }})
                 .mode("queue") // progressive rendering
                 .height(550)
+                .aggregates(aggregates)
                 .types(data_types)
                 .color('#2980b9')
                 .margin({
@@ -593,12 +579,19 @@
 
     }
 
-    function aggregate_func(data, selected_id_lst) {
+    function aggregate_func(data, selected_id_lst, attribute_name, aggregate_function) {
         var j_data = JSON.parse(data);
 
         for (i = 0; i < selected_id_lst.length; i += 1) {
             j_data[i]['id'] = selected_id_lst[i];
         }
+
+        //todo change this
+        var aggregate_function_list = {0 :'sum', 1:'average', 2:'min', 3:'max', 4:'count'}
+
+        aggregates[attribute_name] = aggregate_function_list[aggregate_function]
+
+        parcoords.aggregates(aggregates)
 
         drawData(j_data);
         gridUpdate(j_data);
@@ -624,7 +617,7 @@
                 return false;
             }
 
-            aggregate_func(data, selected_id_lst);
+            aggregate_func(data, selected_id_lst, attribute_name, aggregate_function);
         });
 
 
@@ -686,6 +679,9 @@
         $.get('/reset_axis/', {attribute_name: col_name, selected_ids: selected_ids}, function (data) {
             aggregate_func(data, selected_id_lst);
         });
+
+        aggregates[col_name] = ''
+        parcoords.aggregates(aggregates)
     }
 
     function gridUpdate(data) {

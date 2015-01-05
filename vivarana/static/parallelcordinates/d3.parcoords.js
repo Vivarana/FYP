@@ -18,7 +18,8 @@ d3.parcoords = function(config) {
     smoothness: 0.25,
     showControlPoints: false,
     hideAxis : [],
-    rules:[]
+    rules:[],
+    aggregates:[]
   };
 
 var rule_actives = [];
@@ -512,6 +513,9 @@ pc.createAxes = function() {
         "class": "label"
       })
       .text(function(d) {
+        if( typeof aggregates[d] != 'undefined' ) {
+          return aggregates[d]+ '(' + d +')'
+        }
         return d in __.dimensionTitles ? __.dimensionTitles[d] : d;  // dimension display names
       });
 
