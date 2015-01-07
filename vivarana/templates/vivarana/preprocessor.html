@@ -12,6 +12,7 @@
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
+    <script src="{% static "js/jquery.nouislider.min.js" %}"></script>
     <script src="{% static "js/snackbar.min.js" %}"></script>
 
 
@@ -20,8 +21,83 @@
     <script>
         $(document).ready(function () {
             $.material.init();
+
+            $("#page-size-slider").noUiSlider({
+                start: 1,
+                connect: "lower",
+                step: 1,
+                range: {
+                    'min': [0],
+                    'max': [{{ size }}]
+                }
+            });
+
+
+            $("#page-size-slider").on({
+
+                slide: function () {
+                    $('#range').html($('#page-size-slider').val());
+
+                },
+                set: function () {
+                    $('#range').html($('#page-size-slider').val());
+
+                },
+                change: function () {
+                    $('#range').html($('#page-size-slider').val());
+
+                }
+            });
+
+            $("#sampling-slider").noUiSlider({
+                start: 1,
+                connect: "lower",
+                step: 1,
+                range: {
+                    'min': [0],
+                    'max': [{{ size }}]
+                }
+            });
+
+
+            $("#sampling-slider").on({
+
+                slide: function () {
+                    $('#sample-size-view').html($('#sampling-slider').val());
+                    $('#sample-size-text').html($('#sampling-slider').val());
+                },
+                set: function () {
+                    $('#sample-size-view').html($('#sampling-slider').val());
+                    $('#sample-size-text').html($('#sampling-slider').val());
+                },
+                change: function () {
+                    $('#sample-size-view').html($('#sampling-slider').val());
+                    $('#sample-size-text').html($('#sampling-slider').val());
+                    sample_size_changed($('#sampling-slider').val())
+                }
+            });
+
+
         });
     </script>
+
+    <style>
+        #sampling-slider, #page-size-slider {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        #warning {
+            position: fixed;
+            top: 8%;
+            width: 60%;
+            left: 20%;
+            text-align: center;
+            display: none;
+            background-color: #DB0A0A;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -47,48 +123,7 @@
     </div>
 </div>
 
-<style>
-    {#        .container-clustering {#}
-    {#            width: 980px;#}
-    {#            min-width: 980px;#}
-    {#            margin: 0 auto;#}
-    {#            padding: 0 50px;#}
-    {#        }#}
-    {##}
-    {#        table {#}
-    {#            width: 916px !important; /* 140px * 5 column + 16px scrollbar width */#}
-    {#            border-spacing: 0;#}
-    {#        }#}
-    {##}
-    {#        tbody, thead tr {#}
-    {#            display: block;#}
-    {#        }#}
-    {##}
-    {#        tbody {#}
-    {#            height: 250px;#}
-    {#            overflow-y: auto;#}
-    {#            overflow-x: hidden;#}
-    {#        }#}
-    {##}
-    {#        tbody td, thead th {#}
-    {#            width: 300px;#}
-    {#        }#}
-    {##}
-    {#        thead th:last-child {#}
-    {#            width: 316px; /* 140px + 16px scrollbar width */#}
-    {#        }#}
-    {##}
-    #warning {
-        position: fixed;
-        top: 8%;
-        width: 60%;
-        left: 20%;
-        text-align: center;
-        display: none;
-        background-color: #DB0A0A;
-    }
 
-</style>
 <div id="myTabContent" class="tab-content">
 <div id="warning" class="alert alert-warning" role="alert">Please select at least on column</div>
 <div class="tab-pane fade active in" id="parallel-coordinates">
@@ -127,7 +162,7 @@
 
                             <tr style="width: 500px;"
                                 onclick="event.stopPropagation(); $(this).next('tr').slideToggle(); $(this).closest('tr').next().find('p').slideToggle();">
-                                <td>{{ col.0 }}</td>
+                                <td><i class="mdi-navigation-arrow-drop-down"></i> {{ col.0 }}</td>
                                 <td>{{ col.1 }}</td>
                                 <td>
                                     <div style="margin: 0" class="checkbox" onclick="event.stopPropagation();">
@@ -202,9 +237,8 @@
                                         <label for="page-size" class="col-lg-3">Page Size:</label>
                                         <span id="range" class="col-lg-5">1</span>
                                     </div>
-                                    <input id="page-size-slider" type="range" name="page-size" step="1" value="1"
-                                           min="0" max="{{ size }}"
-                                           data-popup-enabled="true" oninput="$('#range').html(this.value)">
+                                    <div id="page-size-slider" class="slider slider-material-green"></div>
+                                    <input type="text" name="page-size" value="1" id="page-size" style="display: none">
                                 </div>
                             </div>
                         </div>
@@ -233,12 +267,9 @@
                                         <label for="sample-size" class="col-lg-3">Sample Size : </label>
                                         <span id="sample-size-view" class="col-lg-5">1</span>
                                     </div>
-                                    {#                                    todo change this to nouislider#}
-                                    <input type="range" name="sample-size" step="1" value="1" min="0"
-                                           max="{{ size }}"
-                                           data-popup-enabled="true"
-                                           oninput="$('#sample-size-view').html(this.value); $('#sample-size-text').html(this.value)"
-                                           onchange="sample_size_changed(this.value)">
+                                    <div id="sampling-slider" class="slider slider-material-green"></div>
+                                    <input type="text" name="sample-size" value="1" id="sample-size"
+                                           style="display: none">
 
                                 </div>
 
@@ -310,7 +341,12 @@
         attribute_lst.push('{{ col.0 }}');
     {% endfor %}
 
-    console.log(attribute_lst);
+    if ($('#nav-type').val() === 'line') {
+        $('#line-nav-options').show();
+    }
+    if ($('#sampling-type').val() === 'random') {
+        $('#sample-size-container').show();
+    }
 
     $('#select-all').click(function (event) {
         var is_checked = this.checked;
@@ -350,6 +386,8 @@
     function validateForm() {
         var active_tab = $('.navbar-nav .active').text();
         $('input#vis_type').val(active_tab);
+        $('input#page-size').val(parseInt($('#page-size-slider').val()));
+        $('input#sample-size').val(parseInt($('#sampling-slider').val()));
 
         if ($('input[type=checkbox]:checked').length != 0) {
             return true;
@@ -363,29 +401,29 @@
 
     function show_additional_form(value) {
         if (value == 'auto') {
-            $('#line-nav-options').slideToggle()
+            $('#line-nav-options').slideUp();
         }
         else if (value == 'line') {
-            $('#line-nav-options').slideToggle()
+            $('#line-nav-options').slideDown();
         }
     }
 
     function show_sample_form(value) {
         if (value == 'none') {
-            $('#sample-size-container').slideToggle()
-            $('#sample-description').hide()
+            $('#sample-size-container').slideUp();
+            $('#sample-description').hide();
             $('#page-size-slider').attr('max', data_size);
         }
         else if (value == 'random') {
-            $('#sample-size-container').slideToggle()
-            $('#sample-type-text').html('random')
+            $('#sample-size-container').slideDown();
+            $('#sample-type-text').html('random');
             $('#sample-description').show()
         }
     }
 
     function sample_size_changed(value) {
-        var possible_page_value = Math.min(value, $('#page-size-slider').val())
-        $('#page-size-slider').val(possible_page_value)
+        var possible_page_value = Math.min(value, $('#page-size-slider').val());
+        $('#page-size-slider').val(possible_page_value);
         $('#page-size-slider').attr('max', value);
         $('#range').html(possible_page_value)
     }

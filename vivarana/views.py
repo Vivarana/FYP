@@ -235,6 +235,9 @@ def preprocessor(request):
     if request.method == 'POST':
         vistype = request.POST.get('visualization').encode('UTF8')
         if vistype == PARACOORDS_VIS_TYPE:
+            global state_map
+            state_map = copy.deepcopy(initial_state_map)
+            current_data_frame = original_data_frame.copy(deep=True)
             columns = request.POST.getlist('column')
             nav_type = request.POST.get('nav-type')
             sampling_type = request.POST.get('sampling-type')

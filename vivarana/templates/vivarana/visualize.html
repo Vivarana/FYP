@@ -4,7 +4,7 @@
 {% block body_block %}
 
     <style>
-         .nav-head:link {
+        .nav-head:link {
             color: #FF0000;
         }
 
@@ -91,20 +91,6 @@
                     <h4 class="modal-title" id="clusterModalLabel">Select attributes to cluster</h4>
                 </div>
                 <div class="modal-body" id="cluster_model_body">
-{#                    <form action="" id="column_select_for_cluster" onsubmit="return false;">#}
-{#                        <div id="cluster_model_body"></div>#}
-{#                        {% csrf_token %}#}
-{#                        {% for col,type in columns.items %}#}
-{#                            {% if col != "clusterID" %}#}
-{#                                <div class="checkbox">#}
-{#                                    <label>#}
-{#                                        <input type="checkbox" name="column_for_cluster" value="{{ col }}"#}
-{#                                               checked> {{ col }}#}
-{#                                    </label>#}
-{#                                </div>#}
-{#                            {% endif %}#}
-{#                        {% endfor %}#}
-{#                    </form>#}
                 </div>
                 <div class="modal-footer">
                     <button type="button" onclick="continueClustering();" class="btn btn-primary">Continue</button>
@@ -137,10 +123,11 @@
                         style="padding-top: 4px; height: 29px;" href="#home" id="home-tab"
                         role="tab" data-toggle="tab"
                         aria-controls="home" aria-expanded="false">Brushes</a></li>
-                <li role="presentation" class="nav-head"><a style="padding-top: 4px; height: 29px;" href="#cep_rule_panel"
-                                                    role="tab" id="cep_rule_panel-tab"
-                                                    data-toggle="tab" aria-controls="cep_rule_panel"
-                                                    aria-expanded="true">CEP Rule</a></li>
+                <li role="presentation" class="nav-head"><a style="padding-top: 4px; height: 29px;"
+                                                            href="#cep_rule_panel"
+                                                            role="tab" id="cep_rule_panel-tab"
+                                                            data-toggle="tab" aria-controls="cep_rule_panel"
+                                                            aria-expanded="true">CEP Rule</a></li>
             </ul>
             <div style="border-left: 2px solid #2C3E50; height: 200px" id="myTabContent" class="tab-content">
                 <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
@@ -158,7 +145,8 @@
                         </table>
                     </div>
                 </div>
-                <div style="padding-left: 5px" role="tabpanel" class="tab-pane fade" id="cep_rule_panel" aria-labelledby="cep_rule_panel-tab">
+                <div style="padding-left: 5px" role="tabpanel" class="tab-pane fade" id="cep_rule_panel"
+                     aria-labelledby="cep_rule_panel-tab">
                     <p id="rule-paragraph">No rules have been created yet. Please select the events you are interested
                         in and press "Generate Rule" button on the toolbar</p>
 
@@ -264,6 +252,31 @@
             return colors[d.clusterID];
         };
         parcoords.color(color).render();
+    }
+
+    // custom data coloring method. id_dict should have the ids of the rows which should be
+    // colored differently as keys and value should the color for that row in hex e.g: "#ff0000".
+    function enable_custom_coloring(id_dict) {
+        var colors = {};
+
+        _(data).chain()
+                .pluck('id')
+                .each(function (d, i) {
+                    colors[d] = get_color(i, id_dict)
+                });
+
+        var color = function (d) {
+            return colors[d.id];
+        };
+        parcoords.color(color).render();
+
+    }
+    function get_color(i, id_dict) {
+        if (id_dict[i]) {
+            return id_dict[i];
+        } else {
+            return "#069";
+        }
     }
 
     // Z-Score coloring methods*********************************
@@ -740,9 +753,9 @@
 
     function generate_rules() {
         $('#myModal').modal('toggle');
-        $("#cep_rule_panel-tab").tab('show')
+        $("#cep_rule_panel-tab").tab('show');
         $("#rule-paragraph").empty();
-        $('#loading-gif').show()
+        $('#loading-gif').show();
 
         var selected_ids = [];
         var brushed_data = parcoords.state.brushed;
@@ -764,13 +777,13 @@
             success: function (result) {
                 $('#loading-gif').hide()
                 for (var rule in result.rules) {
-                    var count_line = 'You selected ' + result['count_selected'] + ' events. This rule covers ' +  result['count_covered'] + ' events.'
-                    var recall_line = 'Rule recall - ' + parseFloat(result['recall']).toFixed(2)
-                    var precision_line = 'Rule precision - ' + parseFloat(result['precision']).toFixed(2)
+                    var count_line = 'You selected ' + result['count_selected'] + ' events. This rule covers ' + result['count_covered'] + ' events.'
+                    var recall_line = 'Rule recall - ' + parseFloat(result['recall']).toFixed(2);
+                    var precision_line = 'Rule precision - ' + parseFloat(result['precision']).toFixed(2);
 
-                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FORM EVENT_STREAM_NAME'+ result['window_string'] +'</br>SELECT ' + result['select_string'] + '</br>Having</p>')
+                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FORM EVENT_STREAM_NAME' + result['window_string'] + '</br>SELECT ' + result['select_string'] + '</br>Having</p>')
                     $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules[rule]['rule'] + '</p>')
-                    $("#rule-paragraph").append('<div style="text-align:center" class="panel panel-info"><div class="panel-body">'+ precision_line + '</br>' + recall_line + '</br>' + count_line +'</div> </div>')
+                    $("#rule-paragraph").append('<div style="text-align:center" class="panel panel-info"><div class="panel-body">' + precision_line + '</br>' + recall_line + '</br>' + count_line + '</div> </div>')
                 }
             }
         });
