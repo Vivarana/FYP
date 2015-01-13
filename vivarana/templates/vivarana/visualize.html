@@ -32,6 +32,10 @@
                         <li><a onclick="max('{{ col }}',{{ forloop.counter }}, this)" href="#">Maximum</a></li>
                         <li><a onclick="min('{{ col }}',{{ forloop.counter }}, this)" href="#">Minimum</a></li>
                         <li><a onclick="count('{{ col }}',{{ forloop.counter }}, this)" href="#">Count</a></li>
+                        {% if state_map.time_window_enabled %}
+                            <li><a onclick="anomaly('{{ col }}',{{ forloop.counter }}, this)" href="#">Detect
+                                Anomaly</a></li>
+                        {% endif %}
                     {% endif %}
                     <li><a onclick="removeAxis('{{ col }}',{{ forloop.counter }})" href="#">Remove Axis</a></li>
                     <li><a onclick="flipAxis('{{ col }}',{{ forloop.counter }})" href="#">Flip Axis</a></li>
@@ -45,7 +49,7 @@
     <div class="loading-model">
         <img src="{% static "images/gears.gif" %}" alt="preloader"/>
         </br>
-        <p>Clustering Data. Please wait...</p>
+        <div id="ajax-loader-text">Clustering Data. Please wait...</div>
     </div>
 
     <!-- Container for the dialog that appear on clicking the rule generation button -->
@@ -275,7 +279,7 @@
         if (id_dict[i]) {
             return id_dict[i];
         } else {
-            return "#069";
+            return "#F9FBFC";
         }
     }
 
@@ -606,10 +610,37 @@
 
     }
 
+    function anomaly(col_name, col_number, obj) {
+        $("#ajax-loader-text").html("Detecting anomalities. Please wait...");
+        $(".cover, .loading-model").show();
+
+        var selected_ids = "";
+        var current_data = parcoords.state.data;
+
+        for (var i in current_data) {
+            selected_ids = selected_ids + String(current_data[i]['id']) + ',';
+        }
+        var selected_id_lst = [];
+        for (var i in current_data) {
+            selected_id_lst.push(current_data[i]['id'])
+        }
+
+        $.get('/anomaly/', {selected_ids: selected_ids, anomaly_detect_column: col_name}, function (data) {
+            var j_data = JSON.parse(data);
+            var anom_lst = j_data.anom_lst;
+            var anom_dict = {};
+            for(var i=0; i< anom_lst.length; i+=1){
+                anom_dict[anom_lst[i]] = "#ff0000"
+            }
+            $(".cover, .loading-model").hide();
+            enable_custom_coloring(anom_dict);
+        });
+    }
+
     function aggregate_func(data, selected_id_lst) {
         var j_data = JSON.parse(data);
 
-        for (i = 0; i < selected_id_lst.length; i += 1) {
+        for (var i = 0; i < selected_id_lst.length; i += 1) {
             j_data[i]['id'] = selected_id_lst[i];
         }
 
@@ -642,6 +673,7 @@
 
 
     }
+
 
     function sum(col_name, col_number, obj) {
         perform_aggregation(0, col_name);
@@ -727,6 +759,7 @@
             selected_ids.push(brushed_data[i]['id'])
         }
 
+        $("#ajax-loader-text").html("Clustering Data. Please wait...");
         $(".cover, .loading-model").show();
         $.ajax({
             url: '/clustering/',

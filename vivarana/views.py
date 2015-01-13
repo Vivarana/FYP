@@ -12,6 +12,7 @@ from helper import file_helper
 from helper import aggregate
 from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
+from vivarana.helper.anomaly import detect_anomalies
 from vivarana.helper.pagination import process_pagination
 import vivarana.sunburst_visualization.json_parser as ct
 import vivarana.sunburst_visualization.data_processor as sh
@@ -50,6 +51,8 @@ state_map = {
     CLUSTER_COLUMNS_LST: [],
     CLUSTERING_METHOD: None,
     NUMBER_OF_CLUSTERS: None,
+
+    ANOMALY_DETECT_COLUMN: None,
 
     # stores attribute name as key and (aggregate func, window type, granularity, window size)
     AGGREGATE_FUNCTION_ON_ATTR: {},  # p
@@ -153,6 +156,17 @@ def visualize_next(request):
     return HttpResponse(json_out)
 
 
+def anomaly(request):
+    if request.method == GET:
+        ids = request.GET['selected_ids'][:-1]
+        selected_ids = [int(x) for x in ids.split(",")]
+        state_map[ANOMALY_DETECT_COLUMN] = request.GET[ANOMALY_DETECT_COLUMN].encode('UTF8')
+        anom_lst = detect_anomalies(state_map, current_data_frame, selected_ids)
+
+        json_response = json.dumps({'anom_lst': anom_lst})
+        return HttpResponse(json_response)
+
+
 def aggregator(request):
     global state_map
     if not state_map[WINDOW_TYPE] or state_map[TIME_WINDOW_VALUE] == -1 \
@@ -193,7 +207,6 @@ def aggregator(request):
 
             df = new_data_frame.iloc[selected_ids, :]
             json_out = df.to_json(orient='records')
-            print(state_map)
             return HttpResponse(json_out)
 
 
