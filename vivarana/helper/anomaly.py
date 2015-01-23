@@ -25,7 +25,8 @@ def detect_anomalies(state_map, current_data_frame, selected_ids):
         }
         ''')
     r_f = robjects.r['f']
-    res = r_f(r_df, 0.01, 0.05, 5000)
+    #todo add a popup in webpage to get these data
+    res = r_f(r_df, 0.1, 0.05, 4000)
     anoms = com.convert_robj(res)
 
     anom_lst = list(int(x) for x in anoms['index'])

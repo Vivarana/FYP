@@ -87,7 +87,6 @@ def change_state(request):
     if request.method == POST:
         params = simplejson.loads(request.body, "utf-8")
         state_map[params[PROPERTY_NAME]] = params[PROPERTY_VALUE]
-        print params[PROPERTY_NAME], state_map[params[PROPERTY_NAME]]
         return HttpResponse('success')
 
 
@@ -107,7 +106,6 @@ def home(request):
                 global original_data_frame, current_data_frame
                 original_data_frame = output['dataframe']
                 original_data_frame.columns = file_helper.get_html_friendly_names(original_data_frame.columns)
-                state_map[ALL_ATTRIBUTE_LST] = list(x.encode('UTF8') for x in original_data_frame.columns)
                 current_data_frame = original_data_frame.copy(deep=True)
 
                 request.session['filename'] = input_file.name.encode('UTF8')
@@ -248,23 +246,23 @@ def preprocessor(request):
     if request.method == 'POST':
         vistype = request.POST.get('visualization').encode('UTF8')
         if vistype == PARACOORDS_VIS_TYPE:
-            global state_map
+            global state_map, current_data_frame
             state_map = copy.deepcopy(initial_state_map)
             current_data_frame = original_data_frame.copy(deep=True)
+
             columns = request.POST.getlist('column')
             nav_type = request.POST.get('nav-type')
             sampling_type = request.POST.get('sampling-type')
 
-            global current_data_frame
             cols = [original_data_frame.columns[int(i) - 1] for i in columns]
             update_kept_attribute(state_map, cols)
             current_data_frame = file_helper.remove_columns(columns, original_data_frame)
+            state_map[ALL_ATTRIBUTE_LST] = list(x.encode('UTF8') for x in current_data_frame.columns)
 
             # sampling the data
             if sampling_type != 'none':
                 if sampling_type == 'random':
                     sample_size = int(request.POST.get('sample-size'))
-                    print len(current_data_frame.index), sample_size
                     current_data_frame = current_data_frame.loc[
                         np.random.choice(current_data_frame.index, sample_size, replace=False)]
 

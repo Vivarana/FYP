@@ -1,13 +1,18 @@
-from numpy import *
-from pandas.io import json
-import rpy2.robjects as ro
-import pandas.rpy.common as com
-from rpy2.robjects.packages import importr
-import rule as rule_classes
+import os
 import datetime
 from sklearn.metrics import confusion_matrix
 
+from numpy import *
+from pandas.io import json
+from rpy2.robjects.packages import importr
+import rpy2.robjects as ro
+from rpy2.robjects import pandas2ri
+import rpy2.robjects as robjects
+import pandas.rpy.common as com
+
+import rule as rule_classes
 import vivarana.constants as constants
+
 
 debug = True
 
@@ -220,6 +225,38 @@ def generate(selected_ids, dataframe, state):
         data_types = dataframe.dtypes
         columns = dataframe.columns
         selected_ids = json.loads(selected_ids)
+
+        #todo need to fin a way to remove deep copying twice
+        file_frame = dataframe.copy(deep=True)
+        file_frame[constants.RULEGEN_COLUMN_NAME] = 'NO'
+        file_frame[constants.RULEGEN_COLUMN_NAME][
+            file_frame.index.isin(selected_ids['selected_ids'])] = 'YES'
+        if 'clusterID' in file_frame.columns:
+            file_frame = file_frame.drop('clusterID', 1)
+        if 'Date' in file_frame.columns:
+            file_frame = file_frame.drop('Date', 1)
+        file_path = "media" + os.path.sep + "rule.csv"
+        file_frame.to_csv(file_path, index=False)
+        del file_frame
+        pandas2ri.activate()
+        r_df = ro.r['read.csv'](file_path)
+        robjects.r('''
+            library(rJava)
+            library(RWeka)
+            f<- function(df){
+                rule_set <- JRip(SELECTED_FOR_RULEGEN ~ ., data = df)
+                lst<-as.matrix(scan(text=.jcall(rule_set$classifier, "S", "toString") ,sep="\n", what="") )[ -c(1:2, 6), ,drop=FALSE]
+                lst
+            }
+            ''')
+        r_f = robjects.r['f']
+        res = r_f(r_df)
+        # ru = com.convert_robj(res)
+        # print ru
+        print res
+        del r_df
+
+
 
         temporary_dataframe = dataframe.copy(deep=True)
         temporary_dataframe[constants.RULEGEN_COLUMN_NAME] = 0
