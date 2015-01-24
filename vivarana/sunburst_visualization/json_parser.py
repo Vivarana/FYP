@@ -6,6 +6,9 @@ import vivarana.extensions.log.apachelog as apachelog
 import vivarana.sunburst_visualization.data_processor as sh
 from vivarana.sunburst_visualization.constants import COALESCE_SEPARATOR
 from vivarana.sunburst_visualization.constants import NAME_ATTRIB,SIZE_ATTRIB,ROOT_NAME,CHILDREN_ATTRIB
+import pandas as pd
+import json
+import ipdb
 logger = logging.getLogger(__name__)
 
 # Commented code is needed for testing purposes
@@ -52,6 +55,8 @@ logger = logging.getLogger(__name__)
 
 def build_json_hierarchy(ndarray_data):
     """
+
+    :rtype : object
     Builds json tree from csv: csv format = account-account-product 2009
     :param ndarray_data:
     :return:
@@ -89,11 +94,12 @@ def build_json_hierarchy_log(series_data):
 
     """
     Builds the json hierarchy from the dataframe created by log files
-
     :param series_data: grouped rows with sizes
     :return:            json structure that is used by d3 partition layout
     """
     root = {NAME_ATTRIB: ROOT_NAME, CHILDREN_ATTRIB: []}
+    print root,series_data
+
     for x in range(len(series_data)):
         sequence = series_data.index[x]
         size = series_data[x]
@@ -119,6 +125,12 @@ def build_json_hierarchy_log(series_data):
                 child_node = {NAME_ATTRIB: nodename, SIZE_ATTRIB: size}
                 children.append(child_node)
     return json.dumps(root)
+
+def convert_to_d3_csv_parse_rows_input(series_data):
+    dataframe = pd.DataFrame(series_data,columns = ["amount"])
+    dataframe["total"] = dataframe.index
+    return dataframe.to_json(orient ='values')
+
 
 
 def main():

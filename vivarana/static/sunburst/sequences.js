@@ -49,7 +49,6 @@ var partition = d3.layout.partition()
 //  .children(function children(d){return d.children});
 //.sort(function comparator(a,b){return a.value - b.value });
 
-
 var arc = d3.svg.arc()
     .startAngle(function (d) {
         return d.x;
@@ -77,13 +76,14 @@ function showSunburst(){
     var colorsSet = false;
     initializeBreadcrumbTrail();
     drawLegend();
-    $.get('/uniqueurls/', function (data) {
+    $.get('/unique_strings/', function (data) {
         uniqueValues = data;
         colorsSet = initialzeColors(data);
     });
 
-    $.get('/treedata/', function (data) {
-            json = JSON.parse(data);
+    $.get('/tree_data/', function (data) {
+            var csv_type = JSON.parse(data);
+            json = buildHierarchy(csv_type)
         if(colorsSet){
          createVisualization(json);
         }
@@ -469,7 +469,7 @@ function updateData() {
     // For efficiency, filter nodes to keep only those large enough to see.
     var nodes = partition.nodes(json)
         .filter(function (d) {
-            return (d.dx > 2*Math.PI*percentageSliderValue/100); // 0.005 radians = 0.29 degrees
+            return (d.dx > 2*Math.PI*percentageSliderValue[0]/100 && d.dx < 2*Math.PI*percentageSliderValue[1]/100); // 0.005 radians = 0.29 degrees
         });
 
     // Make the changes
@@ -491,4 +491,53 @@ function updateData() {
 
 
     };
+
+function buildHierarchy(csv) {
+  var root = {"name": "root", "children": []};
+  for (var i = 0; i < csv.length; i++) {
+    var sequence = csv[i][1];
+    var size = +csv[i][0];
+    if (isNaN(size)) { // e.g. if this is a header row
+      continue;
+    }
+    var parts;
+    try{
+        parts = sequence.split("|-|");
+    }
+      catch(e){
+          window.cosole.log(e.message)
+          parts = sequence
+      }
+    window.console.log(parts)
+
+    var currentNode = root;
+    for (var j = 0; j < parts.length; j++) {
+      var children = currentNode["children"];
+      var nodeName = parts[j];
+      var childNode;
+      if (j + 1 < parts.length) {
+   // Not yet at the end of the sequence; move down the tree.
+ 	var foundChild = false;
+ 	for (var k = 0; k < children.length; k++) {
+ 	  if (children[k]["name"] == nodeName) {
+ 	    childNode = children[k];
+ 	    foundChild = true;
+ 	    break;
+ 	  }
+ 	}
+  // If we don't already have a child node for this branch, create it.
+ 	if (!foundChild) {
+ 	  childNode = {"name": nodeName, "children": []};
+ 	  children.push(childNode);
+ 	}
+ 	currentNode = childNode;
+      } else {
+ 	// Reached the end of the sequence; create a leaf node.
+ 	childNode = {"name": nodeName, "size": size};
+ 	children.push(childNode);
+      }
+    }
+  }
+  return root;
+};
 

@@ -12,15 +12,23 @@
     <link rel="stylesheet" href="{% static "css/yamm.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "css/custom.css" %}" type="text/css"/>
 
+    <link rel="stylesheet" href="{% static "css/tokenfield/bootstrap-tokenfield.min.css" %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static "css/tokenfield/tokenfield-typeahead.min.css" %}" type="text/css"/>
+
     <link rel="stylesheet" type="text/css" href="{% static "sunburst/sequences.css" %}">
 
 
-    <script src="{% static "js/jquery-1.7.min.js" %}"></script>
+    <script src="{% static "js/jquery-2.1.1.min.js" %}"></script>
+    <script src="{% static "js/jquery-ui.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
-    <script src="{% static "js/jquery.nouislider.min.js" %}"></script>
+    <script src="{% static "js/jquery.nouislider.all.min.js" %}"></script>
     <script src="{% static "js/snackbar.min.js" %}"></script>
+    <script src="{% static "js/bootstrap-tokenfield.min.js" %}"></script>
+     <script src="{% static "js/typeahead.jquery.min.js" %}"></script>
+    <script src="{% static "js/typeahead.bundle.min.js" %}"></script>
+     <script src="{% static "js/bloodhound.min.js" %}"></script>
 
     <script src="{% static "js/d3.js" %}"></script>
     <script src="{% static "js/underscore.js" %}"></script>
@@ -38,6 +46,17 @@
 </head>
 
 <body>
+<style>
+    .modal
+{
+    overflow: hidden;
+}
+.modal-dialog{
+    margin-right: 0;
+    margin-left: 0;
+}
+
+</style>
 <div class="navbar yamm navbar-default">
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -178,6 +197,11 @@
                                    class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
                             </div>
                         </div>
+                        <div class="row">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-backdrop="false" data-whatever="Filter">
+                            Filter
+                            </button>
+                        </div>
 
                     </div>
 
@@ -204,7 +228,7 @@
             </li>
             <li>
                 <div id="percentage-slider-container">
-                    <div id="percentage-opacity-text" class="slider-text">Minimum Percentage: 0.01%</div>
+                    <div id="percentage-opacity-text" class="slider-text">Percentage Range: 1%</div>
                     <div id="percentage-slider" class="slider slider-material-lightgrey"></div>
                 </div>
             </li>
