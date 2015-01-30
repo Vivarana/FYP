@@ -198,9 +198,9 @@ def parse_rule(rule_list, aggregate_functions):
                 rule_dict[rule_variable] = {'operation': '>',
                                             'operand': num(rule_parameters.split(',')[-1], rule_variable)}
 
-    if debug:
-        print "Rule parsed..."
-        print rule_dict
+    # if debug:
+    #     print "Rule parsed..."
+    #     print rule_dict
 
     rule_set = []
 
@@ -226,8 +226,8 @@ def generate(selected_ids, dataframe, state):
         temporary_dataframe[constants.RULEGEN_COLUMN_NAME][
             temporary_dataframe.index.isin(selected_ids['selected_ids'])] = 1
 
-        if 'clusterID' in temporary_dataframe.columns:
-            temporary_dataframe = temporary_dataframe.drop('clusterID', 1)
+        # if 'clusterID' in temporary_dataframe.columns:
+        #     temporary_dataframe = temporary_dataframe.drop('clusterID', 1)
 
         selected_columns = ' + '.join(selected_ids['checked_columns'])
 
@@ -240,13 +240,18 @@ def generate(selected_ids, dataframe, state):
 
         ro.r.assign('temp', temp)
         r_get_rules_function = ro.globalenv['rules']
-
         rule_set = com.convert_robj(r_get_rules_function(temp))
+
+        if len(rule_set) == 0:
+            return False, None, None, None, None, None, None, None, None
 
         temp_rule_set = []
 
         if debug:
+            print "---------------------------------------------------------------------------------"
+            print "Decision Tree"
             print temp
+            print "---------------------------------------------------------------------------------"
 
         for index, row in rule_set.iterrows():
             temp_rule = parse_rule(row['rulelist'], state[constants.AGGREGATE_FUNCTION_ON_ATTR])
@@ -260,32 +265,42 @@ def generate(selected_ids, dataframe, state):
         temporary_dataframe['FILTERED_BY_RULE'][
             temporary_dataframe.index.isin(rule_applied_index)] = 1
 
+        print list(temporary_dataframe[(temporary_dataframe['FILTERED_BY_RULE'] == 0) & (temporary_dataframe[constants.RULEGEN_COLUMN_NAME] == 1)].index)
+
         confusion_mat = confusion_matrix(temporary_dataframe['FILTERED_BY_RULE'], temporary_dataframe[constants.RULEGEN_COLUMN_NAME])
+
         precision = get_precision(confusion_mat)
         recall = get_recall(confusion_mat)
 
         select_string = get_aggregate_string(state[constants.AGGREGATE_FUNCTION_ON_ATTR], columns)
         window_string = get_window_string(state)
 
-        if debug:
-            print constraint_set.to_string()
-            print len(dataframe), len(temporary_dataframe), len(constraint_set.apply_constraint(temporary_dataframe).index)
-            print precision, recall
-            print confusion_mat
 
-        return success, rules, len(selected_ids['selected_ids']), len(rule_applied_index), precision, recall, select_string, window_string
+        if debug:
+            print "Rule Created - "
+            print constraint_set.to_string()
+            print "---------------------------------------------------------------------------------"
+            print "Size of the Dataset = " + str(len(dataframe))
+            print "Number of events selected for rule generation = " + str(len(temporary_dataframe))
+            print "Number of events filtered through the rule = " + str(len(constraint_set.apply_constraint(temporary_dataframe).index))
+            print "---------------------------------------------------------------------------------"
+            print "Confusion Matrix - "
+            print confusion_mat
+            print "Precision = " + str(precision) + ", recall = " + str(recall)
+
+        return success, rules, len(selected_ids['selected_ids']), len(rule_applied_index), precision, recall, select_string, window_string, list(temporary_dataframe[(temporary_dataframe['FILTERED_BY_RULE'] == 1) & (temporary_dataframe[constants.RULEGEN_COLUMN_NAME] == 0)].index)
 
     except Exception, e:
         print e
-        return False, None, None, None, None, None, None
+        return False, None, None, None, None, None, None, None, None
 
 
 def get_precision(conf_matrix):
-    return (conf_matrix[1][1])/float(conf_matrix[0][1] + conf_matrix[1][1])
+    return (conf_matrix[1][1])/float(conf_matrix[1][0] + conf_matrix[1][1])
 
 
 def get_recall(conf_matrix):
-    return (conf_matrix[1][1])/float(conf_matrix[1][1]+conf_matrix[1][0])
+    return (conf_matrix[1][1])/float(conf_matrix[0][1]+conf_matrix[1][1])
 
 
 def num(s, column):

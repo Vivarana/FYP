@@ -12,6 +12,7 @@ from helper import file_helper
 from helper import aggregate
 from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
+from vivarana.helper.anomaly import detect_anomalies
 from vivarana.helper.pagination import process_pagination
 import vivarana.sunburst_visualization.json_parser as ct
 import vivarana.sunburst_visualization.data_processor as sh
@@ -50,6 +51,8 @@ state_map = {
     CLUSTER_COLUMNS_LST: [],
     CLUSTERING_METHOD: None,
     NUMBER_OF_CLUSTERS: None,
+
+    ANOMALY_DETECT_COLUMN: None,
 
     # stores attribute name as key and (aggregate func, window type, granularity, window size)
     AGGREGATE_FUNCTION_ON_ATTR: {},  # p
@@ -153,6 +156,17 @@ def visualize_next(request):
     return HttpResponse(json_out)
 
 
+def anomaly(request):
+    if request.method == GET:
+        ids = request.GET['selected_ids'][:-1]
+        selected_ids = [int(x) for x in ids.split(",")]
+        state_map[ANOMALY_DETECT_COLUMN] = request.GET[ANOMALY_DETECT_COLUMN].encode('UTF8')
+        anom_lst = detect_anomalies(state_map, current_data_frame, selected_ids)
+
+        json_response = json.dumps({'anom_lst': anom_lst})
+        return HttpResponse(json_response)
+
+
 def aggregator(request):
     global state_map
     if not state_map[WINDOW_TYPE] or state_map[TIME_WINDOW_VALUE] == -1 \
@@ -193,7 +207,6 @@ def aggregator(request):
 
             df = new_data_frame.iloc[selected_ids, :]
             json_out = df.to_json(orient='records')
-            print(state_map)
             return HttpResponse(json_out)
 
 
@@ -235,6 +248,9 @@ def preprocessor(request):
     if request.method == 'POST':
         vistype = request.POST.get('visualization').encode('UTF8')
         if vistype == PARACOORDS_VIS_TYPE:
+            global state_map
+            state_map = copy.deepcopy(initial_state_map)
+            current_data_frame = original_data_frame.copy(deep=True)
             columns = request.POST.getlist('column')
             nav_type = request.POST.get('nav-type')
             sampling_type = request.POST.get('sampling-type')
@@ -283,9 +299,11 @@ def preprocessor(request):
 def rule_gen(request):
     if request.method == 'POST':
         rule_list = rule_generator.generate(request.body, current_data_frame, state_map)
+        json_out = rule_list[8]  # to_json(orient='records')
+
         json_response = json.dumps({'success': rule_list[0], 'rules': rule_list[1], 'count_selected': rule_list[2],
-                                    'count_covered': rule_list[3], 'precision': rule_list[5], 'recall': rule_list[4],
-                                    'select_string': rule_list[6], 'window_string': rule_list[7]})
+                                    'count_covered': rule_list[3], 'precision': rule_list[4], 'recall': rule_list[5],
+                                    'select_string': rule_list[6], 'window_string': rule_list[7], 'filtered': json_out})
         return HttpResponse(json_response)
     else:
         json_response = "{'message' : done!}"

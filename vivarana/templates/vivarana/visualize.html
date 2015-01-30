@@ -16,6 +16,10 @@
                         <li><a onclick="max('{{ col }}',{{ forloop.counter }}, this)" href="#">Maximum</a></li>
                         <li><a onclick="min('{{ col }}',{{ forloop.counter }}, this)" href="#">Minimum</a></li>
                         <li><a onclick="count('{{ col }}',{{ forloop.counter }}, this)" href="#">Count</a></li>
+                        {% if state_map.time_window_enabled %}
+                            <li><a onclick="anomaly('{{ col }}',{{ forloop.counter }}, this)" href="#">Detect
+                                Anomaly</a></li>
+                        {% endif %}
                     {% endif %}
                     <li><a onclick="removeAxis('{{ col }}',{{ forloop.counter }})" href="#">Remove Axis</a></li>
                     <li><a onclick="flipAxis('{{ col }}',{{ forloop.counter }})" href="#">Flip Axis</a></li>
@@ -29,7 +33,7 @@
     <div class="loading-model">
         <img src="{% static "images/gears.gif" %}" alt="preloader"/>
         </br>
-        <p>Clustering Data. Please wait...</p>
+        <div id="ajax-loader-text">Clustering Data. Please wait...</div>
     </div>
 
     <!-- Container for the dialog that appear on clicking the rule generation button -->
@@ -75,20 +79,6 @@
                     <h4 class="modal-title" id="clusterModalLabel">Select attributes to cluster</h4>
                 </div>
                 <div class="modal-body" id="cluster_model_body">
-{#                    <form action="" id="column_select_for_cluster" onsubmit="return false;">#}
-{#                        <div id="cluster_model_body"></div>#}
-{#                        {% csrf_token %}#}
-{#                        {% for col,type in columns.items %}#}
-{#                            {% if col != "clusterID" %}#}
-{#                                <div class="checkbox">#}
-{#                                    <label>#}
-{#                                        <input type="checkbox" name="column_for_cluster" value="{{ col }}"#}
-{#                                               checked> {{ col }}#}
-{#                                    </label>#}
-{#                                </div>#}
-{#                            {% endif %}#}
-{#                        {% endfor %}#}
-{#                    </form>#}
                 </div>
                 <div class="modal-footer">
                     <button type="button" onclick="continueClustering();" class="btn btn-primary">Continue</button>
@@ -121,10 +111,11 @@
                         style="padding-top: 4px; height: 29px;" href="#home" id="home-tab"
                         role="tab" data-toggle="tab"
                         aria-controls="home" aria-expanded="false">Brushes</a></li>
-                <li role="presentation" class="nav-head"><a style="padding-top: 4px; height: 29px;" href="#cep_rule_panel"
-                                                    role="tab" id="cep_rule_panel-tab"
-                                                    data-toggle="tab" aria-controls="cep_rule_panel"
-                                                    aria-expanded="true">CEP Rule</a></li>
+                <li role="presentation" class="nav-head"><a style="padding-top: 4px; height: 29px;"
+                                                            href="#cep_rule_panel"
+                                                            role="tab" id="cep_rule_panel-tab"
+                                                            data-toggle="tab" aria-controls="cep_rule_panel"
+                                                            aria-expanded="true">CEP Rule</a></li>
             </ul>
             <div style="border-left: 2px solid #2C3E50; height: 200px" id="myTabContent" class="tab-content">
                 <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
@@ -142,7 +133,8 @@
                         </table>
                     </div>
                 </div>
-                <div style="padding-left: 5px" role="tabpanel" class="tab-pane fade" id="cep_rule_panel" aria-labelledby="cep_rule_panel-tab">
+                <div style="padding-left: 5px" role="tabpanel" class="tab-pane fade" id="cep_rule_panel"
+                     aria-labelledby="cep_rule_panel-tab">
                     <p id="rule-paragraph">No rules have been created yet. Please select the events you are interested
                         in and press "Generate Rule" button on the toolbar</p>
 
@@ -249,6 +241,31 @@
             return colors[d.clusterID];
         };
         parcoords.color(color).render();
+    }
+
+    // custom data coloring method. id_dict should have the ids of the rows which should be
+    // colored differently as keys and value should the color for that row in hex e.g: "#ff0000".
+    function enable_custom_coloring(id_dict) {
+        var colors = {};
+
+        _(data).chain()
+                .pluck('id')
+                .each(function (d, i) {
+                    colors[d] = get_color(i, id_dict)
+                });
+
+        var color = function (d) {
+            return colors[d.id];
+        };
+        parcoords.color(color).render();
+
+    }
+    function get_color(i, id_dict) {
+        if (id_dict[i]) {
+            return id_dict[i];
+        } else {
+            return "#F9FBFC";
+        }
     }
 
     // Z-Score coloring methods*********************************
@@ -579,10 +596,37 @@
 
     }
 
+    function anomaly(col_name, col_number, obj) {
+        $("#ajax-loader-text").html("Detecting anomalities. Please wait...");
+        $(".cover, .loading-model").show();
+
+        var selected_ids = "";
+        var current_data = parcoords.state.data;
+
+        for (var i in current_data) {
+            selected_ids = selected_ids + String(current_data[i]['id']) + ',';
+        }
+        var selected_id_lst = [];
+        for (var i in current_data) {
+            selected_id_lst.push(current_data[i]['id'])
+        }
+
+        $.get('/anomaly/', {selected_ids: selected_ids, anomaly_detect_column: col_name}, function (data) {
+            var j_data = JSON.parse(data);
+            var anom_lst = j_data.anom_lst;
+            var anom_dict = {};
+            for(var i=0; i< anom_lst.length; i+=1){
+                anom_dict[anom_lst[i]] = "#ff0000"
+            }
+            $(".cover, .loading-model").hide();
+            enable_custom_coloring(anom_dict);
+        });
+    }
+
     function aggregate_func(data, selected_id_lst, attribute_name, aggregate_function) {
         var j_data = JSON.parse(data);
 
-        for (i = 0; i < selected_id_lst.length; i += 1) {
+        for (var i = 0; i < selected_id_lst.length; i += 1) {
             j_data[i]['id'] = selected_id_lst[i];
         }
 
@@ -622,6 +666,7 @@
 
 
     }
+
 
     function sum(col_name, col_number, obj) {
         perform_aggregation(0, col_name);
@@ -710,6 +755,7 @@
             selected_ids.push(brushed_data[i]['id'])
         }
 
+        $("#ajax-loader-text").html("Clustering Data. Please wait...");
         $(".cover, .loading-model").show();
         $.ajax({
             url: '/clustering/',
@@ -736,9 +782,9 @@
 
     function generate_rules() {
         $('#myModal').modal('toggle');
-        $("#cep_rule_panel-tab").tab('show')
+        $("#cep_rule_panel-tab").tab('show');
         $("#rule-paragraph").empty();
-        $('#loading-gif').show()
+        $('#loading-gif').show();
 
         var selected_ids = [];
         var brushed_data = parcoords.state.brushed;
@@ -751,6 +797,13 @@
             selected_ids.push(brushed_data[i]['id'])
         }
 
+
+        if (selected_ids.length == 0){
+            $('#loading-gif').hide()
+            $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Please select the set of event to generate CEP rules for</p>')
+            return
+        }
+
         $.ajax({
             url: '/rule_gen/',
             type: 'POST',
@@ -759,14 +812,40 @@
             dataType: 'json',
             success: function (result) {
                 $('#loading-gif').hide()
-                for (var rule in result.rules) {
-                    var count_line = 'You selected ' + result['count_selected'] + ' events. This rule covers ' +  result['count_covered'] + ' events.'
-                    var recall_line = 'Rule recall - ' + parseFloat(result['recall']).toFixed(2)
-                    var precision_line = 'Rule precision - ' + parseFloat(result['precision']).toFixed(2)
 
-                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FORM EVENT_STREAM_NAME'+ result['window_string'] +'</br>SELECT ' + result['select_string'] + '</br>Having</p>')
-                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules[rule]['rule'] + '</p>')
-                    $("#rule-paragraph").append('<div style="text-align:center" class="panel panel-info"><div class="panel-body">'+ precision_line + '</br>' + recall_line + '</br>' + count_line +'</div> </div>')
+                if (result['success']==true) {
+
+                    var false_positive_indexes = result['filtered']
+                    console.log(false_positive_indexes)
+
+                    var false_positives = []
+
+                    for (var index in false_positive_indexes){
+                        false_positives.push(data[false_positive_indexes[index]])
+                    }
+
+                    console.log(false_positives)
+
+                    var current_color = parcoords.state.color
+                    parcoords.color('#FF0000')
+                    parcoords.highlight(false_positives)
+                    parcoords.color(current_color)
+
+
+                    for (var rule in result.rules) {
+                        var count_line = 'You selected ' + result['count_selected'] + ' events. This rule covers ' + result['count_covered'] + ' events.'
+                        var recall_line = 'Rule recall - ' + parseFloat(result['recall']).toFixed(7);
+                        var precision_line = 'Rule precision - ' + parseFloat(result['precision']).toFixed(7);
+
+                        $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FROM EVENT_STREAM_NAME' + result['window_string'] + '</br>SELECT ' + result['select_string'] + '</br>Having</p>')
+                        $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules[rule]['rule'] + '</p>')
+                        $("#rule-paragraph").append('<div style="text-align:center" class="panel panel-info"><div class="panel-body">' + precision_line + '</br>' + recall_line + '</br>' + count_line + '</div> </div>')
+                    }
+                }
+                else {
+                    $('#loading-gif').hide()
+                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Unable to generate rules. Please try again.</p>')
+                    return
                 }
             }
         });

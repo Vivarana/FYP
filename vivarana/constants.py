@@ -64,6 +64,9 @@ NUMBER_PAGES = 'number_pages'
 
 CLUSTER_COLUMNS_LST = 'cluster_columns_lst'
 
+ANOMALY_DETECT_COLUMN = 'anomaly_detect_column'
+ANOMALY_DICT = 'anomaly_dict'
+
 AGGREGATE_FUNCTION_ON_ATTR = 'aggregate_function_on_attribute'
 ALL_ATTRIBUTE_LST = 'all_attribute_lst'
 REMOVED_ATTRIBUTE_LST = 'removed_attribute_lst'

@@ -18,7 +18,7 @@ def get_session_info(dataframe, group_by, coalesce):
    paths = dataframe.groupby(group_by)[coalesce].apply(lambda x: "%s" % COALESCE_SEPARATOR.join(x)) # .apply(lambda x: x.values)
    return paths.value_counts()
 
-def get_unique_urls(dataframe,coalesce):
+def get_unique_urls(dataframe, coalesce):
     urls = dataframe[coalesce].fillna('Null')
     uniqueurls = pd.Series(urls.values.ravel()).unique()
     return uniqueurls.tolist()
@@ -37,6 +37,8 @@ def get_sessions_data(frame,group_by,coalesce):
     paths = dataframe.groupby(group_by)[coalesce].apply(lambda x: "%s" % COALESCE_SEPARATOR.join(x))#"%s" % COALESCE_SEPARATOR.join(x)) # .apply(lambda x: x.values)
     ## truncate sequences longer than limit add end tag for shorter sequences
     df = pd.DataFrame(paths)
+    df.columns = [coalesce]
+
     df[SEQ_LENGTH_NAME] = df[coalesce].apply(lambda x: len(x.split(COALESCE_SEPARATOR)))
     df[coalesce] = df.apply(lambda x: x[0]+COALESCE_SEPARATOR+SEQ_END_TAG if x[1]<SEQ_LIMIT else COALESCE_SEPARATOR.join(x[0].split(COALESCE_SEPARATOR)[:SEQ_LIMIT]), axis=1)
     #get count of unique sequences
