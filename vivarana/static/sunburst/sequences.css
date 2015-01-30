@@ -9,18 +9,12 @@ body {
     float: left;
 }
 
-#subchart {
-    float: left;
-    position: relative;
-}
-
 #sidebar {
     float: right;
     width: 100px;
 }
 
 #sequence {
-    /*width: 600px;*/
     height: 70px;
     position: fixed;
 }
@@ -35,7 +29,8 @@ body {
 }
 
 #chart {
-    position: relative;
+    float: left;
+    top: 70px;
 }
 
 #chart path {
@@ -43,6 +38,29 @@ body {
 }
 
 #explanation {
+    position: absolute;
+    top: 370px;
+    left: 260px;
+    width: 140px;
+    text-align: center;
+    color: #666;
+    z-index: 250;
+    transform: None;
+}
+
+#percentage {
+    font-size: 2.5em;
+}
+#chart2 {
+    float: right;
+     top: 70px;
+}
+
+#chart2 path {
+    stroke: #fff;
+}
+
+#explanation2 {
     position: absolute;
     top: 260px;
     left: 305px;
@@ -53,7 +71,7 @@ body {
     transform: None;
 }
 
-#percentage {
+#percentage2 {
     font-size: 2.5em;
 }
 #percentage-slider{

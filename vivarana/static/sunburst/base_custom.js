@@ -3,15 +3,11 @@ var percentageSliderValue = 0.01;
 $(document).ready(function () {
     $.material.init();
     $("#percentage-slider").noUiSlider({
-        start: [ 1, 100],
-	    connect: true,
+        start: [10],
+        step: 10,
 	    range: {
 		'min': [0],
-		'10%': [0.25],
-		'50%': [1],
-        '70%': [5],
-        '90%': [10],
-		'max': [20]
+		'max': [100]
 	}
     });
 

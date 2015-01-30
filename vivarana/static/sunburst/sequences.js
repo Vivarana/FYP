@@ -1,8 +1,8 @@
 var json;
 var uniqueValues;
 // Dimensions of sunburst.
-var width = $(window).width();
-var height = $(window).height();
+var width = 1300/2;
+var height = 700;
 //window.alert(width+","+height);
 var seq_height = 70;
 var radius = Math.min(width, height-seq_height) / 2;
@@ -33,12 +33,18 @@ var redColorList = ["#000000","#000080","#0000FF","#008000","#008080","#00FF00",
 // Total size of all segments; we set this later, after loading the data.
 var totalSize = 0;
 
+var zoom = d3.behavior.zoom()
+    .scaleExtent([1, 10])
+    .translate([width/2,height/2])
+    .on("zoom", zoomed);
+
 var vis = d3.select("#chart").append("svg:svg")
     .attr("width", width)
     .attr("height", height)
     .append("svg:g")
     .attr("id", "container")
-    .attr("transform", "translate(" + 375 + "," + 300 + ")");
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+    .call(zoom);
 
 
 var partition = d3.layout.partition()
@@ -57,10 +63,10 @@ var arc = d3.svg.arc()
         return d.x + d.dx;
     })
     .innerRadius(function (d) {
-        return Math.sqrt(d.y);
+        return  Math.sqrt(d.y)*4;
     })
     .outerRadius(function (d) {
-        return Math.sqrt(d.y + d.dy);
+        return Math.sqrt(d.y + d.dy)*4;
     });
 
 var tip = d3.tip()
@@ -72,12 +78,17 @@ var tip = d3.tip()
 
 vis.call(tip);
 
+
+function zoomed() {
+  vis.attr("transform",  "translate(" + d3.event.translate+")scale(" + d3.event.scale + ")");
+}
+
 function showSunburst(){
     var colorsSet = false;
     initializeBreadcrumbTrail();
     drawLegend();
     $.get('/unique_strings/', function (data) {
-        uniqueValues = data;
+        uniqueValues =  JSON.parse(data);
         colorsSet = initialzeColors(data);
     });
 
@@ -103,15 +114,15 @@ function createVisualization(json) {
         .attr("r", radius)
         .style("opacity", 0)
         .on("mouseenter",function(){
-            vis.attr("transform", "translate(" + 375 + "," + 300 + ")");
-            subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")scale(" + 1 / 2 + ")");
+           // vis.attr("transform", "translate(" + 375 + "," + 300 + ")");
+            //subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")scale(" + 1 / 2 + ")");
         d3.select("#explanation").style("transform", "None");})
         .on("mouseleave",mouseleave());
 
     // For efficiency, filter nodes to keep only those large enough to see.
     var nodes = partition.nodes(json)
         .filter(function (d) {
-            return (d.dx > 0.005); // 0.005 radians = 0.29 degrees
+            return (d.depth< 10 && d.dx > 0.005); // 0.005 radians = 0.29 degrees
         });
 
     //   alert(nodes[7].children);
@@ -226,7 +237,7 @@ function getAncestors(node) {
 function initializeBreadcrumbTrail() {
     // Add the svg area.
     var trail = d3.select("#sequence").append("svg:svg")
-        .attr("width", width)
+        .attr("width", $(window).width())
         .attr("height", 50)
         .attr("id", "trail");
     // defs to clip path of the text within trail polygon
@@ -462,19 +473,20 @@ function initialzeColors(data) {
     return true;
 }
 function updateData() {
+     d3.select("#container").selectAll("*").remove();
 
     // Select the section we want to apply our changes to
-    var svg = d3.select("#container").transition();
+    var svg = d3.select("#container");//.transition();
 
     // For efficiency, filter nodes to keep only those large enough to see.
     var nodes = partition.nodes(json)
         .filter(function (d) {
-            return (d.dx > 2*Math.PI*percentageSliderValue[0]/100 && d.dx < 2*Math.PI*percentageSliderValue[1]/100); // 0.005 radians = 0.29 degrees
+            return (d.depth <percentageSliderValue); // 0.005 radians = 0.29 degrees
         });
 
     // Make the changes
         svg.selectAll("path").remove();
-        d3.select("#container").selectAll("path")
+        d3.select("#container").datum(json).selectAll("path")
             .data(nodes)
         .enter().append("svg:path")
         .attr("display", function (d) {
@@ -488,7 +500,6 @@ function updateData() {
         .style("opacity", 1)
         .on("mouseover", mouseover)
         .on("click", mouseclick);
-
 
     };
 
@@ -508,7 +519,6 @@ function buildHierarchy(csv) {
           window.cosole.log(e.message)
           parts = sequence
       }
-    window.console.log(parts)
 
     var currentNode = root;
     for (var j = 0; j < parts.length; j++) {
@@ -519,7 +529,7 @@ function buildHierarchy(csv) {
    // Not yet at the end of the sequence; move down the tree.
  	var foundChild = false;
  	for (var k = 0; k < children.length; k++) {
- 	  if (children[k]["name"] == nodeName) {
+ 	  if (children[k]["name"] == nodeName)  {
  	    childNode = children[k];
  	    foundChild = true;
  	    break;
