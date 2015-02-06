@@ -1,14 +1,13 @@
-/**
- * Created by Developer on 11/15/2014.
- */
-var subwidth =  width - 2*radius;
+var subwidth =  width;
 var subheight = height;
-var subradius = Math.min(subwidth, subheight) / 2;
+var subradius =  Math.min(subwidth, subheight-seq_height) / 2;
 
-var subvis = d3.select("svg")
+var subvis = d3.select("#chart2").append("svg:svg")
+    .attr("width", width)
+    .attr("height", height)
     .append("sub:g")
     .attr("id", "subcontainer")
-    .attr("transform", "translate(" + 850 + "," + subheight / 2 + ")scale(" + 1 / 2 + ")")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 1 / 2 + ")")
     .on("mouseover", subchartmouseover)
     .on("mouseleave",mouseleave);
 var subpartition = d3.layout.partition()
@@ -27,10 +26,10 @@ var subarc = d3.svg.arc()
         return d.x + d.dx;
     })
     .innerRadius(function (d) {
-        return Math.sqrt(d.y);
+        return  Math.sqrt(d.y+40)*4;
     })
     .outerRadius(function (d) {
-        return Math.sqrt(d.y + d.dy);
+        return Math.sqrt(d.y + d.dy+40)*4;
     });
 
 
@@ -42,10 +41,11 @@ function createSubchart(node) {
         .attr("r", subradius)
         .style("opacity", 0);
 
-    var subnodes = partition.nodes(node);
-    //.filter(function(d) {
-    //    return (d.dx > 0.005); // 0.005 radians = 0.29 degrees
-    //});
+    var subnodes = partition.nodes(node); // add depth
+   // .filter(function(d) {
+   //     return (d.depth < 20+node.depth); // 0.005 radians = 0.29 degrees
+   // });
+    //subnodes = partition.nodes(subnodes.data);
 
     var subpath = subvis.datum(node).selectAll("path")
         .data(subnodes)
@@ -53,7 +53,7 @@ function createSubchart(node) {
         .attr("display", function (d) {
             return d.depth ? null : "none";
         })
-        .attr("d", arc)
+        .attr("d", subarc)
         .attr("fill-rule", "evenodd")
         .style("fill", function (d) {
             return colors[d.name];
@@ -65,7 +65,7 @@ function createSubchart(node) {
 
 function subchartmouseover() {
 
-    subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")");
-    vis.attr("transform", "translate(" + 375 + "," + 300 + ")scale(" + 1 / 2 + ")");
-    d3.select("#explanation").style("transform", "translate(475px)");
+    //subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")");
+    //vis.attr("transform", "scale(" + 1 / 2 + ")");
+    //d3.select("#explanation").style("transform", "translate(675px)");
 };

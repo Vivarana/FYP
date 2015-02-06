@@ -1,5 +1,4 @@
 import math
-import json
 import logging
 import simplejson
 import copy
@@ -14,8 +13,7 @@ from rulegen import cart_based_rule_generator as rule_generator
 from helper.cluster import *
 from vivarana.helper.anomaly import detect_anomalies
 from vivarana.helper.pagination import process_pagination
-import vivarana.sunburst_visualization.json_parser as ct
-import vivarana.sunburst_visualization.data_processor as sh
+import vivarana.sunburst_visualization.sunburst_views as sun_views
 from vivarana.sunburst_visualization.constants import GROUP_BY, COALESCE
 from vivarana.helper.state_info import *
 
@@ -87,7 +85,6 @@ def change_state(request):
     if request.method == POST:
         params = simplejson.loads(request.body, "utf-8")
         state_map[params[PROPERTY_NAME]] = params[PROPERTY_VALUE]
-        print params[PROPERTY_NAME], state_map[params[PROPERTY_NAME]]
         return HttpResponse('success')
 
 
@@ -107,7 +104,6 @@ def home(request):
                 global original_data_frame, current_data_frame
                 original_data_frame = output['dataframe']
                 original_data_frame.columns = file_helper.get_html_friendly_names(original_data_frame.columns)
-                state_map[ALL_ATTRIBUTE_LST] = list(x.encode('UTF8') for x in original_data_frame.columns)
                 current_data_frame = original_data_frame.copy(deep=True)
 
                 request.session['filename'] = input_file.name.encode('UTF8')
@@ -248,23 +244,25 @@ def preprocessor(request):
     if request.method == 'POST':
         vistype = request.POST.get('visualization').encode('UTF8')
         if vistype == PARACOORDS_VIS_TYPE:
-            global state_map
+
+            global state_map, current_data_frame
+
             state_map = copy.deepcopy(initial_state_map)
             current_data_frame = original_data_frame.copy(deep=True)
+
             columns = request.POST.getlist('column')
             nav_type = request.POST.get('nav-type')
             sampling_type = request.POST.get('sampling-type')
 
-            global current_data_frame
             cols = [original_data_frame.columns[int(i) - 1] for i in columns]
             update_kept_attribute(state_map, cols)
             current_data_frame = file_helper.remove_columns(columns, original_data_frame)
+            state_map[ALL_ATTRIBUTE_LST] = list(x.encode('UTF8') for x in current_data_frame.columns)
 
             # sampling the data
             if sampling_type != 'none':
                 if sampling_type == 'random':
                     sample_size = int(request.POST.get('sample-size'))
-                    print len(current_data_frame.index), sample_size
                     current_data_frame = current_data_frame.loc[
                         np.random.choice(current_data_frame.index, sample_size, replace=False)]
 
@@ -344,20 +342,16 @@ def sunburst(request):
 
 
 def get_tree_data(request):
-    if len(current_data_frame.columns) == 2:  # todo get CSV intelligently
-        json_tree = ct.build_json_hierarchy(current_data_frame.values)
-    else:
-        json_tree = ct.build_json_hierarchy_log(
-            sh.get_sessions_data(current_data_frame, grouping_column, grouped_column))
-    return HttpResponse(json_tree)
+    sun_views.initialize_database(current_data_frame,grouping_column,grouped_column)
+    return HttpResponse(sun_views.give_tree_data_structure(current_data_frame,grouped_column))
 
 
-def get_unique_urls(request):
-    return HttpResponse(json.dumps(sh.get_unique_urls(current_data_frame, grouped_column)))
+def get_unique_strings(request):
+    return HttpResponse(sun_views.give_unique_coalesce_strings(current_data_frame,grouped_column))
 
 
-def get_session_sequence(request):
-    return HttpResponse(sh.get_session_info(current_data_frame, grouping_column, grouped_column))
+#def get_session_sequence(request):
+#    return HttpResponse(sun_dp.get_session_info(current_data_frame, grouping_column, grouped_column))
 
 
 

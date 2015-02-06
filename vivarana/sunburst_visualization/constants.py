@@ -15,3 +15,6 @@ COALESCE_SEPARATOR = "|-|"
 SEQ_LENGTH_NAME = "seq_len"
 SEQ_LIMIT = 5
 SEQ_END_TAG = "end"
+
+GROUP_BY_COLUMN = "host_ip"
+GROUPED_COLUMN = "url"

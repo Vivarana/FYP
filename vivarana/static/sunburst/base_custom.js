@@ -3,17 +3,12 @@ var percentageSliderValue = 0.01;
 $(document).ready(function () {
     $.material.init();
     $("#percentage-slider").noUiSlider({
-        start: [ 0.1 ],
-        connect: "lower",
-        step: 0.01,
-	range: {
-        'min': [0 ],
-            '20%': [0.5],
-            '50%': [1],
-            '70%': [5],
-            '90%': [10],
-            'max': [20]
-    }
+        start: [10],
+        step: 10,
+	    range: {
+		'min': [0],
+		'max': [100]
+	}
     });
 
     $("#curve-slider").noUiSlider({
