@@ -19,7 +19,7 @@
 
     <style>
         .fileinput-button, #alert, #progress.bar {
-            width: 300px;
+            width: 400px;
         }
 
         .fileinput-button input.upload {
@@ -98,6 +98,20 @@
 
 
                 </div>
+
+                <form style="display: none; margin-top: 10px" onsubmit="set_log_format(); return false;" class='form' id='log_format_form'>
+                    <div class="form-group">
+{#                        <label for="log_format_input">#}
+                            <p>There was an error when parsing the log file. Following format failed,</br>
+                            <span id="format_string"></span></br>
+                            Please enter the correct log format string</p>
+{#                        </label>#}
+                        <input type="text" class="form-control" id="log_format_input" placeholder='ex: %h %l %u %t \"%r\" %>s %b' required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </form>
+
+
             </div>
         </div>
     </div>
@@ -150,16 +164,44 @@
                     }, 1000);
                 }
                 else {
-                    $("#progress").after('<div id="alert" class="alert alert-warning" role="alert">' + data.result['error'] + '</div>')
+                    if (data.result.error.type == 'APACHE_LOG_PARSE_ERROR' ){
+                        $('#log_format_form').show()
+                        $('#format_string').html(data.result.error.format)
+                    }
+                    else
+                        $("#progress").after('<div id="alert" class="alert alert-warning" role="alert">' + data.result['error'] + '</div>')
                 }
 
             },
             progressall: function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
-                $('#progress .bar').css('width', 3.0 * progress);
+                $('#progress .bar').css('width', 4.0 * progress);
             }
         });
     });
+
+    function set_log_format() {
+        $.ajax({
+            url: '/apache_log_format/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({"format": $('#log_format_input').val()}),
+            dataType: 'json',
+            success: function (result) {
+                console.log(result)
+                if (result.success == true) {
+                    $("#progress").after('<div id="alert" class="alert alert-success" role="alert">' + 'Succefully Parsed.</div>')
+                    setTimeout(function () {
+                        window.location.replace("/preprocessor");
+                    }, 1000);
+                }
+                else{
+                    $('#format_string').html($('#log_format_input').val())
+                    $('#log_format_input').val('')
+                }
+            }
+        });
+    }
 </script>
 
 
