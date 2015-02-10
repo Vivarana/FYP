@@ -3,22 +3,6 @@
 {% block title %}Visualization of Data{% endblock %}
 {% block body_block %}
 
-    <style>
-        .nav-head:link {
-            color: #FF0000;
-        }
-
-        /* visited link */
-        .nav-head:visited {
-            color: #00FF00;
-        }
-
-        /* mouse over link */
-        .nav-head:hover {
-            color: #FF00FF;
-        }
-    </style>
-
     <!-- Divs for the drop down menus -->
     {% autoescape off %}
         {% for col,type in columns.items %}
@@ -173,6 +157,7 @@
     var new_grid_data;
     var datastack = [];         // stores data history (for undo operation)
     var data = [];
+    var aggregates = new Array();
 
     function drawData(new_data) {
         data = new_data;
@@ -451,6 +436,7 @@
                 .alpha({{ state_map.alpha_opacity }})
                 .mode("queue") // progressive rendering
                 .height(550)
+                .aggregates(aggregates)
                 .types(data_types)
                 .color('#2980b9')
                 .margin({
@@ -637,12 +623,19 @@
         });
     }
 
-    function aggregate_func(data, selected_id_lst) {
+    function aggregate_func(data, selected_id_lst, attribute_name, aggregate_function) {
         var j_data = JSON.parse(data);
 
         for (var i = 0; i < selected_id_lst.length; i += 1) {
             j_data[i]['id'] = selected_id_lst[i];
         }
+
+        //todo change this
+        var aggregate_function_list = {0 :'sum', 1:'average', 2:'min', 3:'max', 4:'count'}
+
+        aggregates[attribute_name] = aggregate_function_list[aggregate_function]
+
+        parcoords.aggregates(aggregates)
 
         drawData(j_data);
         gridUpdate(j_data);
@@ -668,7 +661,7 @@
                 return false;
             }
 
-            aggregate_func(data, selected_id_lst);
+            aggregate_func(data, selected_id_lst, attribute_name, aggregate_function);
         });
 
 
@@ -731,6 +724,9 @@
         $.get('/reset_axis/', {attribute_name: col_name, selected_ids: selected_ids}, function (data) {
             aggregate_func(data, selected_id_lst);
         });
+
+        aggregates[col_name] = ''
+        parcoords.aggregates(aggregates)
     }
 
     function gridUpdate(data) {
@@ -801,6 +797,13 @@
             selected_ids.push(brushed_data[i]['id'])
         }
 
+
+        if (selected_ids.length == 0){
+            $('#loading-gif').hide()
+            $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Please select the set of event to generate CEP rules for</p>')
+            return
+        }
+
         $.ajax({
             url: '/rule_gen/',
             type: 'POST',
@@ -809,14 +812,40 @@
             dataType: 'json',
             success: function (result) {
                 $('#loading-gif').hide()
-                for (var rule in result.rules) {
-                    var count_line = 'You selected ' + result['count_selected'] + ' events. This rule covers ' + result['count_covered'] + ' events.'
-                    var recall_line = 'Rule recall - ' + parseFloat(result['recall']).toFixed(2);
-                    var precision_line = 'Rule precision - ' + parseFloat(result['precision']).toFixed(2);
 
-                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FORM EVENT_STREAM_NAME' + result['window_string'] + '</br>SELECT ' + result['select_string'] + '</br>Having</p>')
-                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules[rule]['rule'] + '</p>')
-                    $("#rule-paragraph").append('<div style="text-align:center" class="panel panel-info"><div class="panel-body">' + precision_line + '</br>' + recall_line + '</br>' + count_line + '</div> </div>')
+                if (result['success']==true) {
+
+                    var false_positive_indexes = result['filtered']
+                    console.log(false_positive_indexes)
+
+                    var false_positives = []
+
+                    for (var index in false_positive_indexes){
+                        false_positives.push(data[false_positive_indexes[index]])
+                    }
+
+                    console.log(false_positives)
+
+                    var current_color = parcoords.state.color
+                    parcoords.color('#FF0000')
+                    parcoords.highlight(false_positives)
+                    parcoords.color(current_color)
+
+
+                    for (var rule in result.rules) {
+                        var count_line = 'You selected ' + result['count_selected'] + ' events. This rule covers ' + result['count_covered'] + ' events.'
+                        var recall_line = 'Rule recall - ' + parseFloat(result['recall']).toFixed(7);
+                        var precision_line = 'Rule precision - ' + parseFloat(result['precision']).toFixed(7);
+
+                        $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FROM EVENT_STREAM_NAME' + result['window_string'] + '</br>SELECT ' + result['select_string'] + '</br>Having</p>')
+                        $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules[rule]['rule'] + '</p>')
+                        $("#rule-paragraph").append('<div style="text-align:center" class="panel panel-info"><div class="panel-body">' + precision_line + '</br>' + recall_line + '</br>' + count_line + '</div> </div>')
+                    }
+                }
+                else {
+                    $('#loading-gif').hide()
+                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Unable to generate rules. Please try again.</p>')
+                    return
                 }
             }
         });

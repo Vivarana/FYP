@@ -16,15 +16,10 @@ def handle_csv(file_in):
 
     """
     try:
-        with open(TEMP_FILE_PATH, 'wb+') as destination:
-            for chunk in file_in.chunks():
-                destination.write(chunk)
-
         with open(TEMP_FILE_PATH, 'r') as csv_file:
             original_data_frame = pd.read_csv(csv_file)
-
         return {'success': True, 'dataframe': original_data_frame}
 
     except Exception, e:
-        logger.error("Failed writing " + file_in.name + "as chunks to the disk", e)
-        return {'success': False}
+        logger.error("Error parsing file : " + file_in.name , e)
+        return {'success': False, 'error': {'type': 'Parse Error', 'message': 'Error while parsing file.'}}

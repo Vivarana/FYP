@@ -38,6 +38,8 @@ def get_sessions_data(frame, group_by, coalesce):
         lambda x: "%s" % COALESCE_SEPARATOR.join(x))  #"%s" % COALESCE_SEPARATOR.join(x)) # .apply(lambda x: x.values)
     ## truncate sequences longer than limit add end tag for shorter sequences
     df = pd.DataFrame(paths)
+    df.columns = [coalesce]
+
     df[SEQ_LENGTH_NAME] = df[coalesce].apply(lambda x: len(x.split(COALESCE_SEPARATOR)))
     df[coalesce] = df.apply(
         lambda x: x[0] + COALESCE_SEPARATOR + SEQ_END_TAG if x[1] < SEQ_LIMIT else COALESCE_SEPARATOR.join(

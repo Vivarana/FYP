@@ -9,7 +9,8 @@ the respective pandas column name should be named as 'Date'
 import logging
 
 import pandas as pd
-
+import os
+import ConfigParser
 from vivarana.constants import TEMP_FILE_PATH
 from vivarana.extensions.log import apachelog
 from vivarana.extensions.log.log_constants import *
@@ -24,12 +25,14 @@ def handle_log(file_in):
     :return:  'success' True if parsing is successful and False if parsing failed
             'dataframe' Pandas dataframe containing parsed data only when parsing is successful
     """
-    log_format = apachelog.formats[COMMON]
-    parser = apachelog.parser(log_format)
 
-    with open(TEMP_FILE_PATH, 'wb+') as destination:
-        for chunk in file_in.chunks():
-            destination.write(chunk)
+    print os.path.dirname(__file__)
+    config = ConfigParser.ConfigParser()
+    config.read(os.path.join(os.path.dirname(__file__), "../../settings.ini"))
+
+    log_format = config.get('parser', 'format')
+    print log_format
+    parser = apachelog.parser(log_format)
 
     log_list = []
 
@@ -37,9 +40,10 @@ def handle_log(file_in):
         with open(TEMP_FILE_PATH, 'r') as log_file:
             for line in log_file.readlines():
                 log_list.append(parser.parse(line))
+
     except apachelog.ApacheLogParserError, e:
-        logger.error("Could not parse " + file_in.name + "using apache parser", e)
-        return {'success': False}
+        logger.error("Could not parse " + file_in + "using apache parser", e)
+        return {'success': False, 'error': {'type': 'APACHE_LOG_PARSE_ERROR', 'format': log_format}}
 
     original_data_frame = pd.DataFrame(log_list)
 

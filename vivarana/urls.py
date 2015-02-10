@@ -19,4 +19,5 @@ urlpatterns = patterns('',
     url(r'^sunburst/$', views.sunburst, name='sunburst'),
     url(r'^tree_data/$', views.get_tree_data, name='tree_data'),
     url(r'^unique_strings/$', views.get_unique_strings, name='unique_strings'),
+    url(r'^apache_log_format/$', views.apache_log_format, name='apache_log_format'),
 )

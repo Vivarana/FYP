@@ -25,7 +25,7 @@ def handle_uploaded_file(file_in, ):
     :return: 'success', 'dataframe' if the file has been parsed successfully
             'error' if the file type is not supported
     """
-    file_extension = file_in.name.split('.')[-1]
+    file_extension = file_in.split('.')[-1]
     if file_extension == EXT_CSV:
         return handle_csv(file_in)
     elif file_extension == EXT_LOG:
