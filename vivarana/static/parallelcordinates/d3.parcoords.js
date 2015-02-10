@@ -1,3 +1,5 @@
+
+//The default values to the parameters
 d3.parcoords = function (config) {
     var __ = {
         data: [],
@@ -51,14 +53,14 @@ d3.parcoords = function (config) {
 
         return pc;
     };
-    var events = d3.dispatch.apply(this, ["render", "resize", "highlight", "brush", "brushend", "axesreorder"].concat(d3.keys(__))),
+    var events = d3.dispatch.apply(this, ["render", "resize", "highlight", "brush", "brushend", "axesreorder"].concat(d3.keys(__))), //different events that can happen
         w = function () {
             return __.width - __.margin.right - __.margin.left;
         },
         h = function () {
             return __.height - __.margin.top - __.margin.bottom;
         },
-        flags = {
+        flags = { //specifying the flags
             brushable: false,
             reorderable: false,
             axes: false,
@@ -107,7 +109,7 @@ d3.parcoords = function (config) {
                 pc.render().updateAxes();
             }
         })
-        .on("bundleDimension", function (d) {
+        .on("bundleDimension", function (d) { //specifying the bundling dimension, cluster ID column
             if (!__.dimensions.length) pc.detectDimensions();
             if (!(__.dimensions[0] in yscale)) pc.autoscale();
             if (typeof d.value === "number") {
@@ -122,7 +124,7 @@ d3.parcoords = function (config) {
 
             __.clusterCentroids = compute_cluster_centroids(__.bundleDimension);
         })
-        .on("hideAxis", function (d) {
+        .on("hideAxis", function (d) { //hiding the selected axis - making it dissapear from the visualization
             if (!__.dimensions.length) pc.detectDimensions();
             pc.dimensions(without(__.dimensions, d.value));
         });
@@ -169,24 +171,24 @@ d3.parcoords = function (config) {
         })
     };
 
-    pc.autoscale = function () {
+    pc.autoscale = function () { //autoscaling function for yaxis, which will be called automatically
         // yscale
         var defaultScales = {
-            "date": function (k) {
+            "date": function (k) { //scaling for the data type
                 return d3.time.scale()
                     .domain(d3.extent(__.data, function (d) {
                         return d[k] ? d[k].getTime() : null;
                     }))
                     .range([h() + 1, 1]);
             },
-            "number": function (k) {
+            "number": function (k) { //scaling for the number type
                 return d3.scale.linear()
                     .domain(d3.extent(__.data, function (d) {
                         return +d[k];
                     }))
                     .range([h() + 1, 1]);
             },
-            "string": function (k) {
+            "string": function (k) { //scaling for the integer type
                 return d3.scale.ordinal()
                     .domain(__.data.map(function (p) {
                         return p[k];
@@ -215,7 +217,7 @@ d3.parcoords = function (config) {
         // xscale
         xscale.rangePoints([0, w()], 1);
 
-        // canvas sizes
+        // canvas sizes of the visualization
         pc.selection.selectAll("canvas")
             .style("margin-top", __.margin.top + "px")
             .style("margin-left", __.margin.left + "px")
@@ -241,9 +243,8 @@ d3.parcoords = function (config) {
         return this;
     };
 
-    pc.flip = function (d) {
-        //yscale[d].domain().reverse();					// does not work
-        yscale[d].domain(yscale[d].domain().reverse()); // works
+    pc.flip = function (d) { //flip the axis of the clicked dimension
+        yscale[d].domain(yscale[d].domain().reverse()); 
 
         return this;
     };
@@ -286,7 +287,7 @@ d3.parcoords = function (config) {
         return this;
     };
 
-    pc.detectDimensions = function () {
+    pc.detectDimensions = function () { //function to return all the dimensions of the parcords
 
         var dimension_list = d3.keys(pc.types())
         //Moving the clusterID to the end of the list
@@ -312,7 +313,7 @@ d3.parcoords = function (config) {
         return pc.toType(v);
     };
 
-    // attempt to determine types of each dimension based on first row of data
+    // attempt to determine types of each dimension based on first row of data, with the first raw it will be returning the type as data, string or number
     pc.detectDimensionTypes = function (data) {
         var types = {};
         d3.keys(data[0])
@@ -323,36 +324,11 @@ d3.parcoords = function (config) {
     };
 
 
-    pc.render = function () {
+    pc.render = function () { //function to render the data
         // try to autodetect dimensions and create scales
         if (!__.dimensions.length) pc.detectDimensions();
         if (!(__.dimensions[0] in yscale)) pc.autoscale();
-
-        //__.color = function (d, i) {
-        //    if (i < 500) {
-        //        return "#000"
-        //    }
-        //    return "#fff"
-        //};
-
-
-        //var temp = __.data.slice(1, 500);
-        //
-        //for (var t in temp){
-        //    __.color[temp[t]] = '#000000'
-        //}
-        //for(var i =0; i<500;i++){
-            //__.color[i] = '#000000'
-        //}
-
-        pc.render[__.mode]();
-
-        //DELETE
-        //
-        //pc.highlight(temp)
-
-        //temp.forEach(path_highlight)
-
+        pc.render[__.mode](); //rendering with the given mode
         events.render.call(this);
         return this;
     };
@@ -366,21 +342,21 @@ d3.parcoords = function (config) {
         }
     };
 
-    var rqueue = d3.renderQueue(path_foreground)
+    var rqueue = d3.renderQueue(path_foreground) //rendering incremently, will reduce the unresponsiveness of the visualization when loading a big data set, default value is set to 50
         .rate(50)
         .clear(function () {
             pc.clear('foreground');
         });
 
     pc.render.queue = function () {
-        if (__.brushed) {
+        if (__.brushed) { //if the brushed event is triggered only rendering the brushed items
             rqueue(__.brushed);
-        } else {
+        } else { //else rendering whole data
             rqueue(__.data);
         }
     };
-
-    function compute_cluster_centroids(d) {
+    //To calculate cluster centroids and control points the dependency sysvester.js is needed
+    function compute_cluster_centroids(d) { //computing the clustering centroids when bundling is performed - position of the y axis
 
         var clusterCentroids = d3.map();
         var clusterCounts = d3.map();
@@ -414,7 +390,7 @@ d3.parcoords = function (config) {
 
     }
 
-    function compute_centroids(row) {
+    function compute_centroids(row) { //computing the x positition of the cluster centroids given the row
         var centroids = [];
 
         var p = __.dimensions;
@@ -443,7 +419,7 @@ d3.parcoords = function (config) {
         return centroids;
     }
 
-    function compute_control_points(centroids) {
+    function compute_control_points(centroids) { //with the given centroids position computing the controlling points
 
         var cols = centroids.length;
         var a = __.smoothness;
@@ -488,11 +464,11 @@ d3.parcoords = function (config) {
         return this;
     };
 
-    // draw single cubic bezier curve
+    // draw single cubic bezier curve when the bundling is specified
     function single_curve(d, ctx) {
 
-        var centroids = compute_centroids(d);
-        var cps = compute_control_points(centroids);
+        var centroids = compute_centroids(d); //computing the centroids
+        var cps = compute_control_points(centroids); //computing the control points to the bundling given the centroids
 
         ctx.moveTo(cps[0].e(1), cps[0].e(2));
         for (var i = 1; i < cps.length; i += 3) {
@@ -509,25 +485,13 @@ d3.parcoords = function (config) {
     function color_path(d, i, ctx) {
         ctx.strokeStyle = d3.functor(__.color)(d,i);
         ctx.beginPath();
-        if (__.bundleDimension === null || (__.bundlingStrength === 0 && __.smoothness == 0)) {
+        if (__.bundleDimension === null || (__.bundlingStrength === 0 && __.smoothness == 0)) { //checking if the bundling is specified
             single_path(d, ctx);
         } else {
-            single_curve(d, ctx);
+            single_curve(d, ctx); //if bundling is specified drawing a curve
         }
         ctx.stroke();
     };
-
-    //function color_path2(d, i, ctx) {
-    //    //ctx.strokeStyle = d3.functor(__.color)(d, i);
-    //    ctx.strokeStyle = '#00000'
-    //    ctx.beginPath();
-    //    if (__.bundleDimension === null || (__.bundlingStrength === 0 && __.smoothness == 0)) {
-    //        single_path(d, ctx);
-    //    } else {
-    //        single_curve(d, ctx);
-    //    }
-    //    ctx.stroke();
-    //};
 
     // draw many polylines of the same color
     function paths(data, ctx) {
@@ -537,7 +501,7 @@ d3.parcoords = function (config) {
             if (__.bundleDimension === null || (__.bundlingStrength === 0 && __.smoothness == 0)) {
                 single_path(d, ctx);
             } else {
-                single_curve(d, ctx);
+                single_curve(d, ctx); //if bundling is specified
             }
         });
         ctx.stroke();
@@ -554,11 +518,11 @@ d3.parcoords = function (config) {
     }
 
     function path_foreground(d, i) {
-        return color_path(d, i, ctx.foreground);
+        return color_path(d, i, ctx.foreground); //coloring the polyline with a specified color
     };
 
     function path_highlight(d, i) {
-        return color_path(d, i, ctx.highlight);
+        return color_path(d, i, ctx.highlight); //highlighting a polyline ex. when brushing is performed
     };
 
 
@@ -568,7 +532,7 @@ d3.parcoords = function (config) {
         return this;
     };
 
-    pc.createAxes = function () {
+    pc.createAxes = function () { //creating the axes for the visualization
         if (g) pc.removeAxes();
 
         // Add a group element for each dimension.
@@ -630,12 +594,12 @@ d3.parcoords = function (config) {
         return this;
     };
 
-    pc.removeAxes = function () {
+    pc.removeAxes = function () { //removing the selected axis
         g.remove();
         return this;
     };
 
-    pc.updateAxes = function () {
+    pc.updateAxes = function () { //updating the axis - when aggregate functions are performed
         var g_data = pc.svg.selectAll(".dimension")
             .data(__.dimensions, function (d) {
                 return d;
@@ -684,7 +648,7 @@ d3.parcoords = function (config) {
         return this;
     };
 
-// Jason Davies, http://bl.ocks.org/1341281
+// Jason Davies, http://bl.ocks.org/1341281 making the axes reorderble so that the users can observe relationships between axes as they wish by bringing the closer
     pc.reorderable = function () {
         if (!g) pc.createAxes();
 
@@ -787,11 +751,11 @@ d3.parcoords = function (config) {
 //
 // @param newSelection - The new set of data items that is currently contained
 //                       by the brushes
-    function brushUpdated(newSelection) {
+    function brushUpdated(newSelection) { //called when brushing is triggered
         __.brushed = newSelection;
-        set_rules();
+        set_rules(); //identifying CEP rules with the brushed data set
         events.brush.call(pc, __.brushed);
-        pc.render();
+        pc.render(); //rendering only the brushed elements
     }
 
     function brushPredicate(predicate) {
@@ -810,7 +774,7 @@ d3.parcoords = function (config) {
         return pc;
     }
 
-    pc.brushModes = function () {
+    pc.brushModes = function () { //specifying 2 brushemode 1D brushing and 2D brushing
         return Object.getOwnPropertyNames(brush.modes);
     };
 
@@ -876,13 +840,13 @@ d3.parcoords = function (config) {
 
             // test if within range
             var within = {
-                "date": function (d, p, dimension) {
+                "date": function (d, p, dimension) { //testing for the date dimention
                     return extents[dimension][0] <= d[p] && d[p] <= extents[dimension][1]
                 },
-                "number": function (d, p, dimension) {
+                "number": function (d, p, dimension) { //testing for the integer dimensions
                     return extents[dimension][0] <= d[p] && d[p] <= extents[dimension][1]
                 },
-                "string": function (d, p, dimension) {
+                "string": function (d, p, dimension) { //testing for the string dimension
                     return extents[dimension][0] <= yscale[p](d[p]) && yscale[p](d[p]) <= extents[dimension][1]
                 }
             };
@@ -936,7 +900,7 @@ d3.parcoords = function (config) {
             return brush;
         }
 
-        function brushReset(dimension) {
+        function brushReset(dimension) { //resetting the brushing when else where is clicked in the dimension
             __.brushed = false;
             if (g) {
                 g.selectAll('.brush')
@@ -982,12 +946,13 @@ d3.parcoords = function (config) {
     })();
 // brush mode: 2D-strums
 // bl.ocks.org/syntagmatic/5441022
+//brushing can be performed between axes also
 
     (function () {
         var strums = {},
             strumCanvas;
 
-        function drawStrum(strum) {
+        function drawStrum(strum) { //drawing the strum to specify brushing
             var svg = pc.selection.select("svg").select("g#strums"),
                 id = strum.dims.i;
 
@@ -1069,7 +1034,7 @@ d3.parcoords = function (config) {
             };
         }
 
-        function onDrag() {
+        function onDrag() { //while drawing the strum
             return function () {
                 var ev = d3.event,
                     strum = strums[strums.active];
@@ -1104,7 +1069,7 @@ d3.parcoords = function (config) {
             };
         }
 
-        function selected() {
+        function selected() { //select the brushed data
             var ids = Object.getOwnPropertyNames(strums),
                 brushed = __.data;
 
@@ -1144,7 +1109,7 @@ d3.parcoords = function (config) {
             });
         }
 
-        function removeStrum() {
+        function removeStrum() { //function to remove the strum when clicked elsewhere between those axes
             var strum = strums[strums.active],
                 svg = pc.selection.select("svg").select("g#strums");
 
@@ -1153,7 +1118,7 @@ d3.parcoords = function (config) {
             svg.selectAll("line#strum-" + strum.dims.i).remove();
         }
 
-        function onDragEnd() {
+        function onDragEnd() { //specifying when the brushing ends
             return function () {
                 var brushed = __.data,
                     strum = strums[strums.active];
@@ -1164,15 +1129,15 @@ d3.parcoords = function (config) {
                     removeStrum(strums);
                 }
 
-                brushed = selected(strums);
+                brushed = selected(strums); //getting the brushed data
                 strums.active = undefined;
                 __.brushed = brushed;
-                pc.render();
+                pc.render(); //rendering only the brushed elements
                 events.brushend.call(pc, __.brushed);
             };
         }
 
-        function brushReset(strums) {
+        function brushReset(strums) { //resetting all the strums
             return function () {
                 var ids = Object.getOwnPropertyNames(strums).filter(function (d) {
                     return !isNaN(d);
@@ -1331,7 +1296,7 @@ d3.parcoords = function (config) {
         return this;
     };
 
-    // clear highlighting
+    // clear highlighting ex. when brushing is removed
     pc.unhighlight = function (data) {
         pc.clear("highlight");
         d3.select(canvas.foreground).classed("faded", false);
