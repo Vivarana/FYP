@@ -44,8 +44,9 @@ var vis = d3.select("#chart").append("svg:svg")
     .append("svg:g")
     .attr("id", "container")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
-    .call(zoom);
 
+zoom(d3.selectAll("svg"));
+zoom.event(d3.selectAll("svg").transition().duration(500));
 
 var partition = d3.layout.partition()
     .size([2 * Math.PI, radius * radius])
@@ -63,10 +64,10 @@ var arc = d3.svg.arc()
         return d.x + d.dx;
     })
     .innerRadius(function (d) {
-        return  Math.sqrt(d.y)*4;
+        return  Math.max(40,Math.sqrt(d.y)*4);
     })
     .outerRadius(function (d) {
-        return Math.sqrt(d.y + d.dy)*4;
+        return Math.max(50,Math.sqrt(d.y + d.dy)*4);
     });
 
 var tip = d3.tip()
@@ -131,6 +132,7 @@ function createVisualization(json) {
         .data(nodes)
         .enter().append("svg:path")
         .attr("display", function (d) {
+            //edit middle to text
             return d.depth ? null : "none";
         })
         .attr("d", arc)

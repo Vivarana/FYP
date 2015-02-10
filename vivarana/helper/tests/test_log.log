@@ -1,0 +1,7 @@
+66.249.79.33 - - [09/Nov/2014:03:39:31 +0530] "GET /ta/events/2-cloud-expo-2014 HTTP/1.1" 200 19512
+66.249.79.33 - - [09/Nov/2014:03:42:20 +0530] "GET /index.php/component/content/article/10-tips/79-securing-cms HTTP/1.1" 404 5308
+66.249.79.41 - - [09/Nov/2014:03:46:14 +0530] "GET /index.php?option=com_content&view=article&id=79%3Asecuring-cms&catid=10%3Atips&lang=en HTTP/1.1" 303 -
+66.249.79.33 - - [09/Nov/2014:03:46:15 +0530] "GET /en/?option=com_content&view=article&id=79%3Asecuring-cms&catid=10%3Atips&lang=en HTTP/1.1" 404 5270
+68.180.228.107 - - [09/Nov/2014:03:50:19 +0530] "GET /en/component/search/?Itemid=309&format=opensearch HTTP/1.1" 200 822
+66.249.79.41 - - [09/Nov/2014:03:52:58 +0530] "GET /index.php/component/content/article/16-newsline/images/stories/habbits.png HTTP/1.1" 404 5319
+180.76.6.134 - - [09/Nov/2014:03:53:23 +0530] "GET /index.php/ta/component/content/article/10-tips/107-byod-bring-your-own-device-a-risk-or-a-reward HTTP/1.1" 404 5379

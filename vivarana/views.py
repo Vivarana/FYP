@@ -2,6 +2,7 @@ import math
 import logging
 import simplejson
 import copy
+import ConfigParser
 
 from pandas import *
 from django.http import HttpResponse
@@ -92,29 +93,17 @@ def change_state(request):
 def home(request):
     if request.method == GET:
         return render(request, HOME_PAGE)
-
     if request.method == POST:
-        response_data = {}
         try:
             input_file = request.FILES[FILE_INPUT]
-            output = file_helper.handle_uploaded_file(input_file)
-            response_data['success'] = output['success']
-            global state_map
-            state_map = copy.deepcopy(initial_state_map)
-            if output['success']:
-                global original_data_frame, current_data_frame
-                original_data_frame = output['dataframe']
-                original_data_frame.columns = file_helper.get_html_friendly_names(original_data_frame.columns)
-                current_data_frame = original_data_frame.copy(deep=True)
-
-                request.session['filename'] = input_file.name.encode('UTF8')
-                response_data['file_name'] = input_file.name.encode('UTF8')
-            else:
-                response_data['error'] = output['error']
-
+            with open(TEMP_FILE_PATH, 'wb+') as destination:
+                for chunk in input_file.chunks():
+                    destination.write(chunk)
+            request.session['filename'] = input_file.name.encode('UTF8')
+            response_data = parse_file(request)
         except Exception, error:
             logger.error('Error occurred while setting up file.', error)
-            response_data['error'] = "Error while setting up file. Please try again."
+            response_data['error'] = {'type': 'FILE_ERROR', 'message': 'Error while setting up file. Please try again.'}
             response_data['success'] = False
 
         return HttpResponse(json.dumps(response_data), content_type="application/json")
@@ -293,9 +282,11 @@ def preprocessor(request):
 def rule_gen(request):
     if request.method == 'POST':
         rule_list = rule_generator.generate(request.body, current_data_frame, state_map)
+        json_out = rule_list[8]  # to_json(orient='records')
+
         json_response = json.dumps({'success': rule_list[0], 'rules': rule_list[1], 'count_selected': rule_list[2],
-                                    'count_covered': rule_list[3], 'precision': rule_list[5], 'recall': rule_list[4],
-                                    'select_string': rule_list[6], 'window_string': rule_list[7]})
+                                    'count_covered': rule_list[3], 'precision': rule_list[4], 'recall': rule_list[5],
+                                    'select_string': rule_list[6], 'window_string': rule_list[7], 'filtered': json_out})
         return HttpResponse(json_response)
     else:
         json_response = "{'message' : done!}"
@@ -328,6 +319,8 @@ def current_column_lst(request):
 
 
 def sunburst(request):
+    if not type(original_data_frame) is pandas.core.frame.DataFrame:
+        return redirect(HOME_PATH)
     context = {"grouping": grouping_column, "grouped": grouped_column}
 
     return render(request, SUNBURST_PAGE, context)
@@ -340,6 +333,49 @@ def get_tree_data(request):
 
 def get_unique_strings(request):
     return HttpResponse(sun_views.give_unique_coalesce_strings(current_data_frame,grouped_column))
+
+
+def parse_file(request):
+    try:
+        response_data = {}
+        output = file_helper.handle_uploaded_file(request.session['filename'])
+        response_data['success'] = output['success']
+        global state_map
+        state_map = copy.deepcopy(initial_state_map)
+        if output['success']:
+            global original_data_frame, current_data_frame
+            original_data_frame = output['dataframe']
+            original_data_frame.columns = file_helper.get_html_friendly_names(original_data_frame.columns)
+            current_data_frame = original_data_frame.copy(deep=True)
+            response_data['file_name'] = request.session['filename']
+        else:
+            response_data['error'] = output['error']
+        print response_data
+    except Exception, e:
+        print e
+    return response_data
+
+
+def apache_log_format(request):
+    if request.method == POST:
+        params = json.loads(request.body)
+        log_format_input = params['format']
+        print log_format_input
+
+        config = ConfigParser.ConfigParser()
+        config.read(os.path.join(os.path.dirname(__file__), "settings.ini"))
+        config.set('parser', 'format', log_format_input)
+
+        try:
+            with open(os.path.join(os.path.dirname(__file__), "settings.ini"), 'w') as config_file:
+                config.write(config_file)
+        except Exception, e:
+            json_response = json.dumps({'success': False})
+            return HttpResponse(json_response)
+
+        response = parse_file(request)
+        json_response = json.dumps(response)
+        return HttpResponse(json_response)
 
 
 #def get_session_sequence(request):
