@@ -21,5 +21,5 @@ def handle_csv(file_in):
         return {'success': True, 'dataframe': original_data_frame}
 
     except Exception, e:
-        logger.error("Error parsing file : " + file_in.name , e)
+        logger.error("Error parsing file : " + file_in , e)
         return {'success': False, 'error': {'type': 'Parse Error', 'message': 'Error while parsing file.'}}
