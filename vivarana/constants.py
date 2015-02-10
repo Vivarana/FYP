@@ -1,4 +1,5 @@
 import os
+from FYP.settings import BASE_DIR
 
 # HTTP methods
 POST = 'POST'
@@ -48,7 +49,7 @@ EXT_CSV = 'csv'
 EXT_LOG = 'log'
 
 #temp file
-TEMP_FILE_PATH = 'media' + os.path.sep + 'temp'
+TEMP_FILE_PATH = os.path.join(BASE_DIR, 'media' + os.path.sep + 'temp')
 
 # state map properties
 DATA_LST = "data_lst"
@@ -104,3 +105,8 @@ SUNBURST_VIS_TYPE = 'Sunburst'
 GROUPING_COL_NAME = 'grouping_col_name'
 GROUPED_COL_NAME = 'grouped_col_name'
 
+# test file paths
+
+TEST_DUMMY_FILE_PATH = os.path.join(BASE_DIR,'vivarana/helper/tests/test_dummy.xcel')
+TEST_LOG_FILE_PATH = os.path.join(BASE_DIR,'vivarana/helper/tests/test_log.log')
+TEST_CSV_FILE_PATH = os.path.join(BASE_DIR,'vivarana/helper/tests/test_csv.csv')
