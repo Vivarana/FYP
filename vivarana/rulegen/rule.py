@@ -15,11 +15,10 @@ class Rule:
 
     def to_string(self):
         window_string = ''
-        if self.window!=None:
-            window_string = '#window.' + self.window[0] + '(' + self.window[1] + ')'
+        if self.window != None:
+            window_string = '#window.' + str(self.window[0]) + '(' + str(self.window[1]) + ')'
 
         return 'FROM ' + self.stream_name + window_string
-
 
 
 class ConstraintSet:
@@ -39,7 +38,8 @@ class ConstraintSet:
             return dataframe[dataframe.index.isin(list(selected_ids))]
 
     def to_string(self):
-        return "( " + (" "+self.operand+" ").join([constraint.to_string() for constraint in self.constraints]) + " )"
+        return "( " + (" " + self.operand + " ").join(
+            [constraint.to_string() for constraint in self.constraints]) + " )"
 
 
 class Constraint:
@@ -47,7 +47,7 @@ class Constraint:
         self.column = column
         self.value = value
         if aggregate != '':
-            aggregate += + '_'
+            aggregate += '_'
         self.aggregate = aggregate
 
 
@@ -64,7 +64,6 @@ class EqualConstraint(Constraint):
 
 
 class LessConstraint(Constraint):
-
     def apply_constraint(self, dataframe):
         return dataframe[dataframe[self.column] < self.value]
 
@@ -101,7 +100,8 @@ class MoreLessBetweenConstraint(Constraint):
         return dataframe[(dataframe[self.column] > self.value[0]) & (dataframe[self.column] < self.value[1])]
 
     def to_string(self):
-        return "(" + self.aggregate + self.column + ">" + str(self.value[0]) + " AND " + self.aggregate + self.column + "<" + str(self.value[1]) + ")"
+        return "(" + self.aggregate + self.column + ">" + str(
+            self.value[0]) + " AND " + self.aggregate + self.column + "<" + str(self.value[1]) + ")"
 
 
 class MoreEqualLessBetweenConstraint(Constraint):
@@ -109,7 +109,8 @@ class MoreEqualLessBetweenConstraint(Constraint):
         return dataframe[(dataframe[self.column] > self.value[0]) & (dataframe[self.column] <= self.value[1])]
 
     def to_string(self):
-        return "(" + self.aggregate + self.column + ">=" + str(self.value[0]) + " AND " + self.aggregate + self.column + "<" + str(self.value[1]) + ")"
+        return "(" + self.aggregate + self.column + ">=" + str(
+            self.value[0]) + " AND " + self.aggregate + self.column + "<" + str(self.value[1]) + ")"
 
 
 class MoreLessEqualBetweenConstraint(Constraint):
@@ -117,7 +118,8 @@ class MoreLessEqualBetweenConstraint(Constraint):
         return dataframe[(dataframe[self.column] >= self.value[0]) & (dataframe[self.column] < self.value[1])]
 
     def to_string(self):
-        return "(" + self.aggregate + self.column + ">" + str(self.value[0]) + " AND " + self.aggregate + self.column + "<=" + str(self.value[1]) + ")"
+        return "(" + self.aggregate + self.column + ">" + str(
+            self.value[0]) + " AND " + self.aggregate + self.column + "<=" + str(self.value[1]) + ")"
 
 
 class MoreEqualLessEqualBetweenConstraint(Constraint):
@@ -125,7 +127,8 @@ class MoreEqualLessEqualBetweenConstraint(Constraint):
         return dataframe[(dataframe[self.column] >= self.value[0]) & (dataframe[self.column] <= self.value[1])]
 
     def to_string(self):
-        return "(" + self.aggregate + self.column + ">=" + str(self.value[0]) + " AND " + self.aggregate + self.column + "<=" + str(self.value[1]) + ")"
+        return "(" + self.aggregate + self.column + ">=" + str(
+            self.value[0]) + " AND " + self.aggregate + self.column + "<=" + str(self.value[1]) + ")"
 
 
 rules = {'=': EqualConstraint.from_list, '<': LessConstraint, '>': MoreConstraint, '<=': LessEqualConstraint,
