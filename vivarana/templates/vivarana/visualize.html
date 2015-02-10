@@ -157,7 +157,7 @@
     var new_grid_data;
     var datastack = [];         // stores data history (for undo operation)
     var data = [];
-    var aggregates = new Array();
+    var aggregates = [];
 
     function drawData(new_data) {
         data = new_data;
@@ -630,17 +630,14 @@
             j_data[i]['id'] = selected_id_lst[i];
         }
 
-<<<<<<< HEAD
         $(".cover, .loading-model").hide();
-=======
         //todo change this
-        var aggregate_function_list = {0 :'sum', 1:'average', 2:'min', 3:'max', 4:'count'}
+        var aggregate_function_list = {0 :'sum', 1:'average', 2:'min', 3:'max', 4:'count'};
 
-        aggregates[attribute_name] = aggregate_function_list[aggregate_function]
+        aggregates[attribute_name] = aggregate_function_list[aggregate_function];
 
-        parcoords.aggregates(aggregates)
+        parcoords.aggregates(aggregates);
 
->>>>>>> b13384377157490d9b32c20c82718be17a29b073
         drawData(j_data);
         gridUpdate(j_data);
         {#        $(obj).parent().addClass("disabled");#}
@@ -678,6 +675,8 @@
     function groupby(col_name, col_number) {
         $.post("/change_state/", JSON.stringify({property_name: "aggregate_group_by_attr", property_value: col_name}), function (data) {
         });
+        aggregates[col_name] = 'group_by';
+        parcoords.aggregates(aggregates);
         $.snackbar({content: 'Group by attribute has been set to '+ col_name, style: 'toast'});
     }
 
@@ -738,8 +737,8 @@
             aggregate_func(data, selected_id_lst);
         });
 
-        aggregates[col_name] = ''
-        parcoords.aggregates(aggregates)
+        aggregates[col_name] = '';
+        parcoords.aggregates(aggregates);
     }
 
     function gridUpdate(data) {
@@ -812,8 +811,8 @@
 
 
         if (selected_ids.length == 0){
-            $('#loading-gif').hide()
-            $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Please select the set of event to generate CEP rules for</p>')
+            $('#loading-gif').hide();
+            $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Please select the set of event to generate CEP rules for</p>');
             return
         }
 
@@ -824,25 +823,25 @@
             data: JSON.stringify({"selected_ids": selected_ids, "checked_columns": checked_columns}),
             dataType: 'json',
             success: function (result) {
-                $('#loading-gif').hide()
+                $('#loading-gif').hide();
 
                 if (result['success']==true) {
 
-                    var false_positive_indexes = result['filtered']
-                    console.log(false_positive_indexes)
+                    var false_positive_indexes = result['filtered'];
+                    console.log(false_positive_indexes);
 
-                    var false_positives = []
+                    var false_positives = [];
 
                     for (var index in false_positive_indexes){
                         false_positives.push(data[false_positive_indexes[index]])
                     }
 
-                    console.log(false_positives)
+                    console.log(false_positives);
 
-                    var current_color = parcoords.state.color
-                    parcoords.color('#FF0000')
-                    parcoords.highlight(false_positives)
-                    parcoords.color(current_color)
+                    var current_color = parcoords.state.color;
+                    parcoords.color('#FF0000');
+                    parcoords.highlight(false_positives);
+                    parcoords.color(current_color);
 
 
                     for (var rule in result.rules) {
@@ -856,9 +855,9 @@
                     }
                 }
                 else {
-                    $('#loading-gif').hide()
+                    $('#loading-gif').hide();
                     $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Unable to generate rules. Please try again.</p>')
-                    return
+                    return true;
                 }
             }
         });

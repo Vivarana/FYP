@@ -302,6 +302,8 @@ def reset_axis(request):
         current_data_frame[attribute_name] = original_data_frame[attribute_name]
         df = current_data_frame.iloc[selected_ids, :]
         json_out = df.to_json(orient='records')
+        if state_map[AGGREGATE_GROUP_BY_ATTR] == attribute_name:
+            state_map[AGGREGATE_GROUP_BY_ATTR] = None
         return HttpResponse(json_out)
 
 

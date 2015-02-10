@@ -562,7 +562,7 @@ d3.parcoords = function (config) {
                 "class": "label"
             })
             .text(function (d) {
-                if (typeof aggregates[d] != 'undefined') {
+                if (typeof aggregates[d] !== 'undefined') {
                     return aggregates[d] + '(' + d + ')'
                 }
                 return d in __.dimensionTitles ? __.dimensionTitles[d] : d;  // dimension display names
