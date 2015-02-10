@@ -227,34 +227,34 @@ def generate(selected_ids, dataframe, state):
         selected_ids = json.loads(selected_ids)
 
         #todo need to fin a way to remove deep copying twice
-        file_frame = dataframe.copy(deep=True)
-        file_frame[constants.RULEGEN_COLUMN_NAME] = 'NO'
-        file_frame[constants.RULEGEN_COLUMN_NAME][
-            file_frame.index.isin(selected_ids['selected_ids'])] = 'YES'
-        if 'clusterID' in file_frame.columns:
-            file_frame = file_frame.drop('clusterID', 1)
-        if 'Date' in file_frame.columns:
-            file_frame = file_frame.drop('Date', 1)
-        file_path = "media" + os.path.sep + "rule.csv"
-        file_frame.to_csv(file_path, index=False)
-        del file_frame
-        pandas2ri.activate()
-        r_df = ro.r['read.csv'](file_path)
-        robjects.r('''
-            library(rJava)
-            library(RWeka)
-            f<- function(df){
-                rule_set <- JRip(SELECTED_FOR_RULEGEN ~ ., data = df)
-                lst<-as.matrix(scan(text=.jcall(rule_set$classifier, "S", "toString") ,sep="\n", what="") )[ -c(1:2, 6), ,drop=FALSE]
-                lst
-            }
-            ''')
-        r_f = robjects.r['f']
-        res = r_f(r_df)
-        # ru = com.convert_robj(res)
-        # print ru
-        print res
-        del r_df
+        # file_frame = dataframe.copy(deep=True)
+        # file_frame[constants.RULEGEN_COLUMN_NAME] = 'NO'
+        # file_frame[constants.RULEGEN_COLUMN_NAME][
+        #     file_frame.index.isin(selected_ids['selected_ids'])] = 'YES'
+        # if 'clusterID' in file_frame.columns:
+        #     file_frame = file_frame.drop('clusterID', 1)
+        # if 'Date' in file_frame.columns:
+        #     file_frame = file_frame.drop('Date', 1)
+        # file_path = "media" + os.path.sep + "rule.csv"
+        # file_frame.to_csv(file_path, index=False)
+        # del file_frame
+        # pandas2ri.activate()
+        # r_df = ro.r['read.csv'](file_path)
+        # robjects.r('''
+        #     library(rJava)
+        #     library(RWeka)
+        #     f<- function(df){
+        #         rule_set <- JRip(SELECTED_FOR_RULEGEN ~ ., data = df)
+        #         lst<-as.matrix(scan(text=.jcall(rule_set$classifier, "S", "toString") ,sep="\n", what="") )[ -c(1:2, 6), ,drop=FALSE]
+        #         lst
+        #     }
+        #     ''')
+        # r_f = robjects.r['f']
+        # res = r_f(r_df)
+        # # ru = com.convert_robj(res)
+        # # print ru
+        # print res
+        # del r_df
 
 
 
