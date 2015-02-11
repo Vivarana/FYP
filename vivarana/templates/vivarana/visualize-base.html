@@ -48,6 +48,7 @@
 
 <body>
 <script>
+    <!--Alpha Slider an exponentionally decaying slider-->
     $(document).ready(function () {
     $("#aplha-slider").noUiSlider({
         start: {{ state_map.alpha_opacity }},
@@ -61,7 +62,7 @@
             'max': [0.5]
         }
     });
-
+    <!--Slider to control smoothness of Bundling-->
     $("#curve-slider").noUiSlider({
         start: {{ state_map.curve_smoothness }},
         connect: "lower",
@@ -71,7 +72,7 @@
             max: 0.25
         }
     });
-
+    <!--Slider to control curveness of Bundling-->
     $("#bundling-slider").noUiSlider({
         start: {{ state_map.bundling_strength }},
         connect: "lower",
@@ -97,7 +98,7 @@
 </div>
 <div class="navbar-collapse collapse navbar-responsive-collapse">
 <ul class="nav navbar-nav">
-
+    <!--Specifying the options for Parallel Coordinates-->
     <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b
                 class="caret"></b></a>
@@ -113,6 +114,7 @@
                                         <label class="control-label">Brushing:</label>
 
                                         <div class="radio radio-primary">
+                                            <!--Specifying Brushing types-->
                                             <label>
                                                 <input type="radio" name="brushingRadios" id="oneBrushing-radio"
                                                        value="option1"
@@ -130,6 +132,7 @@
                                             </div>
 
                                         </div>
+                                        <!--Enabling Cluster Bundling-->
                                         <div class="checkbox">
                                             <label>
                                                 <input id="bundling-checkbox" type="checkbox"> Cluster Bundling
@@ -143,7 +146,7 @@
 
                                     <div class="form-group">
                                         <label class="control-label">Coloring:</label>
-
+                                        <!--Enable cluster coloring-->
                                         <div class="radio radio-primary">
                                             <label>
                                                 <input type="radio" name="coloringRadios"
@@ -151,7 +154,7 @@
                                                        value="option3">
                                                 Enable Cluster Coloring
                                             </label>
-
+                                            <!--Enable zscore coloring-->
                                             <div class="radio radio-primary">
                                                 <label>
                                                     <input type="radio" name="coloringRadios"
@@ -162,6 +165,7 @@
                                             </div>
                                         </div>
                                         <div class="checkbox">
+                                            <!--Alpha Blending-->
                                             <label>
                                                 <input id="alpha-checkbox" type="checkbox" checked=""> Alpha
                                                 Blending
@@ -230,7 +234,7 @@
     </li>
     {# end of time window dropdown #}
 
-
+    <!--Specifying clustering algorithms-->
     <li class="dropdown" id="cluster_dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clustering <b
                 class="caret"></b></a>
@@ -242,6 +246,7 @@
                         <label class="control-label">Select Clustering Method:</label>
 
                         <div class="radio radio-primary">
+                            <!--Provide options to the users as Hierarchical clustering, K-Modes Clustering and fuzzy clustering-->
                             <label>
                                 <input type="radio" name="clustering-algo-radios"
                                        id="hierarchical-radio"
@@ -269,7 +274,7 @@
                             </div>
                         </div>
                     </div>
-
+                    <!--Option to specify the number of clusters user expects in the data set Disable when density based lcustering is implemented-->
                     <div class="col-xs-5">
                         <label class="control-label">Specify the number of clusters:</label>
                         <input id="num-of-clusters" type="number" class="form-control"
@@ -291,7 +296,7 @@
     <li><a data-toggle="modal" data-target="#myModal" href="#">Generate Rule</a></li>
 </ul>
 
-
+<!--Specifying the sliders bundling sliders and alpha opacity sliders-->
 <ul class="nav navbar-nav navbar-right">
     <li>
         <div id="bundling-slider-container">
