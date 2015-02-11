@@ -9,7 +9,7 @@
             <div id="column_dropdown_{{ col }}" class="dropdown-tip">
                 <ul id="column_dropdown-menu_{{ col }}" class="dropdown dropdown-menu">
                     {% if type == "string" %}
-                        {#            todo            <li><a onclick="temp('{{ col }}',{{ forloop.counter }},this)" href="#">Order By</a></li>#}
+                        <li><a onclick="groupby('{{ col }}',{{ forloop.counter }},this)" href="#">Group By</a></li>
                     {% else %}
                         <li><a onclick="sum('{{ col }}',{{ forloop.counter }},this)" href="#">Sum</a></li>
                         <li><a onclick="average('{{ col }}',{{ forloop.counter }}, this)" href="#">Average</a></li>
@@ -157,7 +157,7 @@
     var new_grid_data;
     var datastack = [];         // stores data history (for undo operation)
     var data = [];
-    var aggregates = new Array();
+    var aggregates = [];
 
     function drawData(new_data) {
         data = new_data;
@@ -615,7 +615,7 @@
             var j_data = JSON.parse(data);
             var anom_lst = j_data.anom_lst;
             var anom_dict = {};
-            for(var i=0; i< anom_lst.length; i+=1){
+            for (var i = 0; i < anom_lst.length; i += 1) {
                 anom_dict[anom_lst[i]] = "#ff0000"
             }
             $(".cover, .loading-model").hide();
@@ -630,12 +630,13 @@
             j_data[i]['id'] = selected_id_lst[i];
         }
 
+        $(".cover, .loading-model").hide();
         //todo change this
-        var aggregate_function_list = {0 :'sum', 1:'average', 2:'min', 3:'max', 4:'count'}
+        var aggregate_function_list = {0 :'sum', 1:'average', 2:'min', 3:'max', 4:'count'};
 
-        aggregates[attribute_name] = aggregate_function_list[aggregate_function]
+        aggregates[attribute_name] = aggregate_function_list[aggregate_function];
 
-        parcoords.aggregates(aggregates)
+        parcoords.aggregates(aggregates);
 
         drawData(j_data);
         gridUpdate(j_data);
@@ -643,6 +644,9 @@
     }
 
     function perform_aggregation(aggregate_function, attribute_name) {
+
+        $("#ajax-loader-text").html("Performing Aggreagtion on Data. Please wait...");
+        $(".cover, .loading-model").show();
 
         var selected_ids = "";
         var current_data = parcoords.state.data;
@@ -657,6 +661,7 @@
         $.get('/aggregator/', {selected_ids: selected_ids, aggregate_func: aggregate_function, attribute_name: attribute_name}, function (data) {
 
             if (data == 'error-100') {
+                $(".cover, .loading-model").hide();
                 $.snackbar({content: 'Please specify a time or event window value.', style: 'toast'});
                 return false;
             }
@@ -667,6 +672,13 @@
 
     }
 
+    function groupby(col_name, col_number) {
+        $.post("/change_state/", JSON.stringify({property_name: "aggregate_group_by_attr", property_value: col_name}), function (data) {
+        });
+        aggregates[col_name] = 'group_by';
+        parcoords.aggregates(aggregates);
+        $.snackbar({content: 'Group by attribute has been set to '+ col_name, style: 'toast'});
+    }
 
     function sum(col_name, col_number, obj) {
         perform_aggregation(0, col_name);
@@ -725,8 +737,8 @@
             aggregate_func(data, selected_id_lst);
         });
 
-        aggregates[col_name] = ''
-        parcoords.aggregates(aggregates)
+        aggregates[col_name] = '';
+        parcoords.aggregates(aggregates);
     }
 
     function gridUpdate(data) {
@@ -799,8 +811,8 @@
 
 
         if (selected_ids.length == 0){
-            $('#loading-gif').hide()
-            $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Please select the set of event to generate CEP rules for</p>')
+            $('#loading-gif').hide();
+            $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Please select the set of event to generate CEP rules for</p>');
             return
         }
 
@@ -811,25 +823,25 @@
             data: JSON.stringify({"selected_ids": selected_ids, "checked_columns": checked_columns}),
             dataType: 'json',
             success: function (result) {
-                $('#loading-gif').hide()
+                $('#loading-gif').hide();
 
                 if (result['success']==true) {
 
-                    var false_positive_indexes = result['filtered']
-                    console.log(false_positive_indexes)
+                    var false_positive_indexes = result['filtered'];
+                    console.log(false_positive_indexes);
 
-                    var false_positives = []
+                    var false_positives = [];
 
                     for (var index in false_positive_indexes){
                         false_positives.push(data[false_positive_indexes[index]])
                     }
 
-                    console.log(false_positives)
+                    console.log(false_positives);
 
-                    var current_color = parcoords.state.color
-                    parcoords.color('#FF0000')
-                    parcoords.highlight(false_positives)
-                    parcoords.color(current_color)
+                    var current_color = parcoords.state.color;
+                    parcoords.color('#FF0000');
+                    parcoords.highlight(false_positives);
+                    parcoords.color(current_color);
 
 
                     for (var rule in result.rules) {
@@ -843,9 +855,9 @@
                     }
                 }
                 else {
-                    $('#loading-gif').hide()
+                    $('#loading-gif').hide();
                     $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Unable to generate rules. Please try again.</p>')
-                    return
+                    return true;
                 }
             }
         });

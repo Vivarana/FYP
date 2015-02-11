@@ -71,6 +71,7 @@ ANOMALY_DICT = 'anomaly_dict'
 AGGREGATE_FUNCTION_ON_ATTR = 'aggregate_function_on_attribute'
 ALL_ATTRIBUTE_LST = 'all_attribute_lst'
 REMOVED_ATTRIBUTE_LST = 'removed_attribute_lst'
+AGGREGATE_GROUP_BY_ATTR = 'aggregate_group_by_attr'
 
 BRUSH_MODE = 'brush_mode'
 ONE_BRUSH = '1D-axes'

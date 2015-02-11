@@ -55,6 +55,7 @@ state_map = {
 
     # stores attribute name as key and (aggregate func, window type, granularity, window size)
     AGGREGATE_FUNCTION_ON_ATTR: {},  # p
+    AGGREGATE_GROUP_BY_ATTR: None,
 
     ALL_ATTRIBUTE_LST: [],  # p
     REMOVED_ATTRIBUTE_LST: [],
@@ -168,31 +169,26 @@ def aggregator(request):
 
         aggregated_cols = state_map[AGGREGATE_FUNCTION_ON_ATTR]
 
-        if (attribute_name in aggregated_cols) and aggregated_cols[attribute_name][0] \
-                == aggregate_functions[aggregate_func]:
-            # if attribute is already aggregated with same function
-            df = current_data_frame.iloc[selected_ids, :]
-            json_out = df.to_json(orient='records')
-            return HttpResponse(json_out)
-        else:
-            set_aggregate_state(state_map, aggregate_functions[aggregate_func], attribute_name)
+        set_aggregate_state(state_map, aggregate_functions[aggregate_func], attribute_name)
 
-            if window_type == TIME_WINDOW:
-                new_data_frame = aggregate.aggregate_time_window(aggregate_func,
-                                                                 state_map[TIME_WINDOW_VALUE],
-                                                                 state_map[TIME_GRANULARITY],
-                                                                 attribute_name, original_data_frame,
-                                                                 current_data_frame)
+        if window_type == TIME_WINDOW:
+            new_data_frame = aggregate.aggregate_time_window(aggregate_func,
+                                                             state_map[TIME_WINDOW_VALUE],
+                                                             state_map[TIME_GRANULARITY],
+                                                             attribute_name, original_data_frame,
+                                                             current_data_frame,
+                                                             state_map[AGGREGATE_GROUP_BY_ATTR])
 
-            elif window_type == EVENT_WINDOW:
-                new_data_frame = aggregate.aggregate_event_window(aggregate_func,
-                                                                  attribute_name,
-                                                                  state_map[EVENT_WINDOW_VALUE], original_data_frame,
-                                                                  current_data_frame)
+        elif window_type == EVENT_WINDOW:
+            new_data_frame = aggregate.aggregate_event_window(aggregate_func,
+                                                              attribute_name,
+                                                              state_map[EVENT_WINDOW_VALUE], original_data_frame,
+                                                              current_data_frame,
+                                                              state_map[AGGREGATE_GROUP_BY_ATTR])
 
-            df = new_data_frame.iloc[selected_ids, :]
-            json_out = df.to_json(orient='records')
-            return HttpResponse(json_out)
+        df = new_data_frame.iloc[selected_ids, :]
+        json_out = df.to_json(orient='records')
+        return HttpResponse(json_out)
 
 
 def set_window(request):
@@ -308,6 +304,8 @@ def reset_axis(request):
         current_data_frame[attribute_name] = original_data_frame[attribute_name]
         df = current_data_frame.iloc[selected_ids, :]
         json_out = df.to_json(orient='records')
+        if state_map[AGGREGATE_GROUP_BY_ATTR] == attribute_name:
+            state_map[AGGREGATE_GROUP_BY_ATTR] = None
         return HttpResponse(json_out)
 
 
