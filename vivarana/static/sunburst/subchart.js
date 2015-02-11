@@ -1,6 +1,9 @@
-var subwidth =  width;
+var subwidth = width;
 var subheight = height;
-var subradius =  Math.min(subwidth, subheight-seq_height) / 2;
+var subradius = Math.min(subwidth, subheight - seq_height) / 2;
+
+var subInnerRad = 50;
+var subRadiusIncrement = 20;
 
 var subvis = d3.select("#chart2").append("svg:svg")
     .attr("width", width)
@@ -8,17 +11,14 @@ var subvis = d3.select("#chart2").append("svg:svg")
     .append("sub:g")
     .attr("id", "subcontainer")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 1 / 2 + ")")
-    .on("mouseover", subchartmouseover)
-    .on("mouseleave",mouseleave);
+    .on("mouseleave", mouseleave);
 var subpartition = d3.layout.partition()
     .size([2 * Math.PI, subradius * subradius])
     .value(function (d) {
         return d.size;
     });
-//.sort(function comparator(a,b){return a.value - b.value });
-//.children(function children(d){return d.children});
 
-var subarc = d3.svg.arc()
+subarc = d3.svg.arc()
     .startAngle(function (d) {
         return d.x;
     })
@@ -26,12 +26,11 @@ var subarc = d3.svg.arc()
         return d.x + d.dx;
     })
     .innerRadius(function (d) {
-        return  Math.sqrt(d.y+40)*4;
+        return  Math.min(1, d.depth) * subInnerRad + Math.max(0, d.depth - 1) * subRadiusIncrement;
     })
     .outerRadius(function (d) {
-        return Math.sqrt(d.y + d.dy+40)*4;
+        return subInnerRad + d.depth * subRadiusIncrement;
     });
-
 
 function createSubchart(node) {
 
@@ -42,10 +41,6 @@ function createSubchart(node) {
         .style("opacity", 0);
 
     var subnodes = partition.nodes(node); // add depth
-   // .filter(function(d) {
-   //     return (d.depth < 20+node.depth); // 0.005 radians = 0.29 degrees
-   // });
-    //subnodes = partition.nodes(subnodes.data);
 
     var subpath = subvis.datum(node).selectAll("path")
         .data(subnodes)
@@ -59,13 +54,7 @@ function createSubchart(node) {
             return colors[d.name];
         })
         .style("opacity", 1)
-        .on("mouseover", mouseover);
+        .on("mouseover", mouseover)
+        .on("click", mouseclick);
 
-};
-
-function subchartmouseover() {
-
-    //subvis.attr("transform", "translate(" + 850 + "," + height / 2 + ")");
-    //vis.attr("transform", "scale(" + 1 / 2 + ")");
-    //d3.select("#explanation").style("transform", "translate(675px)");
 };

@@ -25,7 +25,7 @@ def get_unique_coalesce_strings(dataframe, coalesce):
 
 def get_sessions_data(frame, group_by, coalesce):
     """
-    This function groups datafrom from one column and gets the result
+    This function groups data from from one column and gets the result
     :param frame: dataframe
     :param group_by: grouping column name
     :param coalesce: grouped column name

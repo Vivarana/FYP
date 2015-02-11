@@ -1,5 +1,7 @@
+from django.core.serializers.json import DjangoJSONEncoder
 import data_processor as sun_dp
 import json_parser as sun_jp
+import callback_helper_functions as chf
 import constants as sun_ct
 
 import json
@@ -20,3 +22,6 @@ def give_tree_data_structure(cur_dataframe,coalesce):
 def give_unique_coalesce_strings(cur_dataframe,coalesce):
     return json.dumps(sun_dp.get_unique_coalesce_strings(cur_dataframe, coalesce))
 
+
+def get_max_seq_length():
+    return json.dumps({"maxwidth":chf.return_max_depth()},cls=DjangoJSONEncoder)

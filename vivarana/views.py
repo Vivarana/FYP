@@ -275,6 +275,8 @@ def preprocessor(request):
             global grouped_column
             grouping_column = request.POST.get(GROUPING_COL_NAME).encode('UTF8')
             grouped_column = request.POST.get(GROUPED_COL_NAME).encode('UTF8')
+            #create sunburst database
+            sun_views.initialize_database(current_data_frame,grouping_column,grouped_column)
             return redirect(
                 SUNBURST_PATH + "?" + GROUP_BY + "=" + grouping_column + "&" + COALESCE + "=" + grouped_column)
     else:
@@ -326,12 +328,12 @@ def sunburst(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
         return redirect(HOME_PATH)
     context = {"grouping": grouping_column, "grouped": grouped_column}
-
     return render(request, SUNBURST_PAGE, context)
 
+def get_max_seq_width(request):
+    return HttpResponse(sun_views.get_max_seq_length())
 
 def get_tree_data(request):
-    sun_views.initialize_database(current_data_frame,grouping_column,grouped_column)
     return HttpResponse(sun_views.give_tree_data_structure(current_data_frame,grouped_column))
 
 
@@ -380,6 +382,7 @@ def apache_log_format(request):
         response = parse_file(request)
         json_response = json.dumps(response)
         return HttpResponse(json_response)
+
 
 
 #def get_session_sequence(request):
