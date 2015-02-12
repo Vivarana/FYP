@@ -83,6 +83,22 @@ aggregate_functions = {
 }
 
 
+def zoom_data(request):
+    if request.method == POST:
+        params = json.loads(request.body)
+        # user_operation = params[]
+
+        # selected_ids = params['selected_ids']
+        return HttpResponse("success")
+
+
+
+
+def get_state_obj(request):
+    json_response = json.dumps(get_state_info(state_map))
+    return HttpResponse(json_response)
+
+
 def change_state(request):
     if request.method == POST:
         params = simplejson.loads(request.body, "utf-8")
@@ -329,12 +345,12 @@ def sunburst(request):
 
 
 def get_tree_data(request):
-    sun_views.initialize_database(current_data_frame,grouping_column,grouped_column)
-    return HttpResponse(sun_views.give_tree_data_structure(current_data_frame,grouped_column))
+    sun_views.initialize_database(current_data_frame, grouping_column, grouped_column)
+    return HttpResponse(sun_views.give_tree_data_structure(current_data_frame, grouped_column))
 
 
 def get_unique_strings(request):
-    return HttpResponse(sun_views.give_unique_coalesce_strings(current_data_frame,grouped_column))
+    return HttpResponse(sun_views.give_unique_coalesce_strings(current_data_frame, grouped_column))
 
 
 def parse_file(request):
@@ -380,7 +396,7 @@ def apache_log_format(request):
         return HttpResponse(json_response)
 
 
-#def get_session_sequence(request):
+# def get_session_sequence(request):
 #    return HttpResponse(sun_dp.get_session_info(current_data_frame, grouping_column, grouped_column))
 
 

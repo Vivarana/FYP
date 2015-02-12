@@ -9,8 +9,71 @@ $(document).ready(function () {
         $("[data-toggle='tooltip']").tooltip();
     });
 
-
 });
+
+
+function displaySystemState() {
+    var modal_body = '<dl class="dl-horizontal">';
+    $.getJSON('/get_state_obj/', {}, function (data) {
+        if (data['clustering-algo-radios'] !== null) {
+            if (data['clustering-algo-radios'] === 'hierarchical-cluster') {
+                data['clustering-algo-radios'] = 'Hierarchical Clustering';
+            } else if (data['clustering-algo-radios'] === 'kmeans-cluster') {
+                data['clustering-algo-radios'] = 'K-modes Clustering';
+            } else if (data['clustering-algo-radios'] === 'fuzzy-cluster') {
+                data['clustering-algo-radios'] = 'Fuzzy Clustering';
+            }
+
+            modal_body += '<dt> Clustering Method Used</dt><dd>' + data['clustering-algo-radios'] + '</dd>';
+            modal_body += '<dt> Number of Clusters Specified </dt><dd>' + data['number-of-clusters'] + '</dd>';
+            modal_body += '<dt> Attributes used for Clustering</dt><dd>' + data.cluster_columns_lst + '</dd>';
+            modal_body += '</br>';
+        }
+
+        if (data.time_window_enabled) {
+            modal_body += '<dt> Granularity of Current Time Window </dt><dd>' + data.time_granularity + '</dd>';
+            modal_body += '<dt> Size of Current Time Window </dt><dd>' + data.time_window_value + '</dd>';
+            modal_body += '</br>';
+        } else {
+            if (data.event_window_value !== null) {
+                modal_body += '<dt> Size of Current Event Window </dt><dd>' + data.event_window_value + '</dd>';
+            }
+            modal_body += '</br>';
+        }
+        var agrt_dict = data.aggregate_function_on_attribute;
+        if (Object.keys(agrt_dict).length > 0) {
+            modal_body += '<table class="table"><thead><tr><th>Attribute Name</th><th>Aggregate Operation</th><th>Window Size</th><th>Window Type</th></thead><tbody>';
+
+            for (var key in agrt_dict) {
+                if (agrt_dict.hasOwnProperty(key)) {
+                    var val = agrt_dict[key];
+                    if (val[1] !== 'event') {
+                        modal_body += '<tr><td>' + key + '</td><td>' + val[0] + '</td><td>' + val[3] + val[2] + '</td><td>' + val[1] + '</td>'
+                    } else {
+                        modal_body += '<tr><td>' + key + '</td><td>' + val[0] + '</td><td>' + val[3] + '</td><td>' + val[1] + '</td>'
+                    }
+                }
+            }
+            modal_body += '</table>';
+        }
+        if (data.aggregate_group_by_attr !== null) {
+            modal_body += '<dt> Attribute used for Group_by Operation </dt><dd>' + data.aggregate_group_by_attr + '</dd>';
+        }
+
+        modal_body += '</br>';
+        modal_body += '<dt> All Attributes </dt><dd>' + data.all_attribute_lst + '</dd>';
+
+        if (data.removed_attribute_lst.length > 0) {
+            modal_body += '<dt> Removed Attributes </dt><dd>' + data.removed_attribute_lst + '</dd>';
+        }
+
+        modal_body += '</dl>';
+        $("#state_modal_body").html(modal_body);
+        $('#state_modal').modal('toggle');
+    });
+
+}
+
 
 function setEventWindow() {
     var isDisabled = $('#event-window').prop('disabled');
@@ -93,10 +156,10 @@ function performClustering() {
         $.getJSON('/current_column_lst/', {}, function (data) {
             var col_list = data.attribute_list;
 
-            for (var i=0;i<col_list.length;i++) {
+            for (var i = 0; i < col_list.length; i++) {
                 html_string += "<div class='checkbox'><label><input type='checkbox' name='column_for_cluster' value='" +
                     col_list[i] + "' checked> " +
-                    "<span class='ripple'></span>"+
+                    "<span class='ripple'></span>" +
                     "<span class='check'>" +
                     "</span>"
                     + col_list[i] + "</label></div>"

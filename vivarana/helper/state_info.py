@@ -1,5 +1,17 @@
 import json
+import copy
 from vivarana.constants import *
+
+
+def get_state_info(state_map):
+    state = copy.deepcopy(state_map)
+    del state[DATA_LST]
+    return state
+
+
+def set_current_data_lst(state_map, selected_id_lst):
+    new_data_dict = {CURRENT_ROW_IDS_LST: selected_id_lst, CURRENT_PAGE_NUMBER: state_map[ACTIVE_PAGE_NUMBER]}
+    state_map[DATA_LST].append(new_data_dict)
 
 
 def set_current_data(state_map, start_id, end_id, current_page_no):
@@ -57,7 +69,7 @@ def get_current_attribute_list(state_map):
 
 
 def write_state_to_file(state_map):
-    a=1
+    a = 1
     # with open('state.json', 'a') as fp:
-    #     json.dump(state_map, fp)
-    #     fp.write("\n")
+    # json.dump(state_map, fp)
+    # fp.write("\n")

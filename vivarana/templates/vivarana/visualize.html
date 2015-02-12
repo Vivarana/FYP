@@ -87,6 +87,25 @@
         </div>
     </div>
 
+    <!-- Container for the dialog that appear on clicking the system state button -->
+    <div class="modal fade" id="state_modal" tabindex="-1" role="dialog" aria-labelledby="stateModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="stateModalLabel">Current State of the System</h4>
+                </div>
+                <div class="modal-body" id="state_modal_body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Container for the main visualization -->
     <div id="parcoords-main" class="parcoords"></div>
 
@@ -183,8 +202,23 @@
         if (parcoords.brushed()) {
 
             var new_data = parcoords.brushed();
-            datastack.push(parcoords.data());
+            var id_lst = [];
+            new_data.forEach(function (d, i) {
+                id_lst.push(d.id);
+            });
+
+            $.ajax({
+                url: '/zoom_data/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({"selected_ids": id_lst, "user_operation": 'keep' }),
+                dataType: 'json',
+                success: function (result) {
+
+                }
+            });
             drawData(new_data);
+            gridUpdate(new_data);
 
             $("#btn-undo").css('display', 'block');
             $("#btn-clear").css('display', 'block');
@@ -632,7 +666,7 @@
 
         $(".cover, .loading-model").hide();
         //todo change this
-        var aggregate_function_list = {0 :'sum', 1:'average', 2:'min', 3:'max', 4:'count'};
+        var aggregate_function_list = {0: 'sum', 1: 'average', 2: 'min', 3: 'max', 4: 'count'};
 
         aggregates[attribute_name] = aggregate_function_list[aggregate_function];
 
@@ -677,7 +711,7 @@
         });
         aggregates[col_name] = 'group_by';
         parcoords.aggregates(aggregates);
-        $.snackbar({content: 'Group by attribute has been set to '+ col_name, style: 'toast'});
+        $.snackbar({content: 'Group by attribute has been set to ' + col_name, style: 'toast'});
     }
 
     function sum(col_name, col_number, obj) {
@@ -810,7 +844,7 @@
         }
 
 
-        if (selected_ids.length == 0){
+        if (selected_ids.length == 0) {
             $('#loading-gif').hide();
             $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Please select the set of event to generate CEP rules for</p>');
             return
@@ -825,14 +859,14 @@
             success: function (result) {
                 $('#loading-gif').hide();
 
-                if (result['success']==true) {
+                if (result['success'] == true) {
 
                     var false_positive_indexes = result['filtered'];
                     console.log(false_positive_indexes);
 
                     var false_positives = [];
 
-                    for (var index in false_positive_indexes){
+                    for (var index in false_positive_indexes) {
                         false_positives.push(data[false_positive_indexes[index]])
                     }
 
