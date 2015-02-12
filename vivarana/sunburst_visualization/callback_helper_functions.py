@@ -4,6 +4,7 @@ from vivarana.sunburst_visualization.constants import *
 import data_processor as sun_dp
 
 
+maxDepth = 0
 #creates dict from every row of split dataframe by grouping
 def event_dict(x):
     y = {}
@@ -15,8 +16,10 @@ def event_dict(x):
     # return stringified representation
     return json.dumps(y)
 
+
 # further process and add some more values to create seq database structure
 def event_seq_no(x):
+    global maxDepth
     seq_database = {}
     seq_database["data"]=[]
     seq_database["projections"]=[]
@@ -26,6 +29,9 @@ def event_seq_no(x):
         dictr = json.loads(x.values[event_no],parse_float=None, parse_int=None, parse_constant=None)
         #add event no of the sequence to event object
         dictr["seq_no"]=event_no
+        # get the maximum length of event
+        if event_no> maxDepth:
+            maxDepth = event_no
         seq_list.append(dictr)
     return json.dumps(seq_database)
 
@@ -54,4 +60,8 @@ def reformatdate(date):
 def parse_dataframe_date(dataframe):
     dataframe.index = pd.to_datetime(pd.Series([reformatdate(convertdate(date)) for date in dataframe.index]))
     return dataframe
+
+
+def return_max_depth():
+    return maxDepth
 ###################################################################
