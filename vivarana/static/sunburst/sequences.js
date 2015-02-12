@@ -226,7 +226,11 @@ function mouseover(d) {
 
     var sequenceArray = getAncestors(d);
     var breadcrumbSequenceArray = sequenceArray.slice(sequenceArray.length-10,sequenceArray.length);
-    updateBreadcrumbs(breadcrumbSequenceArray, percentageString);
+    if(sequenceArray.length <=10){
+         updateBreadcrumbs(sequenceArray, percentageString);
+    }else{
+        updateBreadcrumbs(breadcrumbSequenceArray, percentageString);
+    }
 
     // Fade all the segments.
     d3.selectAll("path")
@@ -286,7 +290,7 @@ function initializeBreadcrumbTrail() {
     // Add the svg area.
     var trail = d3.select("#sequence").append("svg:svg")
         .attr("width", $(window).width())
-        .attr("height", 50)
+        .attr("height", 30)
         .attr("id", "trail");
     // defs to clip path of the text within trail polygon
 
