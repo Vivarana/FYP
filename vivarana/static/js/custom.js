@@ -42,15 +42,15 @@ function displaySystemState() {
         }
         var agrt_dict = data.aggregate_function_on_attribute;
         if (Object.keys(agrt_dict).length > 0) {
-            modal_body += '<table class="table"><thead><tr><th>Attribute Name</th><th>Aggregate Operation</th><th>Window Size</th><th>Window Type</th></thead><tbody>';
+            modal_body += '<table class="table"><thead><tr><th>Attribute Name</th><th>Aggregate Operation</th><th>Window Size</th><th>Window Type</th><th>group_by attribute</th></thead><tbody>';
 
             for (var key in agrt_dict) {
                 if (agrt_dict.hasOwnProperty(key)) {
                     var val = agrt_dict[key];
                     if (val[1] !== 'event') {
-                        modal_body += '<tr><td>' + key + '</td><td>' + val[0] + '</td><td>' + val[3] + val[2] + '</td><td>' + val[1] + '</td>'
+                        modal_body += '<tr><td>' + key + '</td><td>' + val[0] + '</td><td>' + val[3] + val[2] + '</td><td>' + val[1] + '</td><td>'+val[4]+'</td>'
                     } else {
-                        modal_body += '<tr><td>' + key + '</td><td>' + val[0] + '</td><td>' + val[3] + '</td><td>' + val[1] + '</td>'
+                        modal_body += '<tr><td>' + key + '</td><td>' + val[0] + '</td><td>' + val[3] + '</td><td>' + val[1] + '</td><td>'+val[4]+'</td>'
                     }
                 }
             }

@@ -38,10 +38,12 @@ def set_aggregate_state(state_map, aggregate_func, attribute_name):
     time_window_enabled = state_map[TIME_WINDOW_ENABLED]
     if time_window_enabled:
         state_map[AGGREGATE_FUNCTION_ON_ATTR][attribute_name] = (
-            aggregate_func, state_map[WINDOW_TYPE], state_map[TIME_GRANULARITY], state_map[TIME_WINDOW_VALUE])
+            aggregate_func, state_map[WINDOW_TYPE], state_map[TIME_GRANULARITY], state_map[TIME_WINDOW_VALUE],
+            state_map[AGGREGATE_GROUP_BY_ATTR])
     else:
         state_map[AGGREGATE_FUNCTION_ON_ATTR][attribute_name] = (
-            aggregate_func, state_map[WINDOW_TYPE], None, state_map[EVENT_WINDOW_VALUE])
+            aggregate_func, state_map[WINDOW_TYPE], None, state_map[EVENT_WINDOW_VALUE],
+            state_map[AGGREGATE_GROUP_BY_ATTR])
     write_state_to_file(state_map)
 
 

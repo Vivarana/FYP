@@ -53,7 +53,7 @@ state_map = {
 
     ANOMALY_DETECT_COLUMN: None,
 
-    # stores attribute name as key and (aggregate func, window type, granularity, window size)
+    # stores attribute name as key and (aggregate func, window type, granularity, window size, groupby attribute)
     AGGREGATE_FUNCTION_ON_ATTR: {},  # p
     AGGREGATE_GROUP_BY_ATTR: None,
 
@@ -86,9 +86,10 @@ aggregate_functions = {
 def zoom_data(request):
     if request.method == POST:
         params = json.loads(request.body)
-        # user_operation = params[]
-
-        # selected_ids = params['selected_ids']
+        user_operation = params['user_operation']
+        if user_operation == 'keep':
+            selected_ids = params['selected_ids']
+            set_current_data_lst(state_map, selected_ids)
         return HttpResponse("success")
 
 
@@ -183,26 +184,37 @@ def aggregator(request):
 
         aggregated_cols = state_map[AGGREGATE_FUNCTION_ON_ATTR]
 
-        set_aggregate_state(state_map, aggregate_functions[aggregate_func], attribute_name)
+        if (attribute_name in aggregated_cols) and \
+                        aggregated_cols[attribute_name][0] == aggregate_functions[aggregate_func] and \
+                (aggregated_cols[attribute_name][3] == state_map[EVENT_WINDOW_VALUE] or
+                         aggregated_cols[attribute_name][3] == state_map[TIME_WINDOW_VALUE]) and \
+                (aggregated_cols[attribute_name][4] == state_map[AGGREGATE_GROUP_BY_ATTR]):
+            # if attribute is already aggregated with same function
+            df = current_data_frame.iloc[selected_ids, :]
+            json_out = df.to_json(orient='records')
+            return HttpResponse(json_out)
+        else:
 
-        if window_type == TIME_WINDOW:
-            new_data_frame = aggregate.aggregate_time_window(aggregate_func,
-                                                             state_map[TIME_WINDOW_VALUE],
-                                                             state_map[TIME_GRANULARITY],
-                                                             attribute_name, original_data_frame,
-                                                             current_data_frame,
-                                                             state_map[AGGREGATE_GROUP_BY_ATTR])
+            set_aggregate_state(state_map, aggregate_functions[aggregate_func], attribute_name)
 
-        elif window_type == EVENT_WINDOW:
-            new_data_frame = aggregate.aggregate_event_window(aggregate_func,
-                                                              attribute_name,
-                                                              state_map[EVENT_WINDOW_VALUE], original_data_frame,
-                                                              current_data_frame,
-                                                              state_map[AGGREGATE_GROUP_BY_ATTR])
+            if window_type == TIME_WINDOW:
+                new_data_frame = aggregate.aggregate_time_window(aggregate_func,
+                                                                 state_map[TIME_WINDOW_VALUE],
+                                                                 state_map[TIME_GRANULARITY],
+                                                                 attribute_name, original_data_frame,
+                                                                 current_data_frame,
+                                                                 state_map[AGGREGATE_GROUP_BY_ATTR])
 
-        df = new_data_frame.iloc[selected_ids, :]
-        json_out = df.to_json(orient='records')
-        return HttpResponse(json_out)
+            elif window_type == EVENT_WINDOW:
+                new_data_frame = aggregate.aggregate_event_window(aggregate_func,
+                                                                  attribute_name,
+                                                                  state_map[EVENT_WINDOW_VALUE], original_data_frame,
+                                                                  current_data_frame,
+                                                                  state_map[AGGREGATE_GROUP_BY_ATTR])
+
+            df = new_data_frame.iloc[selected_ids, :]
+            json_out = df.to_json(orient='records')
+            return HttpResponse(json_out)
 
 
 def set_window(request):
@@ -399,7 +411,7 @@ def apache_log_format(request):
 
 
 # def get_session_sequence(request):
-#    return HttpResponse(sun_dp.get_session_info(current_data_frame, grouping_column, grouped_column))
+# return HttpResponse(sun_dp.get_session_info(current_data_frame, grouping_column, grouped_column))
 
 
 
