@@ -90,7 +90,15 @@ def zoom_data(request):
         if user_operation == 'keep':
             selected_ids = params['selected_ids']
             set_current_data_lst(state_map, selected_ids)
-        return HttpResponse("success")
+            return HttpResponse("success")
+        elif user_operation == 'undo':
+            context = undo_on_current_data_lst(state_map, current_data_frame)
+            json_response = json.dumps(context)
+            return HttpResponse(json_response)
+        elif user_operation == 'reset':
+            context = reset_current_data_lst(state_map, current_data_frame)
+            json_response = json.dumps(context)
+            return HttpResponse(json_response)
 
 
 def get_state_obj(request):
@@ -129,10 +137,11 @@ def visualize(request):
         return redirect(HOME_PATH)
     if 'clusterID' not in current_data_frame.columns:
         current_data_frame['clusterID'] = 0
+
     column_types = file_helper.get_compatible_column_types(current_data_frame)
     data_start, is_last_page, json_output = process_pagination(state_map, current_data_frame)
     state_map[TIME_WINDOW_ENABLED] = 'Date' in current_data_frame.columns
-
+    state_map[DATA_LST] = []
     context = {'columns': column_types, 'result': json_output, 'is_last_page': is_last_page, "start_id": data_start,
                'state_map': state_map}
     return render(request, 'vivarana/visualize.html', context)
@@ -243,7 +252,7 @@ def clustering(request):
         state_map[NUMBER_OF_CLUSTERS] = int(params[NUMBER_OF_CLUSTERS])
         selected_ids = params['selected_ids']
         clustered_dict = apply_clustering(state_map, current_data_frame, selected_ids)
-        set_current_data_on_clustering(state_map, selected_ids, clustered_dict)
+        # set_current_data_on_clustering(state_map, selected_ids, clustered_dict)
         json_response = json.dumps(clustered_dict)
         return HttpResponse(json_response)
 

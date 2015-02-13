@@ -1,5 +1,5 @@
 .slider {
-    min-width: 150px;
+    min-width: 125px;
     margin: 5px 15px;
 }
 
@@ -10,9 +10,9 @@
     color: rgba(255, 255, 255, 0.84);
 }
 
-#curve-slider-container, #bundling-slider-container {
-    display: none;
-}
+/*#curve-slider-container, #bundling-slider-container {*/
+    /*display: none;*/
+/*}*/
 
 #rule-right {
     float: right;
@@ -93,5 +93,10 @@
 }
 
 .dl-horizontal dt {
+    white-space: normal;
+}
+
+
+.dl-horizontal dd {
     white-space: normal;
 }

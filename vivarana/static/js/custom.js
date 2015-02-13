@@ -26,11 +26,11 @@ function displaySystemState() {
 
             modal_body += '<dt> Clustering Method Used</dt><dd>' + data['clustering-algo-radios'] + '</dd>';
             modal_body += '<dt> Number of Clusters Specified </dt><dd>' + data['number-of-clusters'] + '</dd>';
-            modal_body += '<dt> Attributes used for Clustering</dt><dd>' + data.cluster_columns_lst + '</dd>';
+            modal_body += '<dt> Attributes used for Clustering</dt><dd>' + data.cluster_columns_lst.join(', ') + '</dd>';
             modal_body += '</br>';
         }
 
-        if (data.time_window_enabled) {
+        if (data.time_window_value !== null) {
             modal_body += '<dt> Granularity of Current Time Window </dt><dd>' + data.time_granularity + '</dd>';
             modal_body += '<dt> Size of Current Time Window </dt><dd>' + data.time_window_value + '</dd>';
             modal_body += '</br>';
@@ -61,10 +61,10 @@ function displaySystemState() {
         }
 
         modal_body += '</br>';
-        modal_body += '<dt> All Attributes </dt><dd>' + data.all_attribute_lst + '</dd>';
+        modal_body += '<dt> All Attributes </dt><dd>' + data.all_attribute_lst.join(', ') + '</dd>';
 
         if (data.removed_attribute_lst.length > 0) {
-            modal_body += '<dt> Removed Attributes </dt><dd>' + data.removed_attribute_lst + '</dd>';
+            modal_body += '<dt> Removed Attributes </dt><dd>' + data.removed_attribute_lst.join(', ') + '</dd>';
         }
 
         modal_body += '</dl>';

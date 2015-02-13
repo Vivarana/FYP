@@ -1,5 +1,4 @@
 from vivarana.constants import *
-from vivarana.helper.state_info import set_current_data
 
 
 def process_pagination(state_map, current_data_frame):
@@ -9,7 +8,8 @@ def process_pagination(state_map, current_data_frame):
     data_start = page_number * state_map[PAGE_SIZE]
     data_end = (page_number + 1) * state_map[PAGE_SIZE]
 
-    set_current_data(state_map, data_start, data_end, page_number)
+    state_map[DATA_LST] = []
+    # set_current_data(state_map, data_start, data_end, page_number)
 
     if state_map[NUMBER_PAGES] > 1:
         if is_last_page:
