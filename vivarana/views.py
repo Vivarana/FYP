@@ -138,8 +138,6 @@ def home(request):
 def visualize(request):
     if not type(original_data_frame) is pandas.core.frame.DataFrame:
         return redirect(HOME_PATH)
-    if 'clusterID' not in current_data_frame.columns:
-        current_data_frame['clusterID'] = 0
 
     # getting the aggregates in correct format for column naming.
     aggregates = {}

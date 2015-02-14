@@ -217,6 +217,26 @@
         }
     }
 
+    function drawDataWithNewColumn(new_data) {
+        data = new_data;
+        new_grid_data = new_data;
+        parcoords.brushMode("1D-axes");
+        parcoords.brushMode("2D-strums");
+        if ($('[id="oneBrushing-radio"]').is(':checked')) {
+            parcoords
+                    .data(data)
+                    .resize()
+                    .render()
+                    .brushMode("1D-axes");
+        } else {
+            parcoords
+                    .data(data)
+                    .resize()
+                    .render()
+                    .brushMode("2D-strums");
+        }
+    }
+
     function keep_data() {
         if (parcoords.brushed()) {
 
@@ -940,6 +960,13 @@
                 for (var i in brushed_data) {
                     brushed_data[i]['clusterID'] = lst[i];
                 }
+
+                data_types['clusterID'] = 'string'
+
+                parcoords.data(data)
+                         .types(data_types)
+                         .drawWithNewColumn();
+
                 drawData(brushed_data);
                 gridUpdate(brushed_data);
                 $(".cover, .loading-model").hide();

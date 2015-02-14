@@ -1302,6 +1302,30 @@ d3.parcoords = function (config) {
         return this;
     };
 
+    pc.drawWithNewColumn = function () {
+        // selection size
+        pc.selection.select("svg")
+            .attr("width", __.width)
+            .attr("height", __.height)
+        pc.svg.attr("transform", "translate(" + __.margin.left + "," + __.margin.top + ")");
+
+        // FIXME: the current brush state should pass through
+        if (flags.brushable) pc.brushReset();
+
+        // scales
+        pc.detectDimensions()
+        pc.autoscale();
+
+        // axes, destroys old brushes.
+        pc.createAxes();
+        if (flags.shadows) paths(__.data, ctx.shadows);
+        if (flags.brushable) pc.brushable();
+        if (flags.reorderable) pc.reorderable();
+
+        events.resize.call(this, {width: __.width, height: __.height, margin: __.margin});
+        return this;
+    };
+
     // highlight an array of data
     pc.highlight = function (data) {
         pc.clear("highlight");
