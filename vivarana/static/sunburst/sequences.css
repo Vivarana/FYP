@@ -4,30 +4,29 @@ body {
     font-weight: 400;
     background-color: #fff;
 }
+
+#main {
+    float: left;
+    margin-top:  50px;
+}
+#rulegenerator {
+    float: left;
+    margin-top:   70px;
+    display: none;
+}
+
 #sidebar {
     float: right;
     width: 100px;
 }
-
-#legend {
-    padding: 10px 0 0 3px;
-}
-
-#percentage-slider{
-    min-width: 300px;
-}
-
-/* breadcrumb trail*/
 
 #sequence {
     height: 30px;
     position: fixed;
 }
 
-/* main svg visualization*/
-#main {
-    float: left;
-    margin-top:  50px;
+#legend {
+    padding: 10px 0 0 3px;
 }
 
 #sequence text, #legend text {
@@ -58,8 +57,6 @@ body {
 #percentage {
     font-size: 2.5em;
 }
-
-/* second svg visualization */
 #chart2 {
     float: left;
 }
@@ -68,36 +65,29 @@ body {
     stroke: #fff;
 }
 
-/* rule generation panel*/
-
-#rulegenerator {
-    float: left;
-    margin-top:   70px;
-    display: none;
-    width: 50%;
+#explanation2 {
+    position: absolute;
+    top: 260px;
+    left: 305px;
+    width: 140px;
+    text-align: center;
+    color: #666;
+    z-index: 250;
+    transform: None;
 }
 
-#rulepanel{
-    height: 700px;
-
+#percentage2 {
+    font-size: 2.5em;
 }
-#element-input{
-    padding: 15px 15px 15px 15px;
-}
-
-#ruleconfirm{
-    float: right;
-    margin-top: 15px;
-    margin-bottom: 15px
+#percentage-slider{
+    min-width: 300px;
 }
 
-.panel-heading {
-    min-height: 20px;
-}
 #close {
     float:right;
     display:inline-block;
-    background:inherit;
+    padding:2px 5px;
+    background:#ccc;
 }
 
 #close:hover {
