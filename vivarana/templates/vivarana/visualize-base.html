@@ -47,45 +47,6 @@
 </head>
 
 <body>
-<script>
-    <!--Alpha Slider an exponentionally decaying slider-->
-    $(document).ready(function () {
-    $("#aplha-slider").noUiSlider({
-        start: {{ state_map.alpha_opacity }},
-        connect: "lower",
-        range: {
-            'min': [0 ],
-            '20%': [0.05],
-            '50%': [0.1],
-            '70%': [0.25],
-            '80%': [0.4],
-            'max': [0.5]
-        }
-    });
-    <!--Slider to control smoothness of Bundling-->
-    $("#curve-slider").noUiSlider({
-        start: {{ state_map.curve_smoothness }},
-        connect: "lower",
-        step: 0.01,
-        range: {
-            min: 0,
-            max: 0.25
-        }
-    });
-    <!--Slider to control curveness of Bundling-->
-    $("#bundling-slider").noUiSlider({
-        start: {{ state_map.bundling_strength }},
-        connect: "lower",
-        step: 0.05,
-        range: {
-            min: 0,
-            max: 1
-        }
-    });
-
-        });
-</script>
-
 <div class="cover"></div>
 <div class="navbar yamm navbar-default">
 <div class="navbar-header">
@@ -98,21 +59,22 @@
 </div>
 <div class="navbar-collapse collapse navbar-responsive-collapse">
 <ul class="nav navbar-nav">
-    <!--Specifying the options for Parallel Coordinates-->
-    <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b
-                class="caret"></b></a>
-        <ul class="dropdown-menu">
-            <div class="yamm-content">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <label class="control-label">Configuration options for parallel coordinates</label></br>
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <form class="form-horizontal">
-                                    <div class="form-group">
-                                        <label class="control-label">Brushing:</label>
+<!--Specifying the options for Parallel Coordinates-->
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b
+            class="caret"></b></a>
+    <ul class="dropdown-menu">
+        <div class="yamm-content">
+            <div class="row">
+                <div class="col-sm-12">
+                    <label class="control-label">Configuration options for parallel coordinates</label></br>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label">Brushing:</label>
 
+                                    {% if state_map.brush_mode == '1D-axes' %}
                                         <div class="radio radio-primary">
                                             <!--Specifying Brushing types-->
                                             <label>
@@ -132,20 +94,68 @@
                                             </div>
 
                                         </div>
-                                        <!--Enabling Cluster Bundling-->
-                                        <div class="checkbox">
+                                    {% else %}
+                                        <div class="radio radio-primary">
+                                            <!--Specifying Brushing types-->
                                             <label>
-                                                <input id="bundling-checkbox" type="checkbox"> Cluster Bundling
+                                                <input type="radio" name="brushingRadios" id="oneBrushing-radio"
+                                                       value="option1">
+                                                1D Brushing
                                             </label>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="col-xs-6 col-sm-6">
-                                <form class="form-horizontal">
 
-                                    <div class="form-group">
-                                        <label class="control-label">Coloring:</label>
+                                            <div class="radio radio-primary">
+                                                <label>
+                                                    <input type="radio" name="brushingRadios"
+                                                           id="twoBrushing-radio"
+                                                           value="option2"
+                                                           checked="">
+                                                    2D Brushing
+                                                </label>
+                                            </div>
+
+                                        </div>
+                                    {% endif %}
+                                    <!--Enabling Cluster Bundling-->
+                                    <div class="checkbox">
+                                        <label>
+                                            {% if state_map.bundling_enabled %}
+                                                <input id="bundling-checkbox" type="checkbox" checked=""> Cluster
+                                                Bundling
+                                            {% else %}
+                                                <input id="bundling-checkbox" type="checkbox"> Cluster
+                                                Bundling
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <form class="form-horizontal">
+
+                                <div class="form-group">
+                                    <label class="control-label">Coloring:</label>
+                                    {% if state_map.cluster_coloring_enabled %}
+                                        <!--Enable cluster coloring-->
+                                        <div class="radio radio-primary">
+                                            <label>
+                                                <input type="radio" name="coloringRadios"
+                                                       id="clusterColoring-radio"
+                                                       value="option3"
+                                                       checked="">
+                                                Enable Cluster Coloring
+                                            </label>
+                                            <!--Enable zscore coloring-->
+                                            <div class="radio radio-primary">
+                                                <label>
+                                                    <input type="radio" name="coloringRadios"
+                                                           id="zScoreColoring-radio"
+                                                           value="option4">
+                                                    Enable Z Score Coloring
+                                                </label>
+                                            </div>
+                                        </div>
+                                    {% elif state_map.zscore_coloring_enabled %}
                                         <!--Enable cluster coloring-->
                                         <div class="radio radio-primary">
                                             <label>
@@ -159,141 +169,148 @@
                                                 <label>
                                                     <input type="radio" name="coloringRadios"
                                                            id="zScoreColoring-radio"
-                                                           value="option4">
+                                                           value="option4"
+                                                           checked="">
                                                     Enable Z Score Coloring
                                                 </label>
                                             </div>
                                         </div>
-                                        <div class="checkbox">
-                                            <!--Alpha Blending-->
-                                            <label>
+                                    {% endif %}
+                                    <div class="checkbox">
+                                        <!--Alpha Blending-->
+                                        <label>
+                                            {% if state_map.alpha_blending_enabled %}
                                                 <input id="alpha-checkbox" type="checkbox" checked=""> Alpha
                                                 Blending
-                                            </label>
-                                        </div>
+                                            {% else %}
+                                                <input id="alpha-checkbox" type="checkbox"> Alpha
+                                                Blending
+                                            {% endif %}
+                                        </label>
                                     </div>
-                                </form>
-                            </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-        </ul>
-    </li>
-    {# end of features dropdown#}
+        </div>
+    </ul>
+</li>
+{# end of features dropdown#}
 
 
-    <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Aggregate <b
-                class="caret"></b></a>
-        <ul class="dropdown-menu" id="timewindow_dropdown">
-            <div class="yamm-content">
-                {% if state_map.time_window_enabled %}
-                    <label class="control-label">Specify the time window:</label>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <input id="time-window" type="number" class="form-control"
-                                   value="30">
-                        </div>
-                        <div class="col-xs-3">
-                            <select class="form-control" id="granularity-select">
-                                <option>seconds</option>
-                                <option>minutes</option>
-                                <option>days</option>
-                            </select>
-                        </div>
-                        <div class="col-xs-1">
-                            <a href="javascript:setTimeWindow()" id="set-time-window-btn"
-                               class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
-                        </div>
-                        <div class="col-xs-2">
-                            <a href="javascript:clearTimeWindow()" id="clear-time-window-btn"
-                               class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
-                        </div>
-                    </div>
-                {% endif %}
-                <label class="control-label">Specify the event window:</label>
-
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Aggregate <b
+            class="caret"></b></a>
+    <ul class="dropdown-menu" id="timewindow_dropdown">
+        <div class="yamm-content">
+            {% if state_map.time_window_enabled %}
+                <label class="control-label">Specify the time window:</label>
                 <div class="row">
-
-                    <div class="col-xs-9">
-                        <input id="event-window" type="number" class="form-control"
-                               value="10">
+                    <div class="col-xs-6">
+                        <input id="time-window" type="number" class="form-control"
+                               value="30">
+                    </div>
+                    <div class="col-xs-3">
+                        <select class="form-control" id="granularity-select">
+                            <option>seconds</option>
+                            <option>minutes</option>
+                            <option>days</option>
+                        </select>
                     </div>
                     <div class="col-xs-1">
-                        <a href="javascript:setEventWindow()" id="set-event-window-btn"
+                        <a href="javascript:setTimeWindow()" id="set-time-window-btn"
                            class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
                     </div>
                     <div class="col-xs-2">
-                        <a href="javascript:clearEventWindow()" id="clear-event-window-btn"
+                        <a href="javascript:clearTimeWindow()" id="clear-time-window-btn"
                            class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
                     </div>
                 </div>
+            {% endif %}
+            <label class="control-label">Specify the event window:</label>
+
+            <div class="row">
+
+                <div class="col-xs-9">
+                    <input id="event-window" type="number" class="form-control"
+                           value="10">
+                </div>
+                <div class="col-xs-1">
+                    <a href="javascript:setEventWindow()" id="set-event-window-btn"
+                       class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
+                </div>
+                <div class="col-xs-2">
+                    <a href="javascript:clearEventWindow()" id="clear-event-window-btn"
+                       class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
+                </div>
             </div>
-        </ul>
-    </li>
-    {# end of time window dropdown #}
+        </div>
+    </ul>
+</li>
+{# end of time window dropdown #}
 
-    <!--Specifying clustering algorithms-->
-    <li class="dropdown" id="cluster_dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clustering <b
-                class="caret"></b></a>
-        <ul class="dropdown-menu">
-            <div class="yamm-content">
-                <div class="row">
-                    <div class="col-xs-7">
+<!--Specifying clustering algorithms-->
+<li class="dropdown" id="cluster_dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Clustering <b
+            class="caret"></b></a>
+    <ul class="dropdown-menu">
+        <div class="yamm-content">
+            <div class="row">
+                <div class="col-xs-7">
 
-                        <label class="control-label">Select Clustering Method:</label>
+                    <label class="control-label">Select Clustering Method:</label>
+
+                    <div class="radio radio-primary">
+                        <!--Provide options to the users as Hierarchical clustering, K-Modes Clustering and fuzzy clustering-->
+                        <label>
+                            <input type="radio" name="clustering-algo-radios"
+                                   id="hierarchical-radio"
+                                   value="hierarchical-cluster"
+                                   checked="">
+                            Hierarchical Clustering
+                        </label>
 
                         <div class="radio radio-primary">
-                            <!--Provide options to the users as Hierarchical clustering, K-Modes Clustering and fuzzy clustering-->
                             <label>
                                 <input type="radio" name="clustering-algo-radios"
-                                       id="hierarchical-radio"
-                                       value="hierarchical-cluster"
-                                       checked="">
-                                Hierarchical Clustering
+                                       id="kmeans-radio"
+                                       value="kmeans-cluster">
+                                K-Modes Clustering
                             </label>
 
                             <div class="radio radio-primary">
                                 <label>
                                     <input type="radio" name="clustering-algo-radios"
-                                           id="kmeans-radio"
-                                           value="kmeans-cluster">
-                                    K-Modes Clustering
+                                           id="fuzzy-radio"
+                                           value="fuzzy-cluster">
+                                    Fuzzy Clustering
                                 </label>
-
-                                <div class="radio radio-primary">
-                                    <label>
-                                        <input type="radio" name="clustering-algo-radios"
-                                               id="fuzzy-radio"
-                                               value="fuzzy-cluster">
-                                        Fuzzy Clustering
-                                    </label>
-                                </div>
                             </div>
                         </div>
                     </div>
-                    <!--Option to specify the number of clusters user expects in the data set Disable when density based lcustering is implemented-->
-                    <div class="col-xs-5">
-                        <label class="control-label">Specify the number of clusters:</label>
-                        <input id="num-of-clusters" type="number" class="form-control"
-                               value="3">
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-8"></div>
-                        <div class="col-xs-4">
-                            <a href="javascript:performClustering()" class="btn btn-primary btn-raised">Cluster</a>
-                        </div>
+                </div>
+                <!--Option to specify the number of clusters user expects in the data set Disable when density based lcustering is implemented-->
+                <div class="col-xs-5">
+                    <label class="control-label">Specify the number of clusters:</label>
+                    <input id="num-of-clusters" type="number" class="form-control"
+                           value="3">
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"></div>
+                    <div class="col-xs-4">
+                        <a href="javascript:performClustering()" class="btn btn-primary btn-raised">Cluster</a>
                     </div>
                 </div>
-
             </div>
-        </ul>
-    </li>
-    {# end of clustering dropdown #}
 
-    <li><a data-toggle="modal" data-target="#myModal" href="#">Generate Rule</a></li>
+        </div>
+    </ul>
+</li>
+{# end of clustering dropdown #}
+
+<li><a data-toggle="modal" data-target="#myModal" href="#">Generate Rule</a></li>
 </ul>
 
 <!--Specifying the sliders bundling sliders and alpha opacity sliders-->
@@ -332,6 +349,13 @@
                                                                                                   href="#"><span
             class="mdi-content-clear"
             style="font-weight: bold"></span></a></li>
+
+    <li data-toggle="tooltip" data-placement="left" data-original-title="Show System State"><a id="btn-state"
+                                                                                               href=javascript:displaySystemState()><span
+            class="mdi-action-settings"
+            style="font-weight: bold"></span></a></li>
+
+
 </ul>
 
 
@@ -341,7 +365,63 @@
 
 {% block body_block %}{% endblock %}
 
+<script>
 
+    $(document).ready(function () {
+        {% if state_map.bundling_enabled %}
+            $("#curve-slider-container").css('display', 'block');
+            $("#bundling-slider-container").css('display', 'block');
+        {% else %}
+            $("#curve-slider-container").css('display', 'none');
+            $("#bundling-slider-container").css('display', 'none');
+        {% endif %}
+        <!--Alpha Slider an exponentionally decaying slider-->
+        $("#aplha-slider").noUiSlider({
+            start: {{ state_map.alpha_opacity }},
+            connect: "lower",
+            range: {
+                'min': [0 ],
+                '20%': [0.05],
+                '50%': [0.1],
+                '70%': [0.25],
+                '80%': [0.4],
+                'max': [0.5]
+            }
+        });
+        <!--Slider to control smoothness of Bundling-->
+        $("#curve-slider").noUiSlider({
+            start: {{ state_map.curve_smoothness }},
+            connect: "lower",
+            step: 0.01,
+            range: {
+                min: 0,
+                max: 0.25
+            }
+        });
+        <!--Slider to control curveness of Bundling-->
+        $("#bundling-slider").noUiSlider({
+            start: {{ state_map.bundling_strength }},
+            connect: "lower",
+            step: 0.05,
+            range: {
+                min: 0,
+                max: 1
+            }
+        });
+
+        $("#bundling-slider").noUiSlider({
+            start: {{ state_map.bundling_strength }},
+            connect: "lower",
+            step: 0.05,
+            range: {
+                min: 0,
+                max: 1
+            }
+        });
+
+
+    });
+</script>
 </body>
 </html>
 

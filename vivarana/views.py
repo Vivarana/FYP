@@ -53,7 +53,7 @@ state_map = {
 
     ANOMALY_DETECT_COLUMN: None,
 
-    # stores attribute name as key and (aggregate func, window type, granularity, window size)
+    # stores attribute name as key and (aggregate func, window type, granularity, window size, groupby attribute)
     AGGREGATE_FUNCTION_ON_ATTR: {},  # p
     AGGREGATE_GROUP_BY_ATTR: None,
 
@@ -81,6 +81,29 @@ aggregate_functions = {
     3: MAX,
     4: COUNT
 }
+
+
+def zoom_data(request):
+    if request.method == POST:
+        params = json.loads(request.body)
+        user_operation = params['user_operation']
+        if user_operation == 'keep':
+            selected_ids = params['selected_ids']
+            set_current_data_lst(state_map, selected_ids)
+            return HttpResponse("success")
+        elif user_operation == 'undo':
+            context = undo_on_current_data_lst(state_map, current_data_frame)
+            json_response = json.dumps(context)
+            return HttpResponse(json_response)
+        elif user_operation == 'reset':
+            context = reset_current_data_lst(state_map, current_data_frame)
+            json_response = json.dumps(context)
+            return HttpResponse(json_response)
+
+
+def get_state_obj(request):
+    json_response = json.dumps(get_state_info(state_map))
+    return HttpResponse(json_response)
 
 
 def change_state(request):
@@ -114,10 +137,11 @@ def visualize(request):
         return redirect(HOME_PATH)
     if 'clusterID' not in current_data_frame.columns:
         current_data_frame['clusterID'] = 0
+
     column_types = file_helper.get_compatible_column_types(current_data_frame)
     data_start, is_last_page, json_output = process_pagination(state_map, current_data_frame)
     state_map[TIME_WINDOW_ENABLED] = 'Date' in current_data_frame.columns
-
+    state_map[DATA_LST] = []
     context = {'columns': column_types, 'result': json_output, 'is_last_page': is_last_page, "start_id": data_start,
                'state_map': state_map}
     return render(request, 'vivarana/visualize.html', context)
@@ -169,26 +193,37 @@ def aggregator(request):
 
         aggregated_cols = state_map[AGGREGATE_FUNCTION_ON_ATTR]
 
-        set_aggregate_state(state_map, aggregate_functions[aggregate_func], attribute_name)
+        if (attribute_name in aggregated_cols) and \
+                        aggregated_cols[attribute_name][0] == aggregate_functions[aggregate_func] and \
+                (aggregated_cols[attribute_name][3] == state_map[EVENT_WINDOW_VALUE] or
+                         aggregated_cols[attribute_name][3] == state_map[TIME_WINDOW_VALUE]) and \
+                (aggregated_cols[attribute_name][4] == state_map[AGGREGATE_GROUP_BY_ATTR]):
+            # if attribute is already aggregated with same function
+            df = current_data_frame.iloc[selected_ids, :]
+            json_out = df.to_json(orient='records')
+            return HttpResponse(json_out)
+        else:
 
-        if window_type == TIME_WINDOW:
-            new_data_frame = aggregate.aggregate_time_window(aggregate_func,
-                                                             state_map[TIME_WINDOW_VALUE],
-                                                             state_map[TIME_GRANULARITY],
-                                                             attribute_name, original_data_frame,
-                                                             current_data_frame,
-                                                             state_map[AGGREGATE_GROUP_BY_ATTR])
+            set_aggregate_state(state_map, aggregate_functions[aggregate_func], attribute_name)
 
-        elif window_type == EVENT_WINDOW:
-            new_data_frame = aggregate.aggregate_event_window(aggregate_func,
-                                                              attribute_name,
-                                                              state_map[EVENT_WINDOW_VALUE], original_data_frame,
-                                                              current_data_frame,
-                                                              state_map[AGGREGATE_GROUP_BY_ATTR])
+            if window_type == TIME_WINDOW:
+                new_data_frame = aggregate.aggregate_time_window(aggregate_func,
+                                                                 state_map[TIME_WINDOW_VALUE],
+                                                                 state_map[TIME_GRANULARITY],
+                                                                 attribute_name, original_data_frame,
+                                                                 current_data_frame,
+                                                                 state_map[AGGREGATE_GROUP_BY_ATTR])
 
-        df = new_data_frame.iloc[selected_ids, :]
-        json_out = df.to_json(orient='records')
-        return HttpResponse(json_out)
+            elif window_type == EVENT_WINDOW:
+                new_data_frame = aggregate.aggregate_event_window(aggregate_func,
+                                                                  attribute_name,
+                                                                  state_map[EVENT_WINDOW_VALUE], original_data_frame,
+                                                                  current_data_frame,
+                                                                  state_map[AGGREGATE_GROUP_BY_ATTR])
+
+            df = new_data_frame.iloc[selected_ids, :]
+            json_out = df.to_json(orient='records')
+            return HttpResponse(json_out)
 
 
 def set_window(request):
@@ -217,7 +252,7 @@ def clustering(request):
         state_map[NUMBER_OF_CLUSTERS] = int(params[NUMBER_OF_CLUSTERS])
         selected_ids = params['selected_ids']
         clustered_dict = apply_clustering(state_map, current_data_frame, selected_ids)
-        set_current_data_on_clustering(state_map, selected_ids, clustered_dict)
+        # set_current_data_on_clustering(state_map, selected_ids, clustered_dict)
         json_response = json.dumps(clustered_dict)
         return HttpResponse(json_response)
 
@@ -271,8 +306,8 @@ def preprocessor(request):
             global grouped_column
             grouping_column = request.POST.get(GROUPING_COL_NAME).encode('UTF8')
             grouped_column = request.POST.get(GROUPED_COL_NAME).encode('UTF8')
-            #create sunburst database
-            sun_views.initialize_database(current_data_frame,grouping_column,grouped_column)
+            # create sunburst database
+            sun_views.initialize_database(current_data_frame, grouping_column, grouped_column)
             return redirect(
                 SUNBURST_PATH + "?" + GROUP_BY + "=" + grouping_column + "&" + COALESCE + "=" + grouped_column)
     else:
@@ -328,15 +363,17 @@ def sunburst(request):
     context = {"grouping": grouping_column, "grouped": grouped_column}
     return render(request, SUNBURST_PAGE, context)
 
+
 def get_max_seq_width(request):
     return HttpResponse(sun_views.get_max_seq_length())
 
+
 def get_tree_data(request):
-    return HttpResponse(sun_views.give_tree_data_structure(current_data_frame,grouped_column))
+    return HttpResponse(sun_views.give_tree_data_structure(current_data_frame, grouped_column))
 
 
 def get_unique_strings(request):
-    return HttpResponse(sun_views.give_unique_coalesce_strings(current_data_frame,grouped_column))
+    return HttpResponse(sun_views.give_unique_coalesce_strings(current_data_frame, grouped_column))
 
 
 def parse_file(request):
@@ -382,9 +419,8 @@ def apache_log_format(request):
         return HttpResponse(json_response)
 
 
-
-#def get_session_sequence(request):
-#    return HttpResponse(sun_dp.get_session_info(current_data_frame, grouping_column, grouped_column))
+# def get_session_sequence(request):
+# return HttpResponse(sun_dp.get_session_info(current_data_frame, grouping_column, grouped_column))
 
 
 

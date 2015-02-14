@@ -1,35 +1,66 @@
 import json
+import copy
 from vivarana.constants import *
 
 
-def set_current_data(state_map, start_id, end_id, current_page_no):
-    data_lst = state_map[DATA_LST]
-    if len(data_lst) == 0:
-        data_lst.append(
-            {CURRENT_ROW_IDS_LST: range(start_id, end_id), CLUSTER_IDS_DICT: {}, CURRENT_PAGE_NUMBER: current_page_no})
-    else:
-        new_data = {CURRENT_ROW_IDS_LST: range(start_id, end_id), CLUSTER_IDS_DICT: {},
-                    CURRENT_PAGE_NUMBER: current_page_no}
-        if data_lst[-1] != new_data:
-            data_lst.append(new_data)
-    write_state_to_file(state_map)
+def get_state_info(state_map):
+    state = copy.deepcopy(state_map)
+    del state[DATA_LST]
+    return state
 
 
-def set_current_data_on_clustering(state_map, selected_ids, clustered_dict):
-    data_lst = state_map[DATA_LST]
-    data_lst.append({CURRENT_ROW_IDS_LST: selected_ids, CLUSTER_IDS_DICT: clustered_dict,
-                     CURRENT_PAGE_NUMBER: state_map[ACTIVE_PAGE_NUMBER]})
-    write_state_to_file(state_map)
+def undo_on_current_data_lst(state_map, current_data_frame):
+    new_data_dict = state_map[DATA_LST].pop()
+    json_result = current_data_frame.iloc[new_data_dict[CURRENT_ROW_IDS_LST], :]
+    return {'id_lst': new_data_dict[CURRENT_ROW_IDS_LST],
+            'json_opt': json_result.to_json(orient='records', date_format='iso'),
+            'current_page_num': new_data_dict[CURRENT_PAGE_NUMBER], 'num_of_states': len(state_map[DATA_LST])}
+
+
+def reset_current_data_lst(state_map, current_data_frame):
+    new_data_dict = state_map[DATA_LST][-1]
+    json_result = current_data_frame.iloc[new_data_dict[CURRENT_ROW_IDS_LST], :]
+    state_map[DATA_LST] = []
+    return {'id_lst': new_data_dict[CURRENT_ROW_IDS_LST],
+            'json_opt': json_result.to_json(orient='records', date_format='iso'),
+            'current_page_num': new_data_dict[CURRENT_PAGE_NUMBER]}
+
+
+def set_current_data_lst(state_map, selected_id_lst):
+    new_data_dict = {CURRENT_ROW_IDS_LST: selected_id_lst, CURRENT_PAGE_NUMBER: state_map[ACTIVE_PAGE_NUMBER]}
+    state_map[DATA_LST].append(new_data_dict)
+
+
+# def set_current_data(state_map, start_id, end_id, current_page_no):
+#     data_lst = state_map[DATA_LST]
+#     if len(data_lst) == 0:
+#         data_lst.append(
+#             {CURRENT_ROW_IDS_LST: range(start_id, end_id), CURRENT_PAGE_NUMBER: current_page_no})
+#     else:
+#         new_data = {CURRENT_ROW_IDS_LST: range(start_id, end_id),
+#                     CURRENT_PAGE_NUMBER: current_page_no}
+#         if data_lst[-1] != new_data:
+#             data_lst.append(new_data)
+#     write_state_to_file(state_map)
+
+
+# def set_current_data_on_clustering(state_map, selected_ids, clustered_dict):
+#     data_lst = state_map[DATA_LST]
+#     data_lst.append({CURRENT_ROW_IDS_LST: selected_ids, CLUSTER_IDS_DICT: clustered_dict,
+#                      CURRENT_PAGE_NUMBER: state_map[ACTIVE_PAGE_NUMBER]})
+#     write_state_to_file(state_map)
 
 
 def set_aggregate_state(state_map, aggregate_func, attribute_name):
     time_window_enabled = state_map[TIME_WINDOW_ENABLED]
     if time_window_enabled:
         state_map[AGGREGATE_FUNCTION_ON_ATTR][attribute_name] = (
-            aggregate_func, state_map[WINDOW_TYPE], state_map[TIME_GRANULARITY], state_map[TIME_WINDOW_VALUE])
+            aggregate_func, state_map[WINDOW_TYPE], state_map[TIME_GRANULARITY], state_map[TIME_WINDOW_VALUE],
+            state_map[AGGREGATE_GROUP_BY_ATTR])
     else:
         state_map[AGGREGATE_FUNCTION_ON_ATTR][attribute_name] = (
-            aggregate_func, state_map[WINDOW_TYPE], None, state_map[EVENT_WINDOW_VALUE])
+            aggregate_func, state_map[WINDOW_TYPE], None, state_map[EVENT_WINDOW_VALUE],
+            state_map[AGGREGATE_GROUP_BY_ATTR])
     write_state_to_file(state_map)
 
 
@@ -57,7 +88,7 @@ def get_current_attribute_list(state_map):
 
 
 def write_state_to_file(state_map):
-    a=1
+    a = 1
     # with open('state.json', 'a') as fp:
-    #     json.dump(state_map, fp)
-    #     fp.write("\n")
+    # json.dump(state_map, fp)
+    # fp.write("\n")

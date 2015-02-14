@@ -87,15 +87,34 @@
         </div>
     </div>
 
+    <!-- Container for the dialog that appear on clicking the system state button -->
+    <div class="modal fade" id="state_modal" tabindex="-1" role="dialog" aria-labelledby="stateModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="stateModalLabel">Current State of the System</h4>
+                </div>
+                <div class="modal-body" id="state_modal_body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Container for the main visualization -->
     <div id="parcoords-main" class="parcoords"></div>
 
     {% if state_map.number_pages != 1 %}
-        <div style="float: none; margin: 0 auto; font-size: 1.8em;" id="navigation-container" class="col-lg-2">
+        <div style="float: none; margin: 0 auto; font-size: 20px;" id="navigation-container" class="col-lg-2">
             <a onclick="paginate_next('backward')" href="#" id="pagination_back_link">
                 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a>
-            <span style="font-size: 1em;"> <p
-                    id="pagination_current_page_num">{{ state_map.active_page_number | add:1 }}</p> / {{ state_map.number_pages }}</span>
+            <span style="font-size: 20px;"
+                  id="pagination_current_page_num"> {{ state_map.active_page_number | add:1 }}/{{ state_map.number_pages }}</span>
             <a onclick="paginate_next('forward')" href="#" id="pagination_next_link">
                 <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
 
@@ -182,41 +201,111 @@
     function keep_data() {
         if (parcoords.brushed()) {
 
+            var id_lst = [];
+            parcoords.data().forEach(function (d, i) {
+                id_lst.push(d.id);
+            });
+
+            $.ajax({
+                url: '/zoom_data/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({"selected_ids": id_lst, "user_operation": 'keep' }),
+                dataType: 'json',
+                success: function (result) {
+                }
+            });
             var new_data = parcoords.brushed();
-            datastack.push(parcoords.data());
             drawData(new_data);
+            gridUpdate(new_data);
 
             $("#btn-undo").css('display', 'block');
             $("#btn-clear").css('display', 'block');
-
+            parcoords.brushed(false);
         } else {
             $.snackbar({content: 'Please brush some data before clicking keep data button', style: 'toast'});
         }
     }
 
     function exclude_data() {
-        var new_data = _.difference(parcoords.data(), parcoords.brushed());
-        datastack.push(parcoords.data());
-        drawData(new_data);
-        $("#btn-undo").css('display', 'block');
-        $("#btn-clear").css('display', 'block');
-    }
+        if (parcoords.brushed()) {
+            var id_lst = [];
+            parcoords.data().forEach(function (d, i) {
+                id_lst.push(d.id);
+            });
 
-    function undo() {
-        var new_data = datastack.pop();
-        drawData(new_data);
-        if (datastack.length < 1) {
-            $("#btn-undo").css('display', 'none');
-            $("#btn-clear").css('display', 'none');
+            $.ajax({
+                url: '/zoom_data/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({"selected_ids": id_lst, "user_operation": 'keep' }),
+                dataType: 'json',
+                success: function (result) {
+
+                }
+            });
+            var new_data = _.difference(parcoords.data(), parcoords.brushed());
+            drawData(new_data);
+            gridUpdate(new_data);
+            parcoords.brushed(false);
+            $("#btn-undo").css('display', 'block');
+            $("#btn-clear").css('display', 'block');
+        } else {
+            $.snackbar({content: 'Please brush some data before clicking keep data button', style: 'toast'});
         }
     }
 
+    function undo() {
+        $.ajax({
+            url: '/zoom_data/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({"user_operation": 'undo' }),
+            dataType: 'json',
+            success: function (result) {
+                var j_data = JSON.parse(result.json_opt);
+                var id_lst = result.id_lst;
+                j_data.forEach(function (d, i) {
+                    d.id = id_lst[i];
+                });
+
+                drawData(j_data);
+                gridUpdate(j_data);
+                parcoords.brushed(false);
+                if (result.num_of_states === 0) {
+                    $("#btn-undo").css('display', 'none');
+                    $("#btn-clear").css('display', 'none');
+                }
+
+            }
+        });
+
+
+    }
+
     function reset() {
-        var new_data = datastack[0];
-        datastack = [];
-        drawData(new_data);
-        $("#btn-undo").css('display', 'none');
-        $("#btn-clear").css('display', 'none');
+        $.ajax({
+            url: '/zoom_data/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({"user_operation": 'reset' }),
+            dataType: 'json',
+            success: function (result) {
+                var j_data = JSON.parse(result.json_opt);
+                var id_lst = result.id_lst;
+                j_data.forEach(function (d, i) {
+                    d.id = id_lst[i];
+                });
+
+                drawData(j_data);
+                gridUpdate(j_data);
+                parcoords.brushed(false);
+                $("#btn-undo").css('display', 'none');
+                $("#btn-clear").css('display', 'none');
+
+            }
+        });
+
     }
 
 
@@ -468,6 +557,26 @@
             .reorderable()
             .brushMode('{{ state_map.brush_mode }}');
 
+    {% if state_map.cluster_coloring_enabled %}
+        enable_cluster_coloring();
+        parcoords.svg.selectAll(".dimension")
+                .on("click", enable_cluster_coloring())
+                .selectAll(".label");
+    {% elif state_map.zscore_coloring_enabled %}
+        parcoords.svg.selectAll(".dimension")
+                .on("click", change_color)
+                .selectAll(".label");
+    {% endif %}
+
+    {% if state_map.bundling_enabled %}
+        parcoords
+                .bundleDimension("clusterID")
+                .smoothness({{ state_map.curve_smoothness }})
+                .bundlingStrength({{ state_map.bundling_strength }})
+                .render();
+    {% endif %}
+
+    original_data = data;
     // setting up grid
     var column_keys = d3.keys(data[0]);
     var columns = column_keys.map(function (key, i) {
@@ -574,7 +683,7 @@
                     d.id = d.id || i + start_id;
                 });
 
-                var page_num = parseInt(result.state_map.active_page_number) + 1;
+                var page_num = parseInt(result.state_map.active_page_number) + 1 + '/' + {{ state_map.number_pages}};
                 $('#pagination_current_page_num').html(page_num);
                 if (result.is_last_page) {
                     $("#pagination_next_link").addClass("disabled-link");
@@ -591,6 +700,8 @@
 
                 drawData(j_data);
                 gridUpdate(j_data);
+                $("#btn-undo").css('display', 'none');
+                $("#btn-clear").css('display', 'none');
             }
         });
 
@@ -632,7 +743,7 @@
 
         $(".cover, .loading-model").hide();
         //todo change this
-        var aggregate_function_list = {0 :'sum', 1:'average', 2:'min', 3:'max', 4:'count'};
+        var aggregate_function_list = {0: 'sum', 1: 'average', 2: 'min', 3: 'max', 4: 'count'};
 
         aggregates[attribute_name] = aggregate_function_list[aggregate_function];
 
@@ -677,7 +788,7 @@
         });
         aggregates[col_name] = 'group_by';
         parcoords.aggregates(aggregates);
-        $.snackbar({content: 'Group by attribute has been set to '+ col_name, style: 'toast'});
+        $.snackbar({content: 'Group by attribute has been set to ' + col_name, style: 'toast'});
     }
 
     function sum(col_name, col_number, obj) {
@@ -810,7 +921,7 @@
         }
 
 
-        if (selected_ids.length == 0){
+        if (selected_ids.length == 0) {
             $('#loading-gif').hide();
             $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Please select the set of event to generate CEP rules for</p>');
             return
@@ -825,14 +936,14 @@
             success: function (result) {
                 $('#loading-gif').hide();
 
-                if (result['success']==true) {
+                if (result['success'] == true) {
 
                     var false_positive_indexes = result['filtered'];
                     console.log(false_positive_indexes);
 
                     var false_positives = [];
 
-                    for (var index in false_positive_indexes){
+                    for (var index in false_positive_indexes) {
                         false_positives.push(data[false_positive_indexes[index]])
                     }
 
