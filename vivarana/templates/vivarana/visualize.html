@@ -540,6 +540,8 @@
         //Adding the type for id column so that it comes last
         data_types['id'] = 'number';
 
+        aggregates = {{ aggregates }}
+
         var parcoords = d3.parcoords()("#parcoords-main")
                 .alpha({{ state_map.alpha_opacity }})
                 .mode("queue") // progressive rendering
@@ -572,6 +574,7 @@
             .data(data)
             .bundlingStrength(0)
             .smoothness(0)
+            .aggregates(aggregates)
             .render()
             .reorderable()
             .brushMode('{{ state_map.brush_mode }}');
@@ -830,6 +833,7 @@
         });
         aggregates[col_name] = 'group_by';
         parcoords.aggregates(aggregates);
+        drawData(data);
         $.snackbar({content: 'Group by attribute has been set to ' + col_name, style: 'toast'});
     }
 

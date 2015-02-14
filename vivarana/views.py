@@ -141,12 +141,17 @@ def visualize(request):
     if 'clusterID' not in current_data_frame.columns:
         current_data_frame['clusterID'] = 0
 
+    # getting the aggregates in correct format for column naming.
+    aggregates = {}
+    for value in state_map['aggregate_function_on_attribute']:
+        aggregates[value.encode('ascii', 'ignore')] = state_map['aggregate_function_on_attribute'][value]
+
     column_types = file_helper.get_compatible_column_types(current_data_frame)
     data_start, is_last_page, json_output = process_pagination(state_map, current_data_frame)
     state_map[TIME_WINDOW_ENABLED] = 'Date' in current_data_frame.columns
     state_map[DATA_LST] = []
     context = {'columns': column_types, 'result': json_output, 'is_last_page': is_last_page, "start_id": data_start,
-               'state_map': state_map}
+               'state_map': state_map, 'aggregates':aggregates}
     return render(request, 'vivarana/visualize.html', context)
 
 
@@ -194,6 +199,9 @@ def aggregator(request):
         ids = request.GET['selected_ids'][:-1]
         selected_ids = [int(x) for x in ids.split(",")]
         window_type = state_map[WINDOW_TYPE]
+
+        if not state_map[AGGREGATE_GROUP_BY_ATTR] is None:
+            state_map[AGGREGATE_FUNCTION_ON_ATTR][state_map[AGGREGATE_GROUP_BY_ATTR]] = ['group_by']
 
         aggregate_func = int(request.GET['aggregate_func'])
         attribute_name = request.GET[ATTRIBUTE_NAME]
