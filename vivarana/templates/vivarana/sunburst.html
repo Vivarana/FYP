@@ -13,7 +13,7 @@
 
                 </div>
                 <div class="modal-body">
-                    <input type="text" class="form-control" id="tokenfield-typeahead" value="red,green,blue"/>
+                    <input type="text" class="form-control" id="filter-input" value="red,green,blue"/>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -26,9 +26,9 @@
     </div>
     <!-- /.modal -->
     <div class="container-fluid">
-    <div class="row-fluid">
-        <div id="sequence" class="span12"></div>
-    </div>
+        <div class="row-fluid">
+            <div id="sequence" class="span12"></div>
+        </div>
         <div class="row-fluid">
             <div id="main" class="span6">
                 <div id="chart">
@@ -41,11 +41,32 @@
                 </div>
             </div>
             <div id="rulegenerator" class="span6">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        Panel With title
-                    </h3>
-                    <span id='close'>x</span>
+                <div id="rulepanel" class="panel panel-primary">
+                    <div class="panel-heading">
+                        <button type="button" id="close">x</button>
+                        <h3 class="panel-title span6">
+                            Generate Rule
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="element-input">
+                            <div class="row">
+
+                                <input type="text" class="form-control" id="rule-input"
+                                       placeholder="type elements or regex expression"/>
+
+                            </div>
+                            <div class="row">
+                                <button id="ruleconfirm" type="button" class="btn btn-primary">Primary</button>
+                            </div>
+                            <div class="row">
+                                <div id="results">
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,34 +84,16 @@
         <div id="legend" style="visibility: hidden;"></div>
     </div>
 {% endcomment %}
-
+    <script src="{% static "sunburst/base_custom.js" %}"></script>
     <script src="{% static "sunburst/sequences.js" %}"></script>
     <script src="{% static "sunburst/subchart.js" %}"></script>
+
     <script type="text/javascript">
         var percentageSliderValue = 0.005;
         seq_height = $("#sequence").css("height");
         $("#chart").css("top", seq_height);
-        // Hack to make this example display correctly in an iframe on bl.ocks.org
-        //d3.select(self.frameElement).style("height", "700px");
         showSunburst();
-        $("#percentage-slider").on({'slide': function () {
-            percentageSliderValue = $(this).val();
-            $("#percentage-opacity-text").text("Maximum Depth to Display: " + percentageSliderValue + " %");
 
-        }, 'change': function () {
-            updateData();
-        }});
-
-        $("#exampleModal").draggable({
-            handle: ".modal-header"
-        });
-        $('#tokenfield-typeahead').tokenfield({
-            autocomplete: {
-                source: uniqueValues,
-                delay: 100
-            },
-            showAutocompleteOnFocus: true
-        });
 
     </script>
 {% endblock %}

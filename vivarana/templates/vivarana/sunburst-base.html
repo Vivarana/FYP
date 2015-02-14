@@ -15,30 +15,24 @@
     <link rel="stylesheet" href="{% static "css/tokenfield/bootstrap-tokenfield.min.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "css/tokenfield/tokenfield-typeahead.min.css" %}" type="text/css"/>
 
+    <link href="{% static "css/jquery-ui.min.css" %}" rel="stylesheet">
+
     <link rel="stylesheet" type="text/css" href="{% static "sunburst/sequences.css" %}">
 
 
     <script src="{% static "js/jquery-2.1.1.min.js" %}"></script>
-    <script src="{% static "js/jquery-ui.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
+
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
     <script src="{% static "js/jquery.nouislider.all.min.js" %}"></script>
     <script src="{% static "js/snackbar.min.js" %}"></script>
     <script src="{% static "js/bootstrap-tokenfield.min.js" %}"></script>
-     <script src="{% static "js/typeahead.jquery.min.js" %}"></script>
     <script src="{% static "js/typeahead.bundle.min.js" %}"></script>
-     <script src="{% static "js/bloodhound.min.js" %}"></script>
+    <script src="{% static "js/jquery-ui.min.js" %}"></script>
 
     <script src="{% static "js/d3.js" %}"></script>
-    <script src="{% static "js/underscore.js" %}"></script>
-    <script src="{% static "js/sylvester.js" %}"></script>
-    <script src="{% static "js/divgrid.js" %}"></script>
-    <script src="{% static "js/underscore.math.js" %}"></script>
     <script src={%  static "js/d3_tip.js" %}></script>
-    <!--script src="{% static "js/custom.js" %}"></script-->
-    <script src="{% static "sunburst/base_custom.js" %}"></script>
-
 
     <title>{% block title %}Vivarana{% endblock %}</title>
 
@@ -214,18 +208,6 @@
 
         <ul class="nav navbar-nav navbar-right">
             <li>
-                <div id="bundling-slider-container">
-                    <div id="bundling-text" class="slider-text">Bundling Strength: 0.7</div>
-                    <div id="bundling-slider" class="slider slider-material-lightgrey"></div>
-                </div>
-            </li>
-            <li>
-                <div id="curve-slider-container">
-                    <div id="curve-text" class="slider-text">Curve Smoothness: 0.2</div>
-                    <div id="curve-slider" class="slider slider-material-lightgrey"></div>
-                </div>
-            </li>
-            <li>
                 <div id="percentage-slider-container">
                     <div id="percentage-opacity-text" class="slider-text">Maximum Depth to Display: 10</div>
                     <div id="percentage-slider" class="slider slider-material-lightgrey"></div>
@@ -234,7 +216,7 @@
             <li data-toggle="tooltip" data-placement="right" data-original-title="Hide ticks"><a href="#"><span
                     class="mdi-editor-border-vertical" style="font-weight: bold"></span></a>
             </li>
-            <li data-toggle="tooltip" data-placement="bottom" data-original-title="Keep selected data"><a
+            <!--li data-toggle="tooltip" data-placement="bottom" data-original-title="Keep selected data"><a
                     id="btn-keep-data" href="#"><span class="mdi-image-blur-on"
                                                       style="font-weight: bold"></span></a></li>
             <li data-toggle="tooltip" data-placement="left" data-original-title="Exclude selected data"><a
@@ -242,7 +224,7 @@
                                                          style="font-weight: bold"></span></a></li>
             <li data-toggle="tooltip" data-placement="left" data-original-title="Undo last keep/exclude data"><a
                     id="btn-undo" href="#"><span class="mdi-content-undo"
-                                                 style="font-weight: bold"></span></a></li>
+                                                 style="font-weight: bold"></span></a></li-->
             <li data-toggle="tooltip" data-placement="left" data-original-title="Reset all selections"><a id="btn-clear"
                                                                                                           href="#"><span
                     class="mdi-content-clear"

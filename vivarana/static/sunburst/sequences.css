@@ -83,11 +83,34 @@ body {
     min-width: 300px;
 }
 
+/* Rule generate panel*/
+
+#rulegenerator {
+    float: left;
+    margin-top:   70px;
+    width: 50%;
+}
+#rulepanel{
+    height: 700px;
+
+}
+#element-input{
+    padding: 15px 15px 15px 15px;
+}
+
+#ruleconfirm{
+    float: right;
+    margin-top: 15px;
+    margin-bottom: 15px
+}
+
+.panel-heading {
+    min-height: 20px;
+}
 #close {
     float:right;
     display:inline-block;
-    padding:2px 5px;
-    background:#ccc;
+    background:inherit;
 }
 
 #close:hover {
