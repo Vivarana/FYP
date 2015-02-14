@@ -375,6 +375,8 @@ def get_tree_data(request):
 def get_unique_strings(request):
     return HttpResponse(sun_views.give_unique_coalesce_strings(current_data_frame, grouped_column))
 
+def get_sunburst_rule_data(request):
+    return HttpResponse(sun_views.give_rule_data(current_data_frame, grouped_column))
 
 def parse_file(request):
     try:

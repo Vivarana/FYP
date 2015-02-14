@@ -25,3 +25,7 @@ def give_unique_coalesce_strings(cur_dataframe,coalesce):
 
 def get_max_seq_length():
     return json.dumps({"maxwidth":chf.return_max_depth()},cls=DjangoJSONEncoder)
+
+
+def give_rule_data(cur_dataframe,grouped):
+    return 0

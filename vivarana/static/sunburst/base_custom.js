@@ -26,14 +26,7 @@ $(document).ready(function () {
     }, 'change': function () {
         updateData();
     }});
-    //Filter model
-    $('#filter-input').tokenfield({
-        autocomplete: {
-            source: colors,
-            delay: 100
-        },
-        showAutocompleteOnFocus: true
-    });
+
 
     $("#exampleModal").draggable({
         handle: ".modal-header"
@@ -47,36 +40,12 @@ $(document).ready(function () {
     });
 
     //suggestion token field
-    var engine = new Bloodhound({
-        local: $.map(colors, function (state) {
-            return { value: state };
-        }),
-        datumTokenizer: function (d) {
-            return Bloodhound.tokenizers.whitespace(d.value);
-        },
-        queryTokenizer: Bloodhound.tokenizers.whitespace
-    });
 
-    engine.initialize();
+    var colorsand = ['red','green','white','blue'];
 
-
-    // rule generate panel
-    $('#rule-input').typeahead({
-  hint: true,
-  highlight: true,
-  minLength: 1
-},
-{
-  name: 'engine',
-  displayKey: 'value',
-  // `ttAdapter` wraps the suggestion engine in an adapter that
-  // is compatible with the typeahead jQuery plugin
-  source: engine.ttAdapter()
+$("#ruleconfirm").click(function() {
+    alert($('#rule-input').tokenfield('getTokens')[1]["value"]);
 });
-
-    $("#ruleconfirm").click(function () {
-        alert($('#tokenfield-typeahead').tokenfield('getTokens')[1]["value"]);
-    });
 
     $("#close").on("click", function () {
             $("#rulegenerator").toggle();
