@@ -11,7 +11,7 @@
 }
 
 /*#curve-slider-container, #bundling-slider-container {*/
-    /*display: none;*/
+/*display: none;*/
 /*}*/
 
 #rule-right {
@@ -48,8 +48,12 @@
     height: 550px;
 }
 
-#granularity-select {
+#granularity-select, #anomaly-granularity, #anomaly-description {
     min-height: 28px;
+}
+
+#anomaly-description {
+    padding-top: 10px;
 }
 
 .disabled-link {
@@ -96,7 +100,18 @@
     white-space: normal;
 }
 
+.text-center {
+    font-weight: bold;
+}
 
 .dl-horizontal dd {
     white-space: normal;
+}
+
+#nav-back-button {
+    width: 25px;
+    height: 25px;
+    margin-top: 6px;
+    margin-right: 5px;
+    margin-left: 5px;
 }

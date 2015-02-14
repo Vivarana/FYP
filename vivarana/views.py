@@ -52,6 +52,9 @@ state_map = {
     NUMBER_OF_CLUSTERS: None,
 
     ANOMALY_DETECT_COLUMN: None,
+    ANOMALY_DETECT_PERIOD_SIZE: None,
+    ANOMALY_DETECT_MAX_SIZE: None,
+    ANOMALY_DETECT_GRANULARITY: None,
 
     # stores attribute name as key and (aggregate func, window type, granularity, window size, groupby attribute)
     AGGREGATE_FUNCTION_ON_ATTR: {},  # p
@@ -167,13 +170,17 @@ def visualize_next(request):
 
 
 def anomaly(request):
-    if request.method == GET:
-        ids = request.GET['selected_ids'][:-1]
-        selected_ids = [int(x) for x in ids.split(",")]
-        state_map[ANOMALY_DETECT_COLUMN] = request.GET[ANOMALY_DETECT_COLUMN].encode('UTF8')
-        anom_lst = detect_anomalies(state_map, current_data_frame, selected_ids)
+    if request.method == POST:
+        if state_map[ANOMALY_DETECT_PERIOD_SIZE] is None or state_map[ANOMALY_DETECT_MAX_SIZE] is None:
+            return HttpResponse(ERROR_200)
 
-        json_response = json.dumps({'anom_lst': anom_lst})
+        params = json.loads(request.body)
+        ids = params['selected_ids'][:-1]
+        selected_ids = [int(x) for x in ids.split(",")]
+        state_map[ANOMALY_DETECT_COLUMN] = params[ANOMALY_DETECT_COLUMN].encode('UTF8')
+        anom_lst = detect_anomalies(state_map, current_data_frame, selected_ids)
+        result_data = current_data_frame.iloc[anom_lst, :].to_json(orient='records', date_format='iso')
+        json_response = json.dumps({'anom_lst': anom_lst, 'result_data': result_data})
         return HttpResponse(json_response)
 
 

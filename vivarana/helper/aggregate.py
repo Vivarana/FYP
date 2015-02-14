@@ -118,7 +118,6 @@ group_event_func_dict = {0: group_r_sum_window, 1: group_r_avg_window, 2: group_
 
 def aggregate_time_window(aggregate_function, time_window_value, time_granularity, attribute_name, original_data_frame,
                           current_data_frame, groupby_attr):
-
     if groupby_attr is None:
         df = original_data_frame.loc[:, ['Date', attribute_name]]
     else:
@@ -131,8 +130,6 @@ def aggregate_time_window(aggregate_function, time_window_value, time_granularit
         start_dates = df['Date'] - timedelta(minutes=int(time_window_value))
     elif time_granularity == 'days':
         start_dates = df['Date'] - timedelta(days=int(time_window_value))
-
-    print start_dates
 
     df['start_index'] = df['Date'].values.searchsorted(start_dates, side='right')
     df['end_index'] = np.arange(len(df))

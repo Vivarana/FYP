@@ -49,12 +49,17 @@
 <body>
 <div class="cover"></div>
 <div class="navbar yamm navbar-default">
+<a class="pull-left" href="/preprocessor">
+    <img id="nav-back-button" src= {% static "images/back_button.png" %}>
+</a>
+
 <div class="navbar-header">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
     </button>
+
     <a class="navbar-brand" href="/">Vivarana</a>
 </div>
 <div class="navbar-collapse collapse navbar-responsive-collapse">
@@ -175,6 +180,24 @@
                                                 </label>
                                             </div>
                                         </div>
+                                    {% else %}
+                                        <div class="radio radio-primary">
+                                            <label>
+                                                <input type="radio" name="coloringRadios"
+                                                       id="clusterColoring-radio"
+                                                       value="option3">
+                                                Enable Cluster Coloring
+                                            </label>
+                                            <!--Enable zscore coloring-->
+                                            <div class="radio radio-primary">
+                                                <label>
+                                                    <input type="radio" name="coloringRadios"
+                                                           id="zScoreColoring-radio"
+                                                           value="option4">
+                                                    Enable Z Score Coloring
+                                                </label>
+                                            </div>
+                                        </div>
                                     {% endif %}
                                     <div class="checkbox">
                                         <!--Alpha Blending-->
@@ -201,51 +224,100 @@
 
 
 <li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Aggregate <b
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configurations <b
             class="caret"></b></a>
     <ul class="dropdown-menu" id="timewindow_dropdown">
         <div class="yamm-content">
-            {% if state_map.time_window_enabled %}
-                <label class="control-label">Specify the time window:</label>
-                <div class="row">
-                    <div class="col-xs-6">
-                        <input id="time-window" type="number" class="form-control"
-                               value="30">
+            <div class="row">
+                <p class="text-center"> Configuration options for Aggregation
+                    Functions </p>
+                {% if state_map.time_window_enabled %}
+                    <label class="control-label">Specify the time window:</label>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <input id="time-window" type="number" class="form-control"
+                                   value="30">
+                        </div>
+                        <div class="col-xs-3">
+                            <select class="form-control" id="granularity-select">
+                                <option>seconds</option>
+                                <option>minutes</option>
+                                <option>days</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-1">
+                            <a href="javascript:setTimeWindow()" id="set-time-window-btn"
+                               class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
+                        </div>
+                        <div class="col-xs-2">
+                            <a href="javascript:clearTimeWindow()" id="clear-time-window-btn"
+                               class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
+                        </div>
                     </div>
-                    <div class="col-xs-3">
-                        <select class="form-control" id="granularity-select">
-                            <option>seconds</option>
-                            <option>minutes</option>
-                            <option>days</option>
-                        </select>
+                {% endif %}
+                <label class="control-label">Specify the event window:</label>
+
+                <div class="row">
+
+                    <div class="col-xs-9">
+                        <input id="event-window" type="number" class="form-control"
+                               value="10">
                     </div>
                     <div class="col-xs-1">
-                        <a href="javascript:setTimeWindow()" id="set-time-window-btn"
+                        <a href="javascript:setEventWindow()" id="set-event-window-btn"
                            class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
                     </div>
                     <div class="col-xs-2">
-                        <a href="javascript:clearTimeWindow()" id="clear-time-window-btn"
+                        <a href="javascript:clearEventWindow()" id="clear-event-window-btn"
                            class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
                     </div>
                 </div>
-            {% endif %}
-            <label class="control-label">Specify the event window:</label>
-
-            <div class="row">
-
-                <div class="col-xs-9">
-                    <input id="event-window" type="number" class="form-control"
-                           value="10">
-                </div>
-                <div class="col-xs-1">
-                    <a href="javascript:setEventWindow()" id="set-event-window-btn"
-                       class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
-                </div>
-                <div class="col-xs-2">
-                    <a href="javascript:clearEventWindow()" id="clear-event-window-btn"
-                       class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
-                </div>
             </div>
+            {% if state_map.time_window_enabled %}
+                <hr>
+                <div class="row">
+                    <p class="text-center"> Configuration options for Anomaly Detection</p>
+
+                    <label class="control-label">Specify the Size of Period:</label>
+
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <input id="anomaly_detect_period_size" type="number" class="form-control"
+                                   value="30">
+                        </div>
+                        <div class="col-xs-3">
+                            <select class="form-control" id="anomaly_detect_granularity">
+                                <option>events</option>
+                                <option>seconds</option>
+                                <option>minutes</option>
+                                <option>days</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-1">
+                            <a href="javascript:setAnomalyPeriod()"
+                               class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
+                        </div>
+
+                    </div>
+
+                    <label class="control-label">Maximum number of Anomalies:</label>
+
+                    <div class="row">
+
+                        <div class="col-xs-6">
+                            <input id="anomaly_detect_max_size" type="number" class="form-control"
+                                   value="0.01">
+                        </div>
+                        <div class="col-xs-3" id="anomaly-description">(% of data)</div>
+                        <div class="col-xs-1">
+                            <a href="javascript:setMaxAnomaly()"
+                               class="btn btn-primary btn-sm"><i class="mdi-navigation-check"></i></a>
+                        </div>
+
+                    </div>
+                </div>
+
+            {% endif %}
         </div>
     </ul>
 </li>
@@ -329,7 +401,7 @@
     </li>
     <li>
         <div id="alpha-slider-container">
-            <div id="alpha-opacity-text" class="slider-text">Alpha Opacity: {{ state_map.aplha_opacity }}</div>
+            <div id="alpha-opacity-text" class="slider-text">Alpha Opacity: {{ state_map.alpha_opacity }}</div>
             <div id="aplha-slider" class="slider slider-material-lightgrey"></div>
         </div>
     </li>
