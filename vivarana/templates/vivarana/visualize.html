@@ -196,6 +196,7 @@
     var datastack = [];         // stores data history (for undo operation)
     var data = [];
     var aggregates = [];
+    var ticks_hidden = false;
 
     function drawData(new_data) {
         data = new_data;
@@ -1045,6 +1046,17 @@
                 }
             }
         });
+    }
+
+    function hideTicks(){
+        if(ticks_hidden==false){
+            parcoords.hideTicks();
+            ticks_hidden = true;
+        }
+        else{
+            ticks_hidden = false;
+            parcoords.updateAxes();
+        }
     }
 
 

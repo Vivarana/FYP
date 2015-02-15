@@ -9,7 +9,7 @@ from vivarana.properties import CATEGORICAL_COLUMN_THRESHOLD
 
 col_type_dict = {
     "int64": "number", "float64": "number",
-    "int32": "number", "float32": "number", "object": "string"
+    "int32": "number", "float32": "number", "object": "string",
 }
 
 
@@ -43,11 +43,16 @@ def get_data_summary(dataframe):
             (column name, column type, [list of statistical information on attribute])
             'size' number of rows in the data frame
     """
+    human_readable_type = {
+        "int64": "Integer", "float64": "Float",
+        "int32": "Integer", "float32": "Float", "object": "Categorical",
+        "datetime64[ns]": 'DateTime'
+    }
     columns = list(dataframe.columns)
     data_types = list(dataframe.dtypes)
 
     column_data = [
-        (columns[col], data_types[col], dataframe[columns[col]].describe().to_string().split('\n')) for
+        (columns[col], human_readable_type[data_types[col].name], dataframe[columns[col]].describe().to_string().split('\n')) for
         col
         in xrange(len(columns))]
 

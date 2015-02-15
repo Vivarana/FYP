@@ -189,22 +189,31 @@ d3.parcoords = function (config) {
                     .range([h() + 1, 1]);
             },
             "string": function (k) { //scaling for the integer type
+
                 var counts = {},
                     domain = [];
 
                 // Let's get the count for each value so that we can sort the domain based
                 // on the number of items for each value.
-                __.data.map(function(p) {
-                if (counts[p[k]] === undefined) {
-                    counts[p[k]] = 1;
-                } else {
-                    counts[p[k]] = counts[p[k]] + 1;
-                }
+                __.data.map(function (p) {
+                    if (counts[p[k]] === undefined) {
+                        counts[p[k]] = 1;
+                    } else {
+                        counts[p[k]] = counts[p[k]] + 1;
+                    }
                 });
 
-                domain = Object.getOwnPropertyNames(counts).sort(function(a, b) {
-                    return counts[a] - counts[b];
-                });
+                var unique_values = Object.getOwnPropertyNames(counts).length;
+                console.log(unique_values);
+
+                if (unique_values>20){
+                    domain = Object.getOwnPropertyNames(counts).sort();
+                }
+                else{
+                    domain = Object.getOwnPropertyNames(counts).sort(function (a, b) {
+                        return counts[a] - counts[b];
+                    });
+                }
 
                 return d3.scale.ordinal()
                     .domain(domain)
@@ -219,15 +228,6 @@ d3.parcoords = function (config) {
         __.hideAxis.forEach(function (k) {
             yscale[k] = defaultScales[__.types[k]](k);
         });
-
-        // hack to remove ordinal dimensions with many values
-        pc.dimensions(pc.dimensions().filter(function (p, i) {
-            var uniques = yscale[p].domain().length;
-            if (__.types[p] == "string" && (uniques > 60 || uniques < 1)) {
-                return false;
-            }
-            return true;
-        }));
 
         // xscale
         xscale.rangePoints([0, w()], 1);
@@ -314,30 +314,6 @@ d3.parcoords = function (config) {
         pc.dimensions(dimension_list);
         return this;
     };
-
-    // a better "typeof" from this post: http://stackoverflow.com/questions/7390426/better-way-to-get-type-of-a-javascript-variable
-    pc.toType = function (v) {
-        return ({}).toString.call(v).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
-    };
-
-    // try to coerce to number before returning type
-    pc.toTypeCoerceNumbers = function (v) {
-        if ((parseFloat(v) == v) && (v != null)) {
-            return "number";
-        }
-        return pc.toType(v);
-    };
-
-    // attempt to determine types of each dimension based on first row of data, with the first raw it will be returning the type as data, string or number
-    pc.detectDimensionTypes = function (data) {
-        var types = {};
-        d3.keys(data[0])
-            .forEach(function (col) {
-                types[col] = pc.toTypeCoerceNumbers(data[0][col]);
-            });
-        return types;
-    };
-
 
     pc.render = function () { //function to render the data
         // try to autodetect dimensions and create scales
@@ -540,11 +516,38 @@ d3.parcoords = function (config) {
         return color_path(d, i, ctx.highlight); //highlighting a polyline ex. when brushing is performed
     };
 
-
-
     pc.clear = function (layer) {
         ctx[layer].clearRect(0, 0, w() + 2, h() + 2);
         return this;
+    };
+
+    pc.getAxisForColumn = function (col) {
+        if (__.types[col] == "string") {
+            var unique_values = yscale[col].domain().length;
+            var step = parseInt(unique_values/20);
+
+            if (unique_values > 20 || unique_values < 1) {
+
+                return d3.svg.axis().orient("left").ticks(5).scale(yscale[col])
+                                    .tickValues(yscale[col].domain().filter(function (d, i) {
+                                        return !(i % step);
+                                    }))
+                                    .tickFormat(function(d){
+                                        if (d.length>15)
+                                            return d.substring(0,15) + '...'
+                                        else
+                                            return d
+                                    });
+
+            }
+            else {
+                return d3.svg.axis().orient("left").ticks(5).scale(yscale[col]).tickFormat(function(d){return d.substring(0,10)});
+;
+            }
+        }
+        else {
+            return d3.svg.axis().orient("left").ticks(5).scale(yscale[col]);
+        }
     };
 
     pc.createAxes = function () { //creating the axes for the visualization
@@ -566,7 +569,7 @@ d3.parcoords = function (config) {
             .attr("class", "axis")
             .attr("transform", "translate(0,0)")
             .each(function (d) {
-                d3.select(this).call(axis.scale(yscale[d]));
+                d3.select(this).call(pc.getAxisForColumn(d));
             })
             .append("svg:text")
             .attr({
@@ -630,7 +633,7 @@ d3.parcoords = function (config) {
             .attr("class", "axis")
             .attr("transform", "translate(0,0)")
             .each(function (d) {
-                d3.select(this).call(axis.scale(yscale[d]));
+                d3.select(this).call(pc.getAxisForColumn(d));
             })
             .append("svg:text")
             .attr({
@@ -654,7 +657,7 @@ d3.parcoords = function (config) {
 
         pc.svg.selectAll(".axis").transition().duration(1100)
             .each(function (d) {
-                d3.select(this).call(axis.scale(yscale[d]));
+                d3.select(this).call(pc.getAxisForColumn(d).scale(yscale[d]));
             });
 
         if (flags.shadows) paths(__.data, ctx.shadows);
@@ -662,6 +665,13 @@ d3.parcoords = function (config) {
         if (flags.reorderable) pc.reorderable();
         return this;
     };
+
+    pc.hideTicks = function(){
+        pc.svg.selectAll(".axis").transition().duration(1100)
+            .each(function (d) {
+                d3.select(this).call(pc.getAxisForColumn(d).tickValues([]));
+            });
+    }
 
 // Jason Davies, http://bl.ocks.org/1341281 making the axes reorderble so that the users can observe relationships between axes as they wish by bringing the closer
     pc.reorderable = function () {

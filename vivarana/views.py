@@ -326,6 +326,9 @@ def preprocessor(request):
     else:
         context = file_helper.get_data_summary(original_data_frame)
         context['filename'] = request.session['filename']
+
+        print context
+
         return render(request, PREPROCESSOR_PAGE, context)
 
 

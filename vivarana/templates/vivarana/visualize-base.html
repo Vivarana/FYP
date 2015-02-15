@@ -405,7 +405,7 @@
             <div id="aplha-slider" class="slider slider-material-lightgrey"></div>
         </div>
     </li>
-    <li data-toggle="tooltip" data-placement="right" data-original-title="Hide ticks"><a href="#"><span
+    <li data-toggle="tooltip" data-placement="right" data-original-title="Hide ticks" ><a onclick="hideTicks()" href="#"><span
             class="mdi-editor-border-vertical" style="font-weight: bold"></span></a>
     </li>
     <li data-toggle="tooltip" data-placement="bottom" data-original-title="Keep selected data"><a
@@ -480,17 +480,6 @@
                 max: 1
             }
         });
-
-        $("#bundling-slider").noUiSlider({
-            start: {{ state_map.bundling_strength }},
-            connect: "lower",
-            step: 0.05,
-            range: {
-                min: 0,
-                max: 1
-            }
-        });
-
 
     });
 </script>
