@@ -33,7 +33,7 @@ def apply_clustering(state_map, current_data_frame, selected_ids):
 
     elif cluster_method == FUZZY_CLUSTERING: #performs fuzzy c means clustering
         cluster = importr("cluster")
-        fuzzy_clustered = cluster.fanny(r_dataframe, number_of_clusters)
+        fuzzy_clustered = cluster.fanny(r_dataframe, k = number_of_clusters, maxit = 10)
         cluster_id = fuzzy_clustered[3] #cluster ID contains on the 3rd column of the data frame - referring to that
 
     del r_dataframe
