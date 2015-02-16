@@ -5,7 +5,7 @@ from pandas import rolling_sum, rolling_mean, rolling_max, rolling_min, rolling_
 
 
 def sum_window(row, df, attribute):
-    return df[attribute].iloc[row['start_index']:row['end_index'] + 1].mean().sum()
+    return df[attribute].iloc[row['start_index']:row['end_index'] + 1].sum()
 
 
 def avg_window(row, df, attribute):
