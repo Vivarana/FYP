@@ -93,8 +93,8 @@ $.get('/max_width/', function (data) {
         .attr("id", "container")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
 
-    zoom(d3.selectAll("svg"));
-    zoom.event(d3.selectAll("svg").transition().duration(500));
+    zoom(d3.select("#chart"));
+    zoom.event(d3.select("#chart").transition().duration(500));
 
     partition = d3.layout.partition()
         .size([2 * Math.PI, radius * radius])
@@ -467,7 +467,7 @@ function updateData() {
     // For efficiency, filter nodes to keep only those large enough to see.
     var nodes = partition.nodes(json)
         .filter(function (d) {
-            return (d.depth < maxwidth * percentageSliderValue / 100); // 0.005 radians = 0.29 degrees
+            return (d.depth < percentageSliderValue+1);//maxwidth * percentageSliderValue / 100); // 0.005 radians = 0.29 degrees
         });
 
     // Make the changes

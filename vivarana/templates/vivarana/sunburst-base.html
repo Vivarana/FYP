@@ -5,9 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
-    <link href="{% static "css/ripples.min.css" %}" rel="stylesheet">
+   <link href="{% static "css/ripples.min.css" %}" rel="stylesheet">
     <link href="{% static "css/material-wfont.css" %}" rel="stylesheet">
-    <link href="{% static "css/snackbar.min.css" %}" rel="stylesheet">
+   {% comment %}  <link href="{% static "css/snackbar.min.css" %}" rel="stylesheet">{% endcomment %}
 
     <link rel="stylesheet" href="{% static "css/yamm.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "css/custom.css" %}" type="text/css"/>
@@ -25,8 +25,9 @@
 
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
+    {% comment %}  <script src="{% static "js/snackbar.min.js" %}"></script>{% endcomment %}
     <script src="{% static "js/jquery.nouislider.all.min.js" %}"></script>
-    <script src="{% static "js/snackbar.min.js" %}"></script>
+
     <script src="{% static "js/bootstrap-tokenfield.min.js" %}"></script>
     <script src="{% static "js/typeahead.bundle.min.js" %}"></script>
     <script src="{% static "js/jquery-ui.min.js" %}"></script>
@@ -51,6 +52,9 @@
 }
 
 </style>
+<a class="pull-left" href="/preprocessor">
+    <img id="nav-back-button" src= {% static "images/back_button.png" %}>
+</a>
 <div class="navbar yamm navbar-default">
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">

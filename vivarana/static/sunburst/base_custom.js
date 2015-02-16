@@ -1,4 +1,4 @@
-var percentageSliderValue = 0.01;
+var percentageSliderValue = 5;
 
 $(document).ready(function () {
     $.material.init();
@@ -12,7 +12,7 @@ $(document).ready(function () {
     // Percentage Slider
     $("#percentage-slider").noUiSlider({
         start: [10],
-        step: 10,
+        step: 5,
         range: {
             'min': [0],
             'max': [100]
@@ -21,7 +21,7 @@ $(document).ready(function () {
 
     $("#percentage-slider").on({'slide': function () {
         percentageSliderValue = $(this).val();
-        $("#percentage-opacity-text").text("Maximum Depth to Display: " + percentageSliderValue + " %");
+        $("#percentage-opacity-text").text("Maximum Depth to Display: " + percentageSliderValue );
 
     }, 'change': function () {
         updateData();
