@@ -5,9 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
-    <link href="{% static "css/ripples.min.css" %}" rel="stylesheet">
+   <link href="{% static "css/ripples.min.css" %}" rel="stylesheet">
     <link href="{% static "css/material-wfont.css" %}" rel="stylesheet">
-    <link href="{% static "css/snackbar.min.css" %}" rel="stylesheet">
+   {% comment %}  <link href="{% static "css/snackbar.min.css" %}" rel="stylesheet">{% endcomment %}
 
     <link rel="stylesheet" href="{% static "css/yamm.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "css/custom.css" %}" type="text/css"/>
@@ -15,30 +15,25 @@
     <link rel="stylesheet" href="{% static "css/tokenfield/bootstrap-tokenfield.min.css" %}" type="text/css"/>
     <link rel="stylesheet" href="{% static "css/tokenfield/tokenfield-typeahead.min.css" %}" type="text/css"/>
 
+    <link href="{% static "css/jquery-ui.min.css" %}" rel="stylesheet">
+
     <link rel="stylesheet" type="text/css" href="{% static "sunburst/sequences.css" %}">
 
 
     <script src="{% static "js/jquery-2.1.1.min.js" %}"></script>
-    <script src="{% static "js/jquery-ui.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
+
     <script src="{% static "js/ripples.js" %}"></script>
     <script src="{% static "js/material.js" %}"></script>
+    {% comment %}  <script src="{% static "js/snackbar.min.js" %}"></script>{% endcomment %}
     <script src="{% static "js/jquery.nouislider.all.min.js" %}"></script>
-    <script src="{% static "js/snackbar.min.js" %}"></script>
+
     <script src="{% static "js/bootstrap-tokenfield.min.js" %}"></script>
-     <script src="{% static "js/typeahead.jquery.min.js" %}"></script>
     <script src="{% static "js/typeahead.bundle.min.js" %}"></script>
-     <script src="{% static "js/bloodhound.min.js" %}"></script>
+    <script src="{% static "js/jquery-ui.min.js" %}"></script>
 
     <script src="{% static "js/d3.js" %}"></script>
-    <script src="{% static "js/underscore.js" %}"></script>
-    <script src="{% static "js/sylvester.js" %}"></script>
-    <script src="{% static "js/divgrid.js" %}"></script>
-    <script src="{% static "js/underscore.math.js" %}"></script>
     <script src={%  static "js/d3_tip.js" %}></script>
-    <!--script src="{% static "js/custom.js" %}"></script-->
-    <script src="{% static "sunburst/base_custom.js" %}"></script>
-
 
     <title>{% block title %}Vivarana{% endblock %}</title>
 
@@ -57,6 +52,9 @@
 }
 
 </style>
+<a class="pull-left" href="/preprocessor">
+    <img id="nav-back-button" src= {% static "images/back_button.png" %}>
+</a>
 <div class="navbar yamm navbar-default">
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -68,7 +66,7 @@
     </div>
     <div class="navbar-collapse collapse navbar-responsive-collapse">
         <ul class="nav navbar-nav">
-            <li class="dropdown">
+            <!--li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b
                         class="caret"></b></a>
                 <ul class="dropdown-menu">
@@ -152,7 +150,7 @@
 
                     </div>
                 </ul>
-            </li>
+            </li-->
 
 
             <li class="dropdown">
@@ -183,7 +181,7 @@
                                 </div>
                             </div>
                         {% endif %}
-                        <div class="row">
+                        <!--div class="row">
                             <div class="col-xs-9">
                                 <input id="event-window" type="number" class="form-control"
                                        placeholder="Specify the event window">
@@ -196,7 +194,7 @@
                                 <a href="javascript:clearEventWindow()"
                                    class="btn btn-danger btn-sm"><i class="mdi-navigation-close"></i></a>
                             </div>
-                        </div>
+                        </div-->
                         <div class="row">
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-backdrop="false" data-whatever="Filter">
                             Filter
@@ -208,24 +206,11 @@
 
                 </ul>
             </li>
-
-            <li><a data-toggle="modal" data-target="#myModal" href="#">Generate Rule</a></li>
+            <li><a id="sequence-rule-gen" href="#">Generate Rule</a></li>
         </ul>
 
 
         <ul class="nav navbar-nav navbar-right">
-            <li>
-                <div id="bundling-slider-container">
-                    <div id="bundling-text" class="slider-text">Bundling Strength: 0.7</div>
-                    <div id="bundling-slider" class="slider slider-material-lightgrey"></div>
-                </div>
-            </li>
-            <li>
-                <div id="curve-slider-container">
-                    <div id="curve-text" class="slider-text">Curve Smoothness: 0.2</div>
-                    <div id="curve-slider" class="slider slider-material-lightgrey"></div>
-                </div>
-            </li>
             <li>
                 <div id="percentage-slider-container">
                     <div id="percentage-opacity-text" class="slider-text">Maximum Depth to Display: 10</div>
@@ -235,7 +220,7 @@
             <li data-toggle="tooltip" data-placement="right" data-original-title="Hide ticks"><a href="#"><span
                     class="mdi-editor-border-vertical" style="font-weight: bold"></span></a>
             </li>
-            <li data-toggle="tooltip" data-placement="bottom" data-original-title="Keep selected data"><a
+            <!--li data-toggle="tooltip" data-placement="bottom" data-original-title="Keep selected data"><a
                     id="btn-keep-data" href="#"><span class="mdi-image-blur-on"
                                                       style="font-weight: bold"></span></a></li>
             <li data-toggle="tooltip" data-placement="left" data-original-title="Exclude selected data"><a
@@ -243,7 +228,7 @@
                                                          style="font-weight: bold"></span></a></li>
             <li data-toggle="tooltip" data-placement="left" data-original-title="Undo last keep/exclude data"><a
                     id="btn-undo" href="#"><span class="mdi-content-undo"
-                                                 style="font-weight: bold"></span></a></li>
+                                                 style="font-weight: bold"></span></a></li-->
             <li data-toggle="tooltip" data-placement="left" data-original-title="Reset all selections"><a id="btn-clear"
                                                                                                           href="#"><span
                     class="mdi-content-clear"

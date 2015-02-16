@@ -7,6 +7,12 @@ body {
 
 #main {
     float: left;
+    margin-top:  50px;
+}
+#rulegenerator {
+    float: left;
+    margin-top:   70px;
+    display: none;
 }
 
 #sidebar {
@@ -15,7 +21,7 @@ body {
 }
 
 #sequence {
-    height: 70px;
+    height: 30px;
     position: fixed;
 }
 
@@ -30,7 +36,6 @@ body {
 
 #chart {
     float: left;
-    top: 70px;
 }
 
 #chart path {
@@ -39,21 +44,21 @@ body {
 
 #explanation {
     position: absolute;
-    top: 370px;
-    left: 260px;
+    top: 400px;
+    left: 275px;
     width: 140px;
     text-align: center;
     color: #666;
     z-index: 250;
     transform: None;
+    margin-left:auto ;
 }
 
 #percentage {
     font-size: 2.5em;
 }
 #chart2 {
-    float: right;
-     top: 70px;
+    float: left;
 }
 
 #chart2 path {
@@ -76,4 +81,42 @@ body {
 }
 #percentage-slider{
     min-width: 300px;
+}
+
+/* Rule generate panel*/
+
+#rulegenerator {
+    float: left;
+    margin-top:   70px;
+    width: 50%;
+}
+#rulepanel{
+    height: 700px;
+
+}
+#element-input{
+    padding: 15px 15px 15px 15px;
+}
+
+#ruleconfirm{
+    float: right;
+    margin-top: 15px;
+    margin-bottom: 15px
+}
+
+.panel-heading {
+    min-height: 20px;
+}
+#close {
+    float:right;
+    display:inline-block;
+    background:inherit;
+}
+
+#close:hover {
+    float:right;
+    display:inline-block;
+    padding:2px 5px;
+    background:#ccc;
+    color:#fff;
 }

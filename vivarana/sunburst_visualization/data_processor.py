@@ -79,11 +79,23 @@ def strip_objects(coalesce):
     global sequence_database
     global stripped_database
     stripped_database = sequence_database.copy(deep = True)
-    stripped_database["sequence_objects"] = stripped_database["sequence_objects"].apply(format_string)
+    stripped_database["sequence_objects"] = stripped_database["sequence_objects"].apply(format_string,args=(grouping_column,grouped_column))
     return stripped_database["sequence_objects"].value_counts().astype(int)
 
 def get_columns():
     return [grouping_column,grouped_column]
+
+def get_matching_patterns_stats(patterns,coalesce):
+    patternmatched = sequence_database.copy(deep=True)
+    for e in patterns:
+        pattern = e
+        patternmatched = patternmatched.apply(pattern_match_projection,axis=1,args=(coalesce,pattern))
+        patternmatched = pd.DataFrame(patternmatched,columns = ["sequence_objects"])
+        patternmatched = patternmatched[patternmatched["sequence_objects"] != "blank"]
+
+
+
+
 def main():
     path = 'C:\Users\Developer\Documents\FYP\FYP\media\logdata.csv'
     frame = pd.read_csv(path, index_col='Date', parse_dates=True)

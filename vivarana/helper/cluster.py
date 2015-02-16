@@ -26,8 +26,8 @@ def apply_clustering(state_map, current_data_frame, selected_ids):
 
     elif cluster_method == HIERARCHICAL_CLUSTERING: #performs hierarchical clustering
         cluster = importr("cluster")
-        distances = cluster.daisy(r_dataframe, metric="gower") #specifying the distance metrice as gower to calculate distance matrice to non-numeric values
-        cluster_input = ro.r.hclust(distances, method="complete")
+        distances = cluster.daisy(r_dataframe) #specifying the distance metrice as gower to calculate distance matrice to non-numeric values
+        cluster_input = ro.r.hclust(distances)
         cluster_groups = ro.r.cutree(cluster_input, k=number_of_clusters)  # specify the number of clusters
         cluster_id = cluster_groups
 

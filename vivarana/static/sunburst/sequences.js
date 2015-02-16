@@ -1,5 +1,6 @@
 var json;
 var uniqueValues;
+var engine;
 // Dimensions of sunburst.
 var width = 1300 / 2;
 var height = 700;
@@ -13,22 +14,52 @@ var b = {
 
 // Mapping of step names to colors.
 var colors = { null: "#000000"};
-var colorList = ["#000080", "#00008B", "#0000CD", "#0000FF", "#006400", "#008000", "#008080", "#008B8B", "#00BFFF", "#00CED1",
-    "#00FA9A", "#00FF00", "#00FF7F", "#00FFFF", "#191970", "#1E90FF", "#20B2AA", "#228B22", "#2E8B57", "#2F4F4F",
-    "#32CD32", "#3CB371", "#40E0D0", "#4169E1", "#4682B4", "#483D8B", "#48D1CC", "#4B0082", "#556B2F", "#5F9EA0",
-    "#6495ED", "#66CDAA", "#696969", "#6A5ACD", "#6B8E23", "#708090", "#778899", "#7B68EE", "#7CFC00", "#7FFF00",
-    "#7FFFD4", "#800000", "#800080", "#808000", "#808080", "#87CEEB", "#87CEFA", "#8A2BE2", "#8B0000", "#8B008B",
-    "#8B4513", "#8FBC8F", "#90EE90", "#9370DB", "#9400D3", "#98FB98", "#9932CC", "#9ACD32", "#A0522D", "#A52A2A",
-    "#A9A9A9", "#ADD8E6", "#ADFF2F", "#AFEEEE", "#B0C4DE", "#B0E0E6", "#B22222", "#B8860B", "#BA55D3", "#BC8F8F",
-    "#BDB76B", "#C0C0C0", "#C71585", "#CD5C5C", "#CD853F", "#D2691E", "#D2B48C", "#D3D3D3", "#D8BFD8", "#DA70D6",
-    "#DAA520", "#DB7093", "#DC143C", "#DCDCDC", "#DDA0DD", "#DEB887", "#E6E6FA", "#E9967A", "#EE82EE", "#EEE8AA",
-    "#F08080", "#F0E68C", "#F4A460", "#F5DEB3", "#FA8072", "#FAEBD7", "#FAF0E6", "#FAFAD2", "#FDF5E6", "#FF0000",
-    "#FF00FF", "#FF00FF", "#FF1493", "#FF4500", "#FF6347", "#FF69B4", "#FF7F50", "#FF8C00", "#FFA07A", "#FFA500",
-    "#FFB6C1", "#FFC0CB", "#FFD700", "#FFDAB9", "#FFDEAD", "#FFE4B5", "#FFE4C4", "#FFE4E1", "#FFEBCD", "#FFEFD5",
-    "#FFFF00"];
+/*var colorList = ["#000080", "#00008B", "#0000CD", "#0000FF", "#006400", "#008000", "#008080", "#008B8B", "#00BFFF", "#00CED1",
+ "#00FA9A", "#00FF00", "#00FF7F", "#00FFFF", "#191970", "#1E90FF", "#20B2AA", "#228B22", "#2E8B57", "#2F4F4F",
+ "#32CD32", "#3CB371", "#40E0D0", "#4169E1", "#4682B4", "#483D8B", "#48D1CC", "#4B0082", "#556B2F", "#5F9EA0",
+ "#6495ED", "#66CDAA", "#696969", "#6A5ACD", "#6B8E23", "#708090", "#778899", "#7B68EE", "#7CFC00", "#7FFF00",
+ "#7FFFD4", "#800000", "#800080", "#808000", "#808080", "#87CEEB", "#87CEFA", "#8A2BE2", "#8B0000", "#8B008B",
+ "#8B4513", "#8FBC8F", "#90EE90", "#9370DB", "#9400D3", "#98FB98", "#9932CC", "#9ACD32", "#A0522D", "#A52A2A",
+ "#A9A9A9", "#ADD8E6", "#ADFF2F", "#AFEEEE", "#B0C4DE", "#B0E0E6", "#B22222", "#B8860B", "#BA55D3", "#BC8F8F",
+ "#BDB76B", "#C0C0C0", "#C71585", "#CD5C5C", "#CD853F", "#D2691E", "#D2B48C", "#D3D3D3", "#D8BFD8", "#DA70D6",
+ "#DAA520", "#DB7093", "#DC143C", "#DCDCDC", "#DDA0DD", "#DEB887", "#E6E6FA", "#E9967A", "#EE82EE", "#EEE8AA",
+ "#F08080", "#F0E68C", "#F4A460", "#F5DEB3", "#FA8072", "#FAEBD7", "#FAF0E6", "#FAFAD2", "#FDF5E6", "#FF0000",
+ "#FF00FF", "#FF00FF", "#FF1493", "#FF4500", "#FF6347", "#FF69B4", "#FF7F50", "#FF8C00", "#FFA07A", "#FFA500",
+ "#FFB6C1", "#FFC0CB", "#FFD700", "#FFDAB9", "#FFDEAD", "#FFE4B5", "#FFE4C4", "#FFE4E1", "#FFEBCD", "#FFEFD5",
+ "#FFFF00"];
 
-var redColorList = ["#000000", "#000080", "#0000FF", "#008000", "#008080", "#00FF00", "#00FFFF", "#800000", "#800080", "#808000",
-    "#808080", "#C0C0C0", "#FF0000", "#FF00FF", "#FFA500", "#FFFF00"];
+ var colorscale20 = d3.scale.category20().range();
+ var colorscale20b = d3.scale.category20().range();
+ var colorscale20c = d3.scale.category20().range();
+ var colorList = colorscale20b;//.concat(colorscale20b,colorscale20c);
+ */
+var colorList = ["#FFFF00", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059", "#FFDBE5", "#7A4900",
+    "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87", "#5A0007", "#809693", "#FEFFE6", "#1B4400",
+    "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80", "#61615A", "#BA0900", "#6B7900", "#00C2A0", "#FFAA92", "#FF90C9",
+    "#B903AA", "#D16100", "#DDEFFF", "#000035", "#7B4F4B", "#A1C299", "#300018", "#0AA6D8", "#013349", "#00846F",
+    "#372101", "#FFB500", "#C2FFED", "#A079BF", "#CC0744", "#C0B9B2", "#C2FF99", "#001E09", "#00489C", "#6F0062",
+    "#0CBD66", "#EEC3FF", "#456D75", "#B77B68", "#7A87A1", "#788D66", "#885578", "#FAD09F", "#FF8A9A", "#D157A0",
+    "#BEC459", "#456648", "#0086ED", "#886F4C", "#34362D", "#B4A8BD", "#00A6AA", "#452C2C", "#636375", "#A3C8C9",
+    "#FF913F", "#938A81", "#575329", "#00FECF", "#B05B6F", "#8CD0FF", "#3B9700", "#04F757", "#C8A1A1", "#1E6E00",
+    "#7900D7", "#A77500", "#6367A9", "#A05837", "#6B002C", "#772600", "#D790FF", "#9B9700", "#549E79", "#FFF69F",
+    "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329", "#5B4534", "#FDE8DC", "#404E55", "#0089A3",
+    "#CB7E98", "#A4E804", "#324E72", "#6A3A4C", "#83AB58", "#001C1E", "#D1F7CE", "#004B28", "#C8D0F6", "#A3A489",
+    "#806C66", "#222800", "#BF5650", "#E83000", "#66796D", "#DA007C", "#FF1A59", "#8ADBB4", "#1E0200", "#5B4E51",
+    "#C895C5", "#320033", "#FF6832", "#66E1D3", "#CFCDAC", "#D0AC94", "#7ED379", "#012C58", "#7A7BFF", "#D68E01",
+    "#353339", "#78AFA1", "#FEB2C6", "#75797C", "#837393", "#943A4D", "#B5F4FF", "#D2DCD5", "#9556BD", "#6A714A",
+    "#001325", "#02525F", "#0AA3F7", "#E98176", "#DBD5DD", "#5EBCD1", "#3D4F44", "#7E6405", "#02684E", "#962B75",
+    "#8D8546", "#9695C5", "#E773CE", "#D86A78", "#3E89BE", "#CA834E", "#518A87", "#5B113C", "#55813B", "#E704C4",
+    "#00005F", "#A97399", "#4B8160", "#59738A", "#FF5DA7", "#F7C9BF", "#643127", "#513A01", "#6B94AA", "#51A058",
+    "#A45B02", "#1D1702", "#E20027", "#E7AB63", "#4C6001", "#9C6966", "#64547B", "#97979E", "#006A66", "#391406",
+    "#F4D749", "#0045D2", "#006C31", "#DDB6D0", "#7C6571", "#9FB2A4", "#00D891", "#15A08A", "#BC65E9", "#FFFFFE",
+    "#C6DC99", "#203B3C", "#671190", "#6B3A64", "#F5E1FF", "#FFA0F2", "#CCAA35", "#374527", "#8BB400", "#797868",
+    "#C6005A", "#3B000A", "#C86240", "#29607C", "#402334", "#7D5A44", "#CCB87C", "#B88183", "#AA5199", "#B5D6C3",
+    "#A38469", "#9F94F0", "#A74571", "#B894A6", "#71BB8C", "#00B433", "#789EC9", "#6D80BA", "#953F00", "#5EFF03",
+    "#E4FFFC", "#1BE177", "#BCB1E5", "#76912F", "#003109", "#0060CD", "#D20096", "#895563", "#29201D", "#5B3213",
+    "#A76F42", "#89412E", "#1A3A2A", "#494B5A", "#A88C85", "#F4ABAA", "#A3F3AB", "#00C6C8", "#EA8B66", "#958A9F",
+    "#BDC9D2", "#9FA064", "#BE4700", "#658188", "#83A485", "#453C23", "#47675D", "#3A3F00", "#061203", "#DFFB71",
+    "#868E7E", "#98D058", "#6C8F7D", "#D7BFC2", "#3C3E6E", "#D83D66", "#2F5D9B", "#6C5E46", "#D25B88", "#5B656C",
+    "#00B57F", "#545C46", "#866097", "#365D25", "#252F99", "#00CCFF", "#674E60", "#FC009C", "#92896B"];
 
 // Total size of all segments; we set this later, after loading the data.
 var totalSize = 0;
@@ -62,8 +93,8 @@ $.get('/max_width/', function (data) {
         .attr("id", "container")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
 
-    zoom(d3.selectAll("svg"));
-    zoom.event(d3.selectAll("svg").transition().duration(500));
+    zoom(d3.select("#chart"));
+    zoom.event(d3.select("#chart").transition().duration(500));
 
     partition = d3.layout.partition()
         .size([2 * Math.PI, radius * radius])
@@ -105,8 +136,28 @@ function showSunburst() {
     initializeBreadcrumbTrail();
     drawLegend();
     $.get('/unique_strings/', function (data) {
-        uniqueValues = JSON.parse(data);
-        colorsSet = initialzeColors(data);
+        uniqueValues = JSON.parse(data).sort();
+
+        colorsSet = initialzeColors(uniqueValues);
+        engine = new Bloodhound({
+            local: $.map(uniqueValues, function (state) {
+                return { value: state };
+            }),
+            datumTokenizer: function (d) {
+                return Bloodhound.tokenizers.whitespace(d.value);
+            },
+            queryTokenizer: Bloodhound.tokenizers.whitespace
+        });
+
+        engine.initialize();
+
+        $('#rule-input').tokenfield({
+            typeahead: [null, { source: engine.ttAdapter() }], limit: 0
+        });
+        //Filter model
+        $('#filter-input').tokenfield({
+            typeahead: [null, { source: engine.ttAdapter() }]
+        });
     });
 
     $.get('/tree_data/', function (data) {
@@ -195,7 +246,12 @@ function mouseover(d) {
         .style("visibility", "");
 
     var sequenceArray = getAncestors(d);
-    updateBreadcrumbs(sequenceArray, percentageString);
+    var breadcrumbSequenceArray = sequenceArray.slice(sequenceArray.length - 10, sequenceArray.length);
+    if (sequenceArray.length <= 10) {
+        updateBreadcrumbs(sequenceArray, percentageString);
+    } else {
+        updateBreadcrumbs(breadcrumbSequenceArray, percentageString);
+    }
 
     // Fade all the segments.
     d3.selectAll("path")
@@ -209,7 +265,7 @@ function mouseover(d) {
         .style("opacity", 1);
     subvis.selectAll("path")
         .filter(function (node) {
-            return (sequenceArray.indexOf(node) >= 0);
+            return (breadcrumbSequenceArray.indexOf(node) >= 0);
         })
         .style("opacity", 1);
 }
@@ -244,11 +300,9 @@ function getAncestors(node) {
     // gets ancestors maximum amount of ancesters returned is 10
     var path = [];
     var current = node;
-    var count = 0
-    while (current.parent && count < 10) {
+    while (current.parent) {
         path.unshift(current);
         current = current.parent;
-        count++;
     }
     return path;
 }
@@ -257,7 +311,7 @@ function initializeBreadcrumbTrail() {
     // Add the svg area.
     var trail = d3.select("#sequence").append("svg:svg")
         .attr("width", $(window).width())
-        .attr("height", 50)
+        .attr("height", 30)
         .attr("id", "trail");
     // defs to clip path of the text within trail polygon
 
@@ -391,102 +445,15 @@ function toggleLegend() {
 }
 
 function colorPoints(index, length) {
-    /* var fvalue = Math.floor(0xFFF*(index+1)/length).toString(16);
-     if(fvalue.length == 1){
-     fvalue = "00"+fvalue;
-     }else if(fvalue.length == 2){
-     fvalue = "0"+fvalue;
-     }
-     var color = "#"+fvalue;
-     return color;*/
+
     var color = colorList[Math.floor((colorList.length * index) / length)];
     return color;
 }
-/*var U, V, R, G,B;
- function colorPoints(scalevalue , Y){
- U = Math.cos(scalevalue);
- V = Math.sin(scalevalue);
- //R =Y+V/0.88;
- //G=Y-0.38*U-0.58*V;
- //B=Y+U/0.49;
- R = Math.floor(Math.abs(U*255));
- G = Math.floor(Math.abs(V*255));
- B = Math.floor(Math.abs(((U+V)/2)*255));
- return "rgb("+R+","+G+","+B+")";
- }*/
-/*
- function colorPoints(fullscale,quadrantscale){
- var U = Math.cos(quadrantscale);
- var V = Math.sin(quadrantscale);
- var h = fullscale/60;			// sector 0 to 5
- var i = Math.floor( h );
- window.alert(fullscale+" , "+quadrantscale+" , "+U +" , "+V+" , "+h+" , "+i);
- var f = h - i;			// factorial part of h
- var p = V * ( 1 - U );
- var q = V * ( 1 - U * f );
- var t = V * ( 1 - U * ( 1 - f ) );
- var R,G,B;
- if( U == 0 ) {
- // achromatic (grey)
- R = G = B = V;
- return "rgb("+Math.floor(R*255)+","+Math.floor(G*255)+" ,"+Math.floor(B*255)+")";
- }
- else {
- switch (i) {
- case 0:
- R = V;
- G = t;
- B = p;
- break;
- case 1:
- R = q;
- G = V;
- B = p;
- break;
- case 2:
- R = p;
- G = V;
- B = t;
- break;
- case 3:
- R = p;
- G = q;
- B = V;
- break;
- case 4:
- R = t;
- G = p;
- B = V;
- break;
- default:		// case 5:
- R = V;
- G = p;
- B = q;
- break;
- }
- }
- return "rgb("+Math.floor(R*255)+","+Math.floor(G*255)+" ,"+Math.floor(B*255)+")";
- }
- */
 
 function initialzeColors(data) {
 
-    var urls = JSON.parse(data);
-    //console.log(urls.length);
-    /*var linearScale = d3.scale.linear()
-     .domain([0,urls.length])
-     .range([0,Math.PI/2]);
-     var fullLinearScale = d3.scale.linear()
-     .domain([0,urls.length])
-     .range([0,360]);
-     var quadrantLinearScale = d3.scale.linear()
-     .domain([0,urls.length])
-     .range([0,Math.PI*2]);*/
-    //console.log(linearScale(500))
+    var urls = data;
     urls.map(function (currentvalue, index, array) {
-        //console.log(currentvalue,  colorPoints(linearScale(index),0.5));
-        //colors[currentvalue] = colorPoints(linearScale(index),0.1);
-        //colors[currentvalue] = colorPoints(fullLinearScale(index),quadrantLinearScale(index));
         colors[currentvalue] = colorPoints(index, urls.length);
     });
     return true;
@@ -500,7 +467,7 @@ function updateData() {
     // For efficiency, filter nodes to keep only those large enough to see.
     var nodes = partition.nodes(json)
         .filter(function (d) {
-            return (d.depth < maxwidth * percentageSliderValue / 100); // 0.005 radians = 0.29 degrees
+            return (d.depth < percentageSliderValue+1);//maxwidth * percentageSliderValue / 100); // 0.005 radians = 0.29 degrees
         });
 
     // Make the changes
