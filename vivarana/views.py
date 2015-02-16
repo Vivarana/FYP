@@ -142,7 +142,7 @@ def visualize(request):
     # getting the aggregates in correct format for column naming.
     aggregates = {}
     for value in state_map['aggregate_function_on_attribute']:
-        aggregates[value.encode('ascii', 'ignore')] = state_map['aggregate_function_on_attribute'][value]
+        aggregates[value.encode('ascii', 'ignore')] = state_map['aggregate_function_on_attribute'][value][0]
 
     column_types = file_helper.get_compatible_column_types(current_data_frame)
     data_start, is_last_page, json_output = process_pagination(state_map, current_data_frame)

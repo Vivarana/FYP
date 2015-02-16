@@ -164,6 +164,7 @@ def parse_rule(rule_string, aggregate_functions):
 
     :return: A ConstraintSet object of the single path through the decision tree.
     """
+    print rule_string
     rules = rule_string.split('_AND_')
 
     rule_dict = {}
@@ -280,12 +281,12 @@ def generate(selected_ids, dataframe, state):
         temp_rule_set = []
 
         # if debug:
-        # print "---------------------------------------------------------------------------------"
-        # print "Decision Tree"
-        # logger.debug(decision_tree)
-        # print decision_tree
-        # print rule_set
-        # print "---------------------------------------------------------------------------------"
+        print "---------------------------------------------------------------------------------"
+        print "Decision Tree"
+        logger.debug(decision_tree)
+        print decision_tree
+        print rule_set
+        print "---------------------------------------------------------------------------------"
 
         for index, row in rule_set.iterrows():
             temp_rule = parse_rule(row['rulelist'], state[constants.AGGREGATE_FUNCTION_ON_ATTR])
@@ -316,16 +317,16 @@ def generate(selected_ids, dataframe, state):
         logger.debug(constraint_set.to_string())
 
         # if debug:
-        # print "Rule Created - "
-        # print constraint_set.to_string()
-        # print "---------------------------------------------------------------------------------"
-        # print "Size of the Dataset = " + str(len(dataframe))
-        # print "Number of events selected for rule generation = " + str(len(temporary_dataframe))
-        # print "Number of events filtered through the rule = " + str(len(constraint_set.apply_constraint(temporary_dataframe).index))
-        # print "---------------------------------------------------------------------------------"
-        # print "Confusion Matrix - "
-        # print confusion_mat
-        # print "Precision = " + str(precision) + ", recall = " + str(recall)
+        print "Rule Created - "
+        print constraint_set.to_string()
+        print "---------------------------------------------------------------------------------"
+        print "Size of the Dataset = " + str(len(dataframe))
+        print "Number of events selected for rule generation = " + str(len(temporary_dataframe))
+        print "Number of events filtered through the rule = " + str(len(constraint_set.apply_constraint(temporary_dataframe).index))
+        print "---------------------------------------------------------------------------------"
+        print "Confusion Matrix - "
+        print confusion_mat
+        print "Precision = " + str(precision) + ", recall = " + str(recall)
 
         number_selected = len(selected_ids['selected_ids'])
         number_identified = len(rule_applied_index)

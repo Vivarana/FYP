@@ -32,7 +32,7 @@ def handle_uploaded_file(file_in, ):
         return handle_log(file_in)
     else:
         return {'success': False,
-                'error': 'Sorry. File type ' + file_extension + ' is not supported or parsing error occurred'}
+                'error': 'Sorry. File type ' + file_extension + ' is not supported.'}
 
 
 def get_data_summary(dataframe):

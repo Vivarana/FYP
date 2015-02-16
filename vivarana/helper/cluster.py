@@ -13,7 +13,7 @@ def apply_clustering(state_map, current_data_frame, selected_ids):
     pandas2ri.activate() #converts pandas data frames to R data frames on the fly
     #Datafile should be read as a r dataframe or else Factor variable type won't recognized by R
     file_path = "media" + os.path.sep + "dataframe.csv" #Specifying the file Path to media/dataframe.csv
-    new_data.to_csv(file_path) #writing the data frame to the file_path
+    new_data.to_csv(file_path, index=False) #writing the data frame to the file_path
     r_dataframe = ro.r['read.csv'](file_path) #reading it through rpy2
 
     cluster_id = []

@@ -177,6 +177,34 @@ function performClustering() {
     }
 }
 
+function performRuleGen() {
+    if (true) {
+        var html_string = "<form action='' id='column_select_for_cluster' onsubmit='return false;'>";
+        $.getJSON('/current_column_lst/', {}, function (data) {
+            var col_list = data.attribute_list;
+
+            for (var i = 0; i < col_list.length; i++) {
+                html_string += "<div class='checkbox'><label><input type='checkbox' name='column_for_rulegen' value='" +
+                    col_list[i] + "' checked> " +
+                    "<span class='ripple'></span>" +
+                    "<span class='check'>" +
+                    "</span>"
+                    + col_list[i] + "</label></div>"
+
+            }
+            html_string += "</form>";
+            $("#rulegen_model_body").html(html_string);
+            $('#myModal').modal('toggle');
+            return true;
+        });
+        //data-target="#myModal"
+
+    } else {
+        $.snackbar({content: 'Please specify a positive integer as the number of clusters', style: 'toast'});
+        return false;
+    }
+}
+
 
 function setAnomalyPeriod() {
     var anomaly_period_size = $("#anomaly_detect_period_size").val();
