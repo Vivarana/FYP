@@ -40,8 +40,9 @@ EVENT_WINDOW_VALUE = 'event_window_value'
 
 # error
 ERROR_100 = 'error-100'  # aggregate error where aggregation is performed without setting window value
+ERROR_200 = 'error-200'  # anomaly detection error when it is performed without specifying a period or max size
 
-#file upload constant
+# file upload constant
 FILE_INPUT = 'fileinput'  # fileinput of the form
 
 #supported file extensions
@@ -66,6 +67,9 @@ NUMBER_PAGES = 'number_pages'
 CLUSTER_COLUMNS_LST = 'cluster_columns_lst'
 
 ANOMALY_DETECT_COLUMN = 'anomaly_detect_column'
+ANOMALY_DETECT_PERIOD_SIZE = 'anomaly_detect_period_size'
+ANOMALY_DETECT_MAX_SIZE = 'anomaly_detect_max_size'
+ANOMALY_DETECT_GRANULARITY = 'anomaly_detect_granularity'
 ANOMALY_DICT = 'anomaly_dict'
 
 AGGREGATE_FUNCTION_ON_ATTR = 'aggregate_function_on_attribute'
@@ -108,6 +112,6 @@ GROUPED_COL_NAME = 'grouped_col_name'
 
 # test file paths
 
-TEST_DUMMY_FILE_PATH = os.path.join(BASE_DIR,'vivarana/helper/tests/test_dummy.xcel')
-TEST_LOG_FILE_PATH = os.path.join(BASE_DIR,'vivarana/helper/tests/test_log.log')
-TEST_CSV_FILE_PATH = os.path.join(BASE_DIR,'vivarana/helper/tests/test_csv.csv')
+TEST_DUMMY_FILE_PATH = os.path.join(BASE_DIR, 'vivarana/helper/tests/test_dummy.xcel')
+TEST_LOG_FILE_PATH = os.path.join(BASE_DIR, 'vivarana/helper/tests/test_log.log')
+TEST_CSV_FILE_PATH = os.path.join(BASE_DIR, 'vivarana/helper/tests/test_csv.csv')

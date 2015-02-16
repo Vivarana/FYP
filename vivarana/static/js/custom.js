@@ -48,9 +48,9 @@ function displaySystemState() {
                 if (agrt_dict.hasOwnProperty(key)) {
                     var val = agrt_dict[key];
                     if (val[1] !== 'event') {
-                        modal_body += '<tr><td>' + key + '</td><td>' + val[0] + '</td><td>' + val[3] + val[2] + '</td><td>' + val[1] + '</td><td>'+val[4]+'</td>'
+                        modal_body += '<tr><td>' + key + '</td><td>' + val[0] + '</td><td>' + val[3] + val[2] + '</td><td>' + val[1] + '</td><td>' + val[4] + '</td>'
                     } else {
-                        modal_body += '<tr><td>' + key + '</td><td>' + val[0] + '</td><td>' + val[3] + '</td><td>' + val[1] + '</td><td>'+val[4]+'</td>'
+                        modal_body += '<tr><td>' + key + '</td><td>' + val[0] + '</td><td>' + val[3] + '</td><td>' + val[1] + '</td><td>' + val[4] + '</td>'
                     }
                 }
             }
@@ -173,6 +173,38 @@ function performClustering() {
 
     } else {
         $.snackbar({content: 'Please specify a positive integer as the number of clusters', style: 'toast'});
+        return false;
+    }
+}
+
+
+function setAnomalyPeriod() {
+    var anomaly_period_size = $("#anomaly_detect_period_size").val();
+    var anomaly_granularity = $("#anomaly_detect_granularity option:selected").text();
+
+    if (isInt(anomaly_period_size)) {
+        $.post("/change_state/", JSON.stringify({property_name: "anomaly_detect_period_size", property_value: anomaly_period_size}), function (data) {
+        });
+        $.post("/change_state/", JSON.stringify({property_name: "anomaly_detect_granularity", property_value: anomaly_granularity}), function (data) {
+        });
+
+        $.snackbar({content: 'Anomaly Detection period size has been set to ' + anomaly_period_size + ' ' + anomaly_granularity, style: 'toast'});
+        return true
+    } else {
+        $.snackbar({content: 'Please specify a positive integer as the period size', style: 'toast'});
+        return false;
+    }
+}
+
+function setMaxAnomaly() {
+    var anomaly_max_size = $("#anomaly_detect_max_size").val();
+    if ((anomaly_max_size > 0) && (anomaly_max_size < 100)) {
+        $.post("/change_state/", JSON.stringify({property_name: "anomaly_detect_max_size", property_value: anomaly_max_size}), function (data) {
+        });
+        $.snackbar({content: 'Maximum size of anomalies which should be detected has been set to ' + anomaly_max_size + '% of data ', style: 'toast'});
+        return true
+    } else {
+        $.snackbar({content: 'Maximum size of Anomalies detected should be a percentage value', style: 'toast'});
         return false;
     }
 }

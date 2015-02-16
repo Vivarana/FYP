@@ -106,6 +106,25 @@
         </div>
     </div>
 
+    <!-- Container for the dialog that appear on anomaly detection -->
+    <div class="modal fade" id="anomaly_modal" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    {#                    <h4 class="modal-title" id="stateModalLabel">Current State of the System</h4>#}
+                </div>
+                <div class="modal-body" id="anomaly_modal_body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="" class="btn btn-primary">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Container for the main visualization -->
     <div id="parcoords-main" class="parcoords"></div>
 
@@ -177,8 +196,29 @@
     var datastack = [];         // stores data history (for undo operation)
     var data = [];
     var aggregates = [];
+    var ticks_hidden = false;
 
     function drawData(new_data) {
+        data = new_data;
+        new_grid_data = new_data;
+        parcoords.brushMode("1D-axes");
+        parcoords.brushMode("2D-strums");
+        if ($('[id="oneBrushing-radio"]').is(':checked')) {
+            parcoords
+                    .data(data)
+                    .resize()
+                    .render()
+                    .brushMode("1D-axes");
+        } else {
+            parcoords
+                    .data(data)
+                    .resize()
+                    .render()
+                    .brushMode("2D-strums");
+        }
+    }
+
+    function drawDataWithNewColumn(new_data) {
         data = new_data;
         new_grid_data = new_data;
         parcoords.brushMode("1D-axes");
@@ -353,7 +393,7 @@
         if (id_dict[i]) {
             return id_dict[i];
         } else {
-            return "#F9FBFC";
+            return "#069";
         }
     }
 
@@ -521,6 +561,8 @@
         //Adding the type for id column so that it comes last
         data_types['id'] = 'number';
 
+        aggregates = {{ aggregates }}
+
         var parcoords = d3.parcoords()("#parcoords-main")
                 .alpha({{ state_map.alpha_opacity }})
                 .mode("queue") // progressive rendering
@@ -553,6 +595,7 @@
             .data(data)
             .bundlingStrength(0)
             .smoothness(0)
+            .aggregates(aggregates)
             .render()
             .reorderable()
             .brushMode('{{ state_map.brush_mode }}');
@@ -707,7 +750,9 @@
 
     }
 
+
     function anomaly(col_name, col_number, obj) {
+
         $("#ajax-loader-text").html("Detecting anomalities. Please wait...");
         $(".cover, .loading-model").show();
 
@@ -722,16 +767,37 @@
             selected_id_lst.push(current_data[i]['id'])
         }
 
-        $.get('/anomaly/', {selected_ids: selected_ids, anomaly_detect_column: col_name}, function (data) {
-            var j_data = JSON.parse(data);
-            var anom_lst = j_data.anom_lst;
-            var anom_dict = {};
-            for (var i = 0; i < anom_lst.length; i += 1) {
-                anom_dict[anom_lst[i]] = "#ff0000"
+
+        $.ajax({
+            url: '/anomaly/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({selected_ids: selected_ids, anomaly_detect_column: col_name}),
+            dataType: 'json',
+            success: function (result) {
+                if (data == 'error-200') {
+                    $(".cover, .loading-model").hide();
+                    $.snackbar({content: 'Please specify Configuration values for Anomaly Detection.', style: 'toast'});
+                    return false;
+                }
+
+                var j_data = JSON.parse(result.result_data);
+                var anom_lst = result.anom_lst;
+
+                j_data.forEach(function (d, i) {
+                    d.id = anom_lst[i];
+                });
+
+
+                $(".cover, .loading-model").hide();
+                parcoords.color('#ff0000');
+                drawData(j_data);
+                gridUpdate(j_data);
+                parcoords.brushed(false);
+
             }
-            $(".cover, .loading-model").hide();
-            enable_custom_coloring(anom_dict);
         });
+
     }
 
     function aggregate_func(data, selected_id_lst, attribute_name, aggregate_function) {
@@ -788,6 +854,7 @@
         });
         aggregates[col_name] = 'group_by';
         parcoords.aggregates(aggregates);
+        drawData(data);
         $.snackbar({content: 'Group by attribute has been set to ' + col_name, style: 'toast'});
     }
 
@@ -894,6 +961,13 @@
                 for (var i in brushed_data) {
                     brushed_data[i]['clusterID'] = lst[i];
                 }
+
+                data_types['clusterID'] = 'string'
+
+                parcoords.data(data)
+                         .types(data_types)
+                         .drawWithNewColumn();
+
                 drawData(brushed_data);
                 gridUpdate(brushed_data);
                 $(".cover, .loading-model").hide();
@@ -972,6 +1046,17 @@
                 }
             }
         });
+    }
+
+    function hideTicks(){
+        if(ticks_hidden==false){
+            parcoords.hideTicks();
+            ticks_hidden = true;
+        }
+        else{
+            ticks_hidden = false;
+            parcoords.updateAxes();
+        }
     }
 
 
