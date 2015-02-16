@@ -13,7 +13,7 @@ def apply_clustering(state_map, current_data_frame, selected_ids):
     pandas2ri.activate() #converts pandas data frames to R data frames on the fly
     #Datafile should be read as a r dataframe or else Factor variable type won't recognized by R
     file_path = "media" + os.path.sep + "dataframe.csv" #Specifying the file Path to media/dataframe.csv
-    new_data.to_csv(file_path) #writing the data frame to the file_path
+    new_data.to_csv(file_path, index=False) #writing the data frame to the file_path
     r_dataframe = ro.r['read.csv'](file_path) #reading it through rpy2
 
     cluster_id = []
@@ -26,8 +26,8 @@ def apply_clustering(state_map, current_data_frame, selected_ids):
 
     elif cluster_method == HIERARCHICAL_CLUSTERING: #performs hierarchical clustering
         cluster = importr("cluster")
-        distances = cluster.daisy(r_dataframe, metric="gower") #specifying the distance metrice as gower to calculate distance matrice to non-numeric values
-        cluster_input = ro.r.hclust(distances, method="complete")
+        distances = cluster.daisy(r_dataframe) #specifying the distance metrice as gower to calculate distance matrice to non-numeric values
+        cluster_input = ro.r.hclust(distances)
         cluster_groups = ro.r.cutree(cluster_input, k=number_of_clusters)  # specify the number of clusters
         cluster_id = cluster_groups
 
