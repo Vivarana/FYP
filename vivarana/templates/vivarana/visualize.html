@@ -46,19 +46,6 @@
                     <h4 class="modal-title" id="myModalLabel">Select columns for rule generation</h4>
                 </div>
                 <div class="modal-body" id="rulegen_model_body">
-{#                    <form action="" id="column_select_for_rulegen" onsubmit="return false;">#}
-{#                        {% csrf_token %}#}
-{#                        {% for col,type in columns.items %}#}
-{#                            {% if col != "clusterID" %}#}
-{#                                <div class="checkbox">#}
-{#                                    <label>#}
-{#                                        <input type="checkbox" name="column_for_rulegen" value="{{ col }}"#}
-{#                                               checked> {{ col }}#}
-{#                                    </label>#}
-{#                                </div>#}
-{#                            {% endif %}#}
-{#                        {% endfor %}#}
-{#                    </form>#}
                 </div>
                 <div class="modal-footer">
                     <button type="button" onclick="generate_rules();" class="btn btn-primary">Generate</button>
@@ -144,7 +131,7 @@
     <div id="slickgrid-container">
         <div id="rule-right">
             {#            <div id="rule-right-table-head"></div>#}
-            <ul id="myTab" style="height:29px; background: #2C3E50" class="nav nav-tabs" role="tablist">
+            <ul id="myTab" style="height:29px; background: #2C3E50;width: 475px;" class="nav nav-tabs" role="tablist">
                 <li role="presentation" style="border-left: 2px solid #FFF;" class="active nav-head"><a
                         style="padding-top: 4px; height: 29px;" href="#home" id="home-tab"
                         role="tab" data-toggle="tab"
@@ -154,6 +141,7 @@
                                                             role="tab" id="cep_rule_panel-tab"
                                                             data-toggle="tab" aria-controls="cep_rule_panel"
                                                             aria-expanded="true">CEP Rule</a></li>
+                <li class="pull-right"><button id="reset-colors-button" onclick="reset_highlight()" type="button" style="width: 100px; display: none;" class="btn btn-sm btn-primary">reset colors</button></li>
             </ul>
             <div style="border-left: 2px solid #2C3E50; height: 300px" id="myTabContent" class="tab-content">
                 <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
@@ -173,14 +161,16 @@
                 </div>
                 <div style="padding-left: 5px" role="tabpanel" class="tab-pane fade" id="cep_rule_panel"
                      aria-labelledby="cep_rule_panel-tab">
-                    <p id="rule-paragraph">No rules have been created yet. Please select the events you are interested
-                        in and press "Generate Rule" button on the toolbar</p>
 
                     <div style="padding-left: 80px; display: none" id="loading-gif" class="rule-loading-model">
                         <img src="{% static "images/ajax-rule-loader.gif" %}" alt="preloader"/>
                         </br>
                         <p style="margin-left: 13px">Generating Rule. Please wait...</p>
                     </div>
+
+                    <p id="rule-paragraph" style="height: 150px; overflow:auto;">No rules have been created yet. Please select the events you are interested
+                        in and press "Generate Rule" button on the toolbar</p>
+
                 </div>
             </div>
         </div>
@@ -982,11 +972,6 @@
 
 
     function generate_rules() {
-        $('#myModal').modal('toggle');
-        $("#cep_rule_panel-tab").tab('show');
-        $("#rule-paragraph").empty();
-        $('#loading-gif').show();
-
         var selected_ids = [];
         var brushed_data = parcoords.state.brushed;
 
@@ -998,12 +983,18 @@
             selected_ids.push(brushed_data[i]['id'])
         }
 
+        console.log(selected_ids)
 
         if (selected_ids.length == 0) {
-            $('#loading-gif').hide();
-            $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px; padding-left:15px;">Please select the set of event to generate CEP rules for</p>');
+            $.snackbar({content: 'Please specify the set of events you want to consider for rule generation.', style: 'toast'});
             return
         }
+
+        $('#myModal').modal('toggle');
+        $("#cep_rule_panel-tab").tab('show');
+        $("#rule-paragraph").empty();
+        $("#rule-info-panel").remove();
+        $('#loading-gif').show();
 
         $.ajax({
             url: '/rule_gen/',
@@ -1016,23 +1007,6 @@
 
                 if (result['success'] == true) {
 
-                    var false_positive_indexes = result['filtered'];
-                    console.log(false_positive_indexes);
-
-                    var false_positives = [];
-
-                    for (var index in false_positive_indexes) {
-                        false_positives.push(data[false_positive_indexes[index]])
-                    }
-
-                    console.log(false_positives);
-
-                    var current_color = parcoords.state.color;
-                    parcoords.color('#FF0000');
-                    parcoords.highlight(false_positives);
-                    parcoords.color(current_color);
-
-
                     for (var rule in result.rules) {
                         var count_line = 'You selected ' + result['count_selected'] + ' events. This rule covers ' + result['count_covered'] + ' events.'
                         var recall_line = 'Rule recall - ' + parseFloat(result['recall']).toFixed(7);
@@ -1040,8 +1014,27 @@
 
                         $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FROM EVENT_STREAM_NAME' + result['window_string'] + '</br>SELECT ' + result['select_string'] + '</br>Having</p>')
                         $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules[rule]['rule'] + '</p>')
-                        $("#rule-paragraph").append('<div style="text-align:center" class="panel panel-info"><div class="panel-body">' + precision_line + '</br>' + recall_line + '</br>' + count_line + '</div> </div>')
+                        $("#cep_rule_panel").append('<div style="text-align:center" id="rule-info-panel" class="panel panel-info"><div id="rule-panel" class="panel-body">' + precision_line + '</br>' + recall_line + '</br>' + count_line + '</br></div> </div>')
                     }
+{#                    $("#rule-paragraph").append('<button class="btn-default>reset</button>')#}
+                    var false_positive_indexes = result['filtered']
+
+{#                    console.log(false_positives);#}
+                    if(false_positive_indexes.length>0) {
+                        console.log(false_positive_indexes);
+
+                        var false_positives = [];
+
+                        for (var index in false_positive_indexes) {
+                            false_positives.push(data[false_positive_indexes[index]])
+                        }
+                        var current_color = parcoords.state.color;
+                        parcoords.color('#FF0000');
+                        parcoords.highlight(false_positives);
+                        parcoords.color(current_color);
+                        $('#reset-colors-button').show()
+                    }
+
                 }
                 else {
                     $('#loading-gif').hide();
@@ -1061,6 +1054,11 @@
             ticks_hidden = false;
             parcoords.updateAxes();
         }
+    }
+
+    function reset_highlight(){
+        parcoords.unhighlight();
+        $('#reset-colors-button').hide();
     }
 
 

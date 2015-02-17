@@ -178,7 +178,6 @@ function performClustering() {
 }
 
 function performRuleGen() {
-    if (true) {
         var html_string = "<form action='' id='column_select_for_cluster' onsubmit='return false;'>";
         $.getJSON('/current_column_lst/', {}, function (data) {
             var col_list = data.attribute_list;
@@ -197,12 +196,6 @@ function performRuleGen() {
             $('#myModal').modal('toggle');
             return true;
         });
-        //data-target="#myModal"
-
-    } else {
-        $.snackbar({content: 'Please specify a positive integer as the number of clusters', style: 'toast'});
-        return false;
-    }
 }
 
 

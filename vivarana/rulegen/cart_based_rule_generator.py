@@ -191,6 +191,11 @@ def parse_rule(rule_string, aggregate_functions):
             splits = rule.split('=')
             rule_variable = splits[0]
             rule_parameters = splits[1]
+
+            print rule_parameters
+            print rule_parameters.split(',')
+            print len(rule_parameters.split(','))
+
             if rule_variable in rule_dict.keys():
                 rule_dict[rule_variable] = merge_rules(rule_dict[rule_variable],
                                                        {'operation': '=', 'operand': rule_parameters.split(',')})
@@ -346,7 +351,11 @@ def get_precision(conf_matrix):
     :return: The precision calculated by dividing the amount of true positives from the amount of all items
              filtered out by the rule.
     """
-    return (conf_matrix[1][1])/float(conf_matrix[1][0] + conf_matrix[1][1])
+    try:
+        return (conf_matrix[1][1])/float(conf_matrix[1][0] + conf_matrix[1][1])
+    except ZeroDivisionError, e:
+        logger.error(e)
+        return 0
 
 
 def get_recall(conf_matrix):
@@ -357,7 +366,11 @@ def get_recall(conf_matrix):
     :return: The recall calculated by dividing the amount of all positives from the amount of all
              items selected by the user.
     """
-    return (conf_matrix[1][1])/float(conf_matrix[0][1]+conf_matrix[1][1])
+    try:
+        return (conf_matrix[1][1])/float(conf_matrix[0][1]+conf_matrix[1][1])
+    except ZeroDivisionError, e:
+        logger.error(e)
+        return 0
 
 
 def num(input_string, column):
