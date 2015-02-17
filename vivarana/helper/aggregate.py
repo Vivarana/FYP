@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 import numpy as np
+import pandas as pd
 from pandas import rolling_sum, rolling_mean, rolling_max, rolling_min, rolling_count
 
 
@@ -123,6 +124,8 @@ def aggregate_time_window(aggregate_function, time_window_value, time_granularit
     else:
         df = original_data_frame.loc[:, ['Date', attribute_name, groupby_attr]]
 
+    df['Date'] = pd.to_datetime(df['Date'])
+    df = df.sort(['Date'])
     start_dates = ""
     if time_granularity == 'seconds':
         start_dates = df['Date'] - timedelta(seconds=int(time_window_value))
