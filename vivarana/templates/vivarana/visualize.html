@@ -346,18 +346,10 @@
 
     //Cluster Coloring method
     function enable_cluster_coloring() {
-        var colorgen = ["RoyalBlue", "Crimson", "Green ", "gold", "SaddleBrown", "DarkOrange", "DimGray", "Olive", "Peru", "RosyBrown" ];
-        var colors = {};
-        _(data).chain()
-                .pluck('clusterID')
-                .uniq()
-                .each(function (d, i) {
-                    colors[d] = colorgen[i];
-                });
-
+        var colorgen = ["RoyalBlue", "Crimson", "Green", "gold", "SaddleBrown", "DarkOrange", "DimGray", "Olive", "Peru", "RosyBrown" ];
 
         var color = function (d) {
-            return colors[d.clusterID];
+            return colorgen[parseInt(d.clusterID)-1];
         };
         parcoords.color(color).render();
     }
