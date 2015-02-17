@@ -356,13 +356,13 @@
 
     //Cluster Coloring method
     function enable_cluster_coloring() {
-        var colorgen = d3.scale.category20();
+        var colorgen = ["RoyalBlue", "Crimson", "Green ", "gold", "SaddleBrown", "DarkOrange", "DimGray", "Olive", "Peru", "RosyBrown" ];
         var colors = {};
         _(data).chain()
                 .pluck('clusterID')
                 .uniq()
                 .each(function (d, i) {
-                    colors[d] = colorgen(i);
+                    colors[d] = colorgen[i];
                 });
 
 
