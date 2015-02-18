@@ -45,7 +45,11 @@
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <h4 class="modal-title" id="myModalLabel">Select columns for rule generation</h4>
                 </div>
-                <div class="modal-body" id="rulegen_model_body">
+                <div class="modal-body">
+                    <div class='checkbox'><label style="font-weight: bold"><input type='checkbox' id="rule_select_all"
+                                                                                  checked>Select All Attributes</label>
+                    </div>
+                    <div id="rulegen_model_body"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" onclick="generate_rules();" class="btn btn-primary">Generate</button>
@@ -65,7 +69,12 @@
                             aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <h4 class="modal-title" id="clusterModalLabel">Select attributes to cluster</h4>
                 </div>
-                <div class="modal-body" id="cluster_model_body">
+                <div class="modal-body">
+                    <div class='checkbox'><label style="font-weight: bold"><input type='checkbox'
+                                                                                  id="cluster_select_all"
+                                                                                  checked> Select All Attributes</label>
+                    </div>
+                    <div id="cluster_model_body"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" onclick="continueClustering();" class="btn btn-primary">Continue</button>
@@ -87,7 +96,7 @@
                 <div class="modal-body" id="state_modal_body">
                 </div>
                 <div class="modal-footer">
-{#                    <button type="button" onclick="" class="btn btn-primary">Save</button>#}
+                    {#                    <button type="button" onclick="" class="btn btn-primary">Save</button>#}
                 </div>
             </div>
         </div>
@@ -141,7 +150,11 @@
                                                             role="tab" id="cep_rule_panel-tab"
                                                             data-toggle="tab" aria-controls="cep_rule_panel"
                                                             aria-expanded="true">CEP Rule</a></li>
-                <li class="pull-right"><button id="reset-colors-button" onclick="reset_highlight()" type="button" style="width: 100px; display: none;" class="btn btn-sm btn-primary">reset colors</button></li>
+                <li class="pull-right">
+                    <button id="reset-colors-button" onclick="reset_highlight()" type="button"
+                            style="width: 100px; display: none;" class="btn btn-sm btn-primary">reset colors
+                    </button>
+                </li>
             </ul>
             <div style="border-left: 2px solid #2C3E50; height: 250px" id="myTabContent" class="tab-content">
                 <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
@@ -168,7 +181,8 @@
                         <p style="margin-left: 13px">Generating Rule. Please wait...</p>
                     </div>
 
-                    <p id="rule-paragraph" style="height: 150px; overflow:auto;">No rules have been created yet. Please select the events you are interested
+                    <p id="rule-paragraph" style="height: 150px; overflow:auto;">No rules have been created yet. Please
+                        select the events you are interested
                         in and press "Generate Rule" button on the toolbar</p>
 
                 </div>
@@ -181,6 +195,30 @@
     </div>
 
     <script id="brushing">
+
+    $('#cluster_select_all').click(function (event) {
+        if (this.checked) {
+            $('.cluster_chk').each(function () {
+                this.checked = true;
+            });
+        } else {
+            $('.cluster_chk').each(function () {
+                this.checked = false;
+            });
+        }
+    });
+
+    $('#rule_select_all').click(function (event) {
+        if (this.checked) {
+            $('.rule_chk').each(function () {
+                this.checked = true;
+            });
+        } else {
+            $('.rule_chk').each(function () {
+                this.checked = false;
+            });
+        }
+    });
 
     var new_grid_data;
     var datastack = [];         // stores data history (for undo operation)
@@ -349,7 +387,7 @@
         var colorgen = ["RoyalBlue", "Crimson", "Green", "gold", "SaddleBrown", "DarkOrange", "DimGray", "Olive", "Peru", "RosyBrown" ];
 
         var color = function (d) {
-            return colorgen[parseInt(d.clusterID)-1];
+            return colorgen[parseInt(d.clusterID) - 1];
         };
         parcoords.color(color).render();
     }
@@ -951,8 +989,8 @@
                 data_types['clusterID'] = 'string'
 
                 parcoords.data(data)
-                         .types(data_types)
-                         .drawWithNewColumn();
+                        .types(data_types)
+                        .drawWithNewColumn();
 
                 drawData(brushed_data);
                 gridUpdate(brushed_data);
@@ -1007,7 +1045,7 @@
                     $("#cep_rule_panel").append('<div style="text-align:center" id="rule-info-panel" class="panel panel-info"><div id="rule-panel" class="panel-body">' + precision_line + '</br>' + recall_line + '</br>' + count_line + '</br></div> </div>')
 
                     var false_positive_indexes = result['filtered']
-                    if(false_positive_indexes.length>0) {
+                    if (false_positive_indexes.length > 0) {
                         console.log(false_positive_indexes);
 
                         var false_positives = [];
@@ -1032,18 +1070,18 @@
         });
     }
 
-    function hideTicks(){
-        if(ticks_hidden==false){
+    function hideTicks() {
+        if (ticks_hidden == false) {
             parcoords.hideTicks();
             ticks_hidden = true;
         }
-        else{
+        else {
             ticks_hidden = false;
             parcoords.updateAxes();
         }
     }
 
-    function reset_highlight(){
+    function reset_highlight() {
         parcoords.unhighlight();
         $('#reset-colors-button').hide();
     }

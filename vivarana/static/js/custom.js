@@ -157,7 +157,7 @@ function performClustering() {
             var col_list = data.attribute_list;
 
             for (var i = 0; i < col_list.length; i++) {
-                html_string += "<div class='checkbox'><label><input type='checkbox' name='column_for_cluster' value='" +
+                html_string += "<div class='checkbox'><label><input class='cluster_chk' type='checkbox' name='column_for_cluster' value='" +
                     col_list[i] + "' checked> " +
                     "<span class='ripple'></span>" +
                     "<span class='check'>" +
@@ -183,7 +183,7 @@ function performRuleGen() {
             var col_list = data.attribute_list;
 
             for (var i = 0; i < col_list.length; i++) {
-                html_string += "<div class='checkbox'><label><input type='checkbox' name='column_for_rulegen' value='" +
+                html_string += "<div class='checkbox'><label><input class='rule_chk' type='checkbox' name='column_for_rulegen' value='" +
                     col_list[i] + "' checked> " +
                     "<span class='ripple'></span>" +
                     "<span class='check'>" +
