@@ -115,3 +115,7 @@
     margin-right: 5px;
     margin-left: 5px;
 }
+
+.nav-tabs > li.active{
+    background-color: #4E52D0;
+}
