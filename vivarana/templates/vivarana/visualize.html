@@ -999,19 +999,14 @@
 
                 if (result['success'] == true) {
 
-                    for (var rule in result.rules) {
-                        var count_line = 'You selected ' + result['count_selected'] + ' events. This rule covers ' + result['count_covered'] + ' events.'
-                        var recall_line = 'Rule recall - ' + parseFloat(result['recall']).toFixed(7);
-                        var precision_line = 'Rule precision - ' + parseFloat(result['precision']).toFixed(7);
+                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FROM EVENT_STREAM_NAME' + result['window_string'] + '</br>SELECT ' + result['select_string'] + '</br>Having</p>')
+                    $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules.join('</br>OR</br>') + '</p>')
+                    var count_line = 'You selected ' + result['count_selected'] + ' events. This rule covers ' + result['count_covered'] + ' events.'
+                    var recall_line = 'Rule recall - ' + parseFloat(result['recall']).toFixed(7);
+                    var precision_line = 'Rule precision - ' + parseFloat(result['precision']).toFixed(7);
+                    $("#cep_rule_panel").append('<div style="text-align:center" id="rule-info-panel" class="panel panel-info"><div id="rule-panel" class="panel-body">' + precision_line + '</br>' + recall_line + '</br>' + count_line + '</br></div> </div>')
 
-                        $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + 'FROM EVENT_STREAM_NAME' + result['window_string'] + '</br>SELECT ' + result['select_string'] + '</br>Having</p>')
-                        $("#rule-paragraph").append('<p style="color: #2C3E50;margin-bottom: 0px;">' + result.rules[rule]['rule'] + '</p>')
-                        $("#cep_rule_panel").append('<div style="text-align:center" id="rule-info-panel" class="panel panel-info"><div id="rule-panel" class="panel-body">' + precision_line + '</br>' + recall_line + '</br>' + count_line + '</br></div> </div>')
-                    }
-{#                    $("#rule-paragraph").append('<button class="btn-default>reset</button>')#}
                     var false_positive_indexes = result['filtered']
-
-{#                    console.log(false_positives);#}
                     if(false_positive_indexes.length>0) {
                         console.log(false_positive_indexes);
 

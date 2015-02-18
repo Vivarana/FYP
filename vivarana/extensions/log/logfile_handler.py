@@ -25,13 +25,10 @@ def handle_log(file_in):
     :return:  'success' True if parsing is successful and False if parsing failed
             'dataframe' Pandas dataframe containing parsed data only when parsing is successful
     """
-
-    print os.path.dirname(__file__)
     config = ConfigParser.ConfigParser()
     config.read(os.path.join(os.path.dirname(__file__), "../../settings.ini"))
 
     log_format = config.get('parser', 'format')
-    print log_format
     parser = apachelog.parser(log_format)
 
     log_list = []

@@ -10,6 +10,9 @@ import pandas.rpy.common as com
 import rule as rule_classes
 import vivarana.constants as constants
 
+import os
+import ConfigParser
+
 logger = logging.getLogger(__name__)
 
 data_types = None
@@ -269,38 +272,37 @@ def generate(selected_ids, dataframe, state):
 
         selected_columns = ' + '.join(selected_ids['checked_columns'])
 
+        # Generating the decision tree
         r_dataframe = com.convert_to_r_dataframe(temporary_dataframe)
         ro.r(r_code)
         rpart = importr('rpart')
 
-        decision_tree = rpart.rpart(constants.RULEGEN_COLUMN_NAME + ' ~ ' + selected_columns, method="class", data=r_dataframe)
+        config = ConfigParser.ConfigParser()
+        config.read(os.path.join(os.path.dirname(__file__), "../settings.ini"))
+        minsplit = int(config.get('rulegen', 'minsplit'))
+        cp = float(config.get('rulegen', 'complexity_parameter'))
 
-
+        decision_tree = rpart.rpart(constants.RULEGEN_COLUMN_NAME + ' ~ ' + selected_columns, minsplit=minsplit, cp=cp, method="class", data=r_dataframe)
         ro.r.assign('temp', decision_tree)
         r_get_rules_function = ro.globalenv['rules']
+
+        # Using the decision tree to infer rules.
         rule_set = com.convert_robj(r_get_rules_function(decision_tree))
 
+        # If unable to generate rules return False
         if len(rule_set) == 0:
             return False, None, None, None, None, None, None, None, None
 
-        temp_rule_set = []
-
-        # if debug:
-        print "---------------------------------------------------------------------------------"
-        print "Decision Tree"
         logger.debug(decision_tree)
-        print decision_tree
-        print rule_set
-        print "---------------------------------------------------------------------------------"
+        logger.debug(decision_tree)
+        logger.debug(rule_set)
 
+        # Converting the rule set to the generic constraint format
+        temp_rule_set = []
         for index, row in rule_set.iterrows():
             temp_rule = parse_rule(row['rulelist'], state[constants.AGGREGATE_FUNCTION_ON_ATTR])
             temp_rule_set.append(temp_rule)
-            print temp_rule
-            rules.append({'rule': temp_rule.to_string(), 'coverage': row['coverage']})
-            print rules
-
-        # print rules
+            rules.append(temp_rule.to_string())
 
         constraint_set = rule_classes.ConstraintSet('OR', temp_rule_set)
         rule_applied_index = constraint_set.apply_constraint(temporary_dataframe).index
@@ -308,8 +310,6 @@ def generate(selected_ids, dataframe, state):
         temporary_dataframe['FILTERED_BY_RULE'] = 0
         temporary_dataframe['FILTERED_BY_RULE'][
             temporary_dataframe.index.isin(rule_applied_index)] = 1
-
-        # print list(temporary_dataframe[(temporary_dataframe['FILTERED_BY_RULE'] == 0) & (temporary_dataframe[constants.RULEGEN_COLUMN_NAME] == 1)].index)
 
         confusion_mat = confusion_matrix(temporary_dataframe['FILTERED_BY_RULE'], temporary_dataframe[constants.RULEGEN_COLUMN_NAME])
 
@@ -320,18 +320,7 @@ def generate(selected_ids, dataframe, state):
         window_string = get_window_string(state)
 
         logger.debug(constraint_set.to_string())
-
-        # if debug:
-        print "Rule Created - "
-        print constraint_set.to_string()
-        print "---------------------------------------------------------------------------------"
-        print "Size of the Dataset = " + str(len(dataframe))
-        print "Number of events selected for rule generation = " + str(len(temporary_dataframe))
-        print "Number of events filtered through the rule = " + str(len(constraint_set.apply_constraint(temporary_dataframe).index))
-        print "---------------------------------------------------------------------------------"
-        print "Confusion Matrix - "
-        print confusion_mat
-        print "Precision = " + str(precision) + ", recall = " + str(recall)
+        logger.debug(confusion_mat)
 
         number_selected = len(selected_ids['selected_ids'])
         number_identified = len(rule_applied_index)
